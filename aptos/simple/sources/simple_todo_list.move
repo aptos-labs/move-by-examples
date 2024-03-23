@@ -2,12 +2,15 @@ module simple_todo_list_addr::simple_todo_list {
     use std::signer;
     use std::vector;
     use std::string::String;
-    
-    // Errors
-    const E_TODO_LIST_DOESNT_EXIST: u64 = 1;
-    const E_TODO_LIST_ALREADY_EXISTS: u64 = 2;
-    const E_TODO_DOESNT_EXIST: u64 = 3;
-    const E_TODO_IS_COMPLETED: u64 = 4;
+
+    /// Todo list does not exist
+    const E_TODO_LIST_DOSE_NOT_EXIST: u64 = 1;
+    /// Try to create another todo list, but each user can only have one todo list
+    const E_EACH_USER_CAN_ONLY_HAVE_ONE_TODO_LIST: u64 = 2;
+    /// Todo does not exist
+    const E_TODO_DOSE_NOT_EXIST: u64 = 3;
+    /// Todo is already completed
+    const E_TODO_ALREADY_COMPLETED: u64 = 4;
 
     struct TodoList has key {
         owner: address,
@@ -20,102 +23,168 @@ module simple_todo_list_addr::simple_todo_list {
     }
 
     // This function is only called once when the module is published for the first time.
-    fun init_module(_deployer: &signer) {
+    // init_module is optiona, you can also have an entry function as the initializer.
+    fun init_module(_module_publisher: &signer) {
         // nothing to do here
     }
 
-    public entry fun create_todo_list(account: &signer) {
+    // ======================== Write functions ========================
+
+    public entry fun create_todo_list(sender: &signer) {
+        let sender_address = signer::address_of(sender);
         assert!(
-            !exists<TodoList>(signer::address_of(account)),
-            E_TODO_LIST_ALREADY_EXISTS
+            !exists<TodoList>(sender_address),
+            E_EACH_USER_CAN_ONLY_HAVE_ONE_TODO_LIST
         );
         let todo_list = TodoList {
-            owner: signer::address_of(account),
+            owner: sender_address,
             todos: vector::empty(),
         };
         // move the TodoList resource under the signer account
-        move_to(account, todo_list);
+        move_to(sender, todo_list);
     }
 
-    public entry fun create_todo(account: &signer, content: String) acquires TodoList {
-        // gets the signer address
-        let signer_address = signer::address_of(account);
-        // assert signer has created a list
-        assert!(exists<TodoList>(signer_address), E_TODO_LIST_DOESNT_EXIST);
-        // gets the TodoList resource
-        let todo_list = borrow_global_mut<TodoList>(signer_address);
-        // creates a new Todo
+    public entry fun create_todo(sender: &signer, content: String) acquires TodoList {
+        let sender_address = signer::address_of(sender);
+        assert_user_has_todo_list(sender_address);
+        let todo_list = borrow_global_mut<TodoList>(sender_address);
         let new_todo = Todo {
             content,
             completed: false
         };
-        // adds the new todo into the todos table
         vector::push_back(&mut todo_list.todos, new_todo);
     }
 
-    public entry fun complete_todo(account: &signer, todo_id: u64) acquires TodoList {
-        // gets the signer address
-        let signer_address = signer::address_of(account);
-        // assert signer has created a list
-        assert!(exists<TodoList>(signer_address), E_TODO_LIST_DOESNT_EXIST);
-        // gets the TodoList resource
-        let todo_list = borrow_global_mut<TodoList>(signer_address);
-        // assert todo exists
-        assert!(todo_id < vector::length(&todo_list.todos), E_TODO_DOESNT_EXIST);
-        // gets the todo matched the todo_id
+    public entry fun complete_todo(sender: &signer, todo_id: u64) acquires TodoList {
+        let sender_address = signer::address_of(sender);
+        assert_user_has_todo_list(sender_address);
+        let todo_list = borrow_global_mut<TodoList>(sender_address);
+        assert_user_has_given_todo(todo_list, todo_id);
         let todo_record = vector::borrow_mut(&mut todo_list.todos, todo_id);
-        // assert todo is not completed
-        assert!(todo_record.completed == false, E_TODO_IS_COMPLETED);
-        // update todo as completed
+        assert!(todo_record.completed == false, E_TODO_ALREADY_COMPLETED);
         todo_record.completed = true;
     }
+
+    // ======================== Read Functions ========================
+
+    #[view]
+    public fun has_todo_list(sender: address): bool {
+        exists<TodoList>(sender)
+    }
+
+    // Typicall we don't return custom struct (e.g. TodoList or Todo) from view functions,
+    // we return only the necessary data from the struct,
+    // because custom struct is private and only visible in the module defines it.
+    #[view]
+    public fun get_todo_list(sender: address): (address, u64) acquires TodoList {
+        assert_user_has_todo_list(sender);
+        let todo_list = borrow_global<TodoList>(sender);
+        (todo_list.owner, vector::length(&todo_list.todos))
+    }
+
+    #[view]
+    public fun get_todo(sender: address, todo_id: u64): (String, bool) acquires TodoList {
+        assert_user_has_todo_list(sender);
+        let todo_list = borrow_global<TodoList>(sender);
+        assert!(todo_id < vector::length(&todo_list.todos), E_TODO_DOSE_NOT_EXIST);
+        let todo_record = vector::borrow(&todo_list.todos, todo_id);
+        (todo_record.content, todo_record.completed)
+    }
+
+    // ======================== Helper Functions ========================
+
+    fun assert_user_has_todo_list(user_addr: address) {
+        assert!(
+            exists<TodoList>(user_addr),
+            E_TODO_LIST_DOSE_NOT_EXIST
+        );
+    }
+
+    fun assert_user_has_given_todo(todo_list: &TodoList, todo_id: u64) {
+        assert!(
+            todo_id < vector::length(&todo_list.todos),
+            E_TODO_DOSE_NOT_EXIST
+        );
+    }
+
+    // ======================== Unit Tests ========================
 
     #[test_only]
     use std::string;
     #[test_only]
+    use aptos_std::string_utils;
+    #[test_only]
     use aptos_framework::account;
+    #[test_only]
+    use aptos_std::debug;
 
     #[test(admin = @0x100)]
-    public entry fun test_flow(admin: signer) acquires TodoList {
-        // creates an admin @todolist_addr account for test
-        account::create_account_for_test(signer::address_of(&admin));
-        // initialize contract with admin account
+    public entry fun test_end_to_end(admin: signer) acquires TodoList {
+        let admin_addr = signer::address_of(&admin);
+        account::create_account_for_test(admin_addr);
+        assert!(!has_todo_list(admin_addr), 1);
         create_todo_list(&admin);
+        assert!(has_todo_list(admin_addr), 2);
 
-        // creates a todo by the admin account
         create_todo(&admin, string::utf8(b"New Todo"));
-        let todo_list = borrow_global<TodoList>(signer::address_of(&admin));
-        assert!(todo_list.owner == signer::address_of(&admin), 2);
+        let (todo_list_owner, todo_list_length) = get_todo_list(admin_addr);
+        debug::print(&string_utils::format1(&b"todo_list_owner: {}", todo_list_owner));
+        debug::print(&string_utils::format1(&b"todo_list_length: {}", todo_list_length));
+        assert!(todo_list_owner == admin_addr, 3);
+        assert!(todo_list_length == 1, 4);
 
-        assert!(vector::length(&todo_list.todos) == 1, 3);
-        let todo_record = vector::borrow(&todo_list.todos, vector::length(&todo_list.todos) - 1);
-        assert!(todo_record.completed == false, 4);
-        assert!(todo_record.content == string::utf8(b"New Todo"), 5);
+        let (todo_content, todo_completed) = get_todo(admin_addr, 0);
+        debug::print(&string_utils::format1(&b"todo_content: {}", todo_content));
+        debug::print(&string_utils::format1(&b"todo_completed: {}", todo_completed));
+        assert!(!todo_completed, 5);
+        assert!(todo_content == string::utf8(b"New Todo"), 6);
 
-        // updates todo as completed
         complete_todo(&admin, 0);
-        let todo_list = borrow_global<TodoList>(signer::address_of(&admin));
-        let todo_record = vector::borrow(&todo_list.todos, 0);
-        assert!(todo_record.completed == true, 6);
-        assert!(todo_record.content == string::utf8(b"New Todo"), 7);
+        let (_todo_content, todo_completed) = get_todo(admin_addr, 0);
+        debug::print(&string_utils::format1(&b"todo_completed: {}", todo_completed));
+        assert!(todo_completed, 7);
     }
 
-    #[test(admin = @0x123)]
-    #[expected_failure(abort_code = E_TODO_LIST_DOESNT_EXIST)]
-    public entry fun account_can_not_update_todo(admin: signer) acquires TodoList {
-        // creates an admin @todolist_addr account for test
-        account::create_account_for_test(signer::address_of(&admin));
+    #[test(admin = @0x100)]
+    #[expected_failure(abort_code = E_TODO_LIST_DOSE_NOT_EXIST, location = Self)]
+    public entry fun test_todo_list_does_not_exist(admin: signer) acquires TodoList {
+        let admin_addr = signer::address_of(&admin);
+        account::create_account_for_test(admin_addr);
         // account can not toggle todo as no list was created
+        create_todo(&admin, string::utf8(b"New Todo"));
+    }
+
+    #[test(admin = @0x100)]
+    #[expected_failure(abort_code = E_EACH_USER_CAN_ONLY_HAVE_ONE_TODO_LIST, location = Self)]
+    public entry fun test_each_user_can_only_have_one_todo_list(admin: signer) {
+        let admin_addr = signer::address_of(&admin);
+        account::create_account_for_test(admin_addr);
+        create_todo_list(&admin);
+        // can not create another todo list, since in this code we store TodoList as a resource under user
+        // and under same user, we can only have one resource of the same type
+        // See advanced todo list example for how to handle multiple todo lists under same user
+        create_todo_list(&admin);
+    }
+
+    #[test(admin = @0x100)]
+    #[expected_failure(abort_code = E_TODO_DOSE_NOT_EXIST, location = Self)]
+    public entry fun test_todo_does_not_exist(admin: signer) acquires TodoList {
+        let admin_addr = signer::address_of(&admin);
+        account::create_account_for_test(admin_addr);
+        create_todo_list(&admin);
+        // can not complete todo that does not exist
         complete_todo(&admin, 1);
     }
 
-    #[test(admin = @0x123)]
-    #[expected_failure(abort_code = E_TODO_LIST_ALREADY_EXISTS, location = Self)]
-    public entry fun cannot_create_2_todo_list(admin: signer) {
-        // creates an admin @todolist_addr account for test
-        account::create_account_for_test(signer::address_of(&admin));
+    #[test(admin = @0x100)]
+    #[expected_failure(abort_code = E_TODO_ALREADY_COMPLETED, location = Self)]
+    public entry fun test_todo_already_completed(admin: signer) acquires TodoList {
+        let admin_addr = signer::address_of(&admin);
+        account::create_account_for_test(admin_addr);
         create_todo_list(&admin);
-        // wll get resource already exists error
-        create_todo_list(&admin);
+        create_todo(&admin, string::utf8(b"New Todo"));
+        complete_todo(&admin, 0);
+        // can not complete todo that is already completed
+        complete_todo(&admin, 0);
     }
 }

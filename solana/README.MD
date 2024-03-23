@@ -1,4 +1,4 @@
-# Anchor Todo List
+# Todo List Contract in Solana using Anchor
 
 There are 2 versions
 

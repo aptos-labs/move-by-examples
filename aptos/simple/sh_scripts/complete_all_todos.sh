@@ -2,7 +2,7 @@
 
 set -e
 
-echo "##### Create a resource account and publishing module under it #####"
+echo "##### Running move script to create a todo list under sender if not exists and todos in 1 tx #####"
 
 # Profile is the account you used to execute transaction
 # Run "aptos init" to create the profile, then get the profile name from .aptos/config.yaml
@@ -19,9 +19,16 @@ RESOURCE_ACCOUNT_ADDR=0x$(aptos account derive-resource-account-address \
   --seed $RESOURCE_ACCOUNT_SEED \
   | jq -r '.Result')
 
-aptos move create-resource-account-and-publish-package \
-  --address-name $PUBLISHER_ADDR\
-  --seed $RESOURCE_ACCOUNT_SEED \
-	--assume-yes \
-  --profile $PUBLISHER_PROFILE \
+# Need to compile the package first
+aptos move compile \
   --named-addresses simple_todo_list_addr=$RESOURCE_ACCOUNT_ADDR
+
+# Profile is the account you used to execute transaction
+# Run "aptos init" to create the profile, then get the profile name from .aptos/config.yaml
+SENDER_PROFILE=testnet-profile-1
+
+# Run the script
+aptos move run-script \
+	--assume-yes \
+  --profile $SENDER_PROFILE \
+  --compiled-script-path build/simple_todo_list/bytecode_scripts/complete_all_todos.mv
