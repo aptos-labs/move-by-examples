@@ -9,6 +9,10 @@ script {
 
         // complete all todos
         let () = for (i in 0..todo_list_length) {
+            let (_todo_content, todo_completed) = simple_todo_list_addr::simple_todo_list::get_todo(sender_addr, i);
+            if (todo_completed) {
+                continue
+            };
             simple_todo_list_addr::simple_todo_list::complete_todo(sender, i);
         };
 

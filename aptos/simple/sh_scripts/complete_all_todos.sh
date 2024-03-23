@@ -2,7 +2,7 @@
 
 set -e
 
-echo "##### Running move script to create a todo list under sender if not exists and todos in 1 tx #####"
+echo "##### Running move script to complete all todos in 1 tx #####"
 
 # Profile is the account you used to execute transaction
 # Run "aptos init" to create the profile, then get the profile name from .aptos/config.yaml

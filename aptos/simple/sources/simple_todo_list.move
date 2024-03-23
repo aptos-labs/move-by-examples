@@ -40,7 +40,7 @@ module simple_todo_list_addr::simple_todo_list {
             owner: sender_address,
             todos: vector::empty(),
         };
-        // move the TodoList resource under the signer account
+        // store the TodoList resource directly under the sender
         move_to(sender, todo_list);
     }
 
@@ -55,12 +55,12 @@ module simple_todo_list_addr::simple_todo_list {
         vector::push_back(&mut todo_list.todos, new_todo);
     }
 
-    public entry fun complete_todo(sender: &signer, todo_id: u64) acquires TodoList {
+    public entry fun complete_todo(sender: &signer, todo_idx: u64) acquires TodoList {
         let sender_address = signer::address_of(sender);
         assert_user_has_todo_list(sender_address);
         let todo_list = borrow_global_mut<TodoList>(sender_address);
-        assert_user_has_given_todo(todo_list, todo_id);
-        let todo_record = vector::borrow_mut(&mut todo_list.todos, todo_id);
+        assert_user_has_given_todo(todo_list, todo_idx);
+        let todo_record = vector::borrow_mut(&mut todo_list.todos, todo_idx);
         assert!(todo_record.completed == false, E_TODO_ALREADY_COMPLETED);
         todo_record.completed = true;
     }
@@ -83,11 +83,11 @@ module simple_todo_list_addr::simple_todo_list {
     }
 
     #[view]
-    public fun get_todo(sender: address, todo_id: u64): (String, bool) acquires TodoList {
+    public fun get_todo(sender: address, todo_idx: u64): (String, bool) acquires TodoList {
         assert_user_has_todo_list(sender);
         let todo_list = borrow_global<TodoList>(sender);
-        assert!(todo_id < vector::length(&todo_list.todos), E_TODO_DOSE_NOT_EXIST);
-        let todo_record = vector::borrow(&todo_list.todos, todo_id);
+        assert!(todo_idx < vector::length(&todo_list.todos), E_TODO_DOSE_NOT_EXIST);
+        let todo_record = vector::borrow(&todo_list.todos, todo_idx);
         (todo_record.content, todo_record.completed)
     }
 
@@ -100,9 +100,9 @@ module simple_todo_list_addr::simple_todo_list {
         );
     }
 
-    fun assert_user_has_given_todo(todo_list: &TodoList, todo_id: u64) {
+    fun assert_user_has_given_todo(todo_list: &TodoList, todo_idx: u64) {
         assert!(
-            todo_id < vector::length(&todo_list.todos),
+            todo_idx < vector::length(&todo_list.todos),
             E_TODO_DOSE_NOT_EXIST
         );
     }
@@ -150,7 +150,7 @@ module simple_todo_list_addr::simple_todo_list {
     public entry fun test_todo_list_does_not_exist(admin: signer) acquires TodoList {
         let admin_addr = signer::address_of(&admin);
         account::create_account_for_test(admin_addr);
-        // account can not toggle todo as no list was created
+        // account can not create todo as no list was created
         create_todo(&admin, string::utf8(b"New Todo"));
     }
 
@@ -162,7 +162,7 @@ module simple_todo_list_addr::simple_todo_list {
         create_todo_list(&admin);
         // can not create another todo list, since in this code we store TodoList as a resource under user
         // and under same user, we can only have one resource of the same type
-        // See advanced todo list example for how to handle multiple todo lists under same user
+        // see advanced todo list example for how to handle multiple todo lists under same user
         create_todo_list(&admin);
     }
 

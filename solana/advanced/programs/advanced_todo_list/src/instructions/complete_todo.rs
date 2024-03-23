@@ -9,16 +9,16 @@ pub struct CompleteTodo<'info> {
     pub owner: Signer<'info>,
 }
 
-pub fn handle_complete_todo(ctx: Context<CompleteTodo>, index: u32) -> Result<()> {
+pub fn handle_complete_todo(ctx: Context<CompleteTodo>, todo_idx: u32) -> Result<()> {
     let todo_list = &mut ctx.accounts.todo_list;
     require!(
-        (index as usize) < todo_list.todos.len(),
+        (todo_idx as usize) < todo_list.todos.len(),
         ContractError::TodoNotFound
     );
     require!(
-        !todo_list.todos[index as usize].completed,
+        !todo_list.todos[todo_idx as usize].completed,
         ContractError::TodoAlreadyCompleted
     );
-    todo_list.todos[index as usize].completed = true;
+    todo_list.todos[todo_idx as usize].completed = true;
     Ok(())
 }
