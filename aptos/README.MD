@@ -1,4 +1,4 @@
-# Todo List Contract in Aptos Move
+# Todo List Contract on Aptos
 
 There are 2 versions
 
@@ -7,5 +7,5 @@ There are 2 versions
 
 ## Env setup
 
-We usually use Intellij with Move plugin to develop Move smart contract. 
+We usually use Intellij with Move plugin to develop Move smart contract.
 VS Code has a move plugin, but it's not fully functioning yet.
