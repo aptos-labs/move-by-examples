@@ -1,0 +1,16 @@
+[package]
+name = "simple-todo-list"
+version = "1.0.0"
+authors = []
+
+[addresses]
+simple_todo_list_addr = "_"
+
+[dev-addresses]
+simple_todo_list_addr = "0x111"
+
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", rev = "mainnet", subdir = "aptos-move/framework/aptos-framework"}
+AptosTokenObjects = { git = "https://github.com/aptos-labs/aptos-core.git", rev = "mainnet", subdir = "aptos-move/framework/aptos-token-objects"}
+
+[dev-dependencies]

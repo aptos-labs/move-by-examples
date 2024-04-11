@@ -1,6 +1,0 @@
-[workspace]
-members = [
-    "simple/programs/simple_todo_list",
-    "advanced/programs/advanced_todo_list",
-]
-resolver = "2"

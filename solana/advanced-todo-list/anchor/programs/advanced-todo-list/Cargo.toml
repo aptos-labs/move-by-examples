@@ -1,0 +1,22 @@
+[package]
+name = "advanced-todo-list"
+version = "0.1.0"
+description = "Created with Anchor"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "advanced_todo_list"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = "0.29.0"
+# fix error: use of unstable library feature 'build_hasher_simple_hash_one'
+ahash = "=0.8.6"
+solana-program = "=1.17.0"
