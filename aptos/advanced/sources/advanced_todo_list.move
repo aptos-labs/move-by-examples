@@ -3,8 +3,8 @@ module advanced_todo_list_addr::advanced_todo_list {
     use std::signer;
     use std::vector;
     use std::string::String;
+    use aptos_std::string_utils;
     use aptos_framework::object;
-    use aptos_framework::object::Object;
 
     /// Todo list does not exist
     const E_TODO_LIST_DOSE_NOT_EXIST: u64 = 1;
@@ -46,8 +46,11 @@ module advanced_todo_list_addr::advanced_todo_list {
             move_to(sender, counter);
             0
         };
-        // create a new object to hold the todo list, use the counter as seed
-        let obj_holds_todo_list = object::create_named_object(sender, bcs::to_bytes(&counter));
+        // create a new object to hold the todo list, use the contract_addr_counter as seed
+        let obj_holds_todo_list = object::create_named_object(
+            sender,
+            construct_todo_list_object_seed(counter),
+        );
         let obj_signer = object::generate_signer(&obj_holds_todo_list);
         let todo_list = TodoList {
             owner: sender_address,
@@ -62,7 +65,10 @@ module advanced_todo_list_addr::advanced_todo_list {
 
     public entry fun create_todo(sender: &signer, todo_list_idx: u64, content: String) acquires TodoList {
         let sender_address = signer::address_of(sender);
-        let todo_list_obj_addr = object::create_object_address(&sender_address, bcs::to_bytes(&todo_list_idx));
+        let todo_list_obj_addr = object::create_object_address(
+            &sender_address,
+            construct_todo_list_object_seed(todo_list_idx)
+        );
         assert_user_has_todo_list(todo_list_obj_addr);
         let todo_list = borrow_global_mut<TodoList>(todo_list_obj_addr);
         let new_todo = Todo {
@@ -74,7 +80,10 @@ module advanced_todo_list_addr::advanced_todo_list {
 
     public entry fun complete_todo(sender: &signer, todo_list_idx: u64, todo_idx: u64) acquires TodoList {
         let sender_address = signer::address_of(sender);
-        let todo_list_obj_addr = object::create_object_address(&sender_address, bcs::to_bytes(&todo_list_idx));
+        let todo_list_obj_addr = object::create_object_address(
+            &sender_address,
+            construct_todo_list_object_seed(todo_list_idx)
+        );
         assert_user_has_todo_list(todo_list_obj_addr);
         let todo_list = borrow_global_mut<TodoList>(todo_list_obj_addr);
         assert_user_has_given_todo(todo_list, todo_idx);
@@ -98,7 +107,7 @@ module advanced_todo_list_addr::advanced_todo_list {
 
     #[view]
     public fun get_todo_list_obj_addr(sender: address, todo_list_idx: u64): address {
-        object::create_object_address(&sender, bcs::to_bytes(&todo_list_idx))
+        object::create_object_address(&sender, construct_todo_list_object_seed(todo_list_idx))
     }
 
     #[view]
@@ -150,17 +159,21 @@ module advanced_todo_list_addr::advanced_todo_list {
         );
     }
 
-    fun get_todo_list_obj(sender: address, todo_list_idx: u64): Object<TodoList> {
+    fun get_todo_list_obj(sender: address, todo_list_idx: u64): object::Object<TodoList> {
         let addr = get_todo_list_obj_addr(sender, todo_list_idx);
         object::address_to_object(addr)
+    }
+
+    fun construct_todo_list_object_seed(counter: u64): vector<u8> {
+        // The seed must be unique per todo list creator
+        //Wwe add contract address as part of the seed so seed from 2 todo list contract for same user would be different
+        bcs::to_bytes(&string_utils::format2(&b"{}_{}", @advanced_todo_list_addr, counter))
     }
 
     // ======================== Unit Tests ========================
 
     #[test_only]
     use std::string;
-    #[test_only]
-    use aptos_std::string_utils;
     #[test_only]
     use aptos_framework::account;
     #[test_only]
