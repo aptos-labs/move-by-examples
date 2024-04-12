@@ -23,7 +23,7 @@ module simple_todo_list_addr::simple_todo_list {
     }
 
     // This function is only called once when the module is published for the first time.
-    // init_module is optiona, you can also have an entry function as the initializer.
+    // init_module is optional, you can also have an entry function as the initializer.
     fun init_module(_module_publisher: &signer) {
         // nothing to do here
     }

@@ -86,7 +86,7 @@ export type Launchpad = {
       "name": "mintToken",
       "accounts": [
         {
-          "name": "mintAuthority",
+          "name": "payer",
           "isMut": true,
           "isSigner": true
         },
@@ -143,18 +143,6 @@ export type Launchpad = {
           }
         ]
       }
-    }
-  ],
-  "errors": [
-    {
-      "code": 6000,
-      "name": "TodoNotFound",
-      "msg": "The todo with the given id is not found"
-    },
-    {
-      "code": 6001,
-      "name": "TodoAlreadyCompleted",
-      "msg": "The todo is already completed"
     }
   ]
 };
@@ -247,7 +235,7 @@ export const IDL: Launchpad = {
       "name": "mintToken",
       "accounts": [
         {
-          "name": "mintAuthority",
+          "name": "payer",
           "isMut": true,
           "isSigner": true
         },
@@ -304,18 +292,6 @@ export const IDL: Launchpad = {
           }
         ]
       }
-    }
-  ],
-  "errors": [
-    {
-      "code": 6000,
-      "name": "TodoNotFound",
-      "msg": "The todo with the given id is not found"
-    },
-    {
-      "code": 6001,
-      "name": "TodoAlreadyCompleted",
-      "msg": "The todo is already completed"
     }
   ]
 };

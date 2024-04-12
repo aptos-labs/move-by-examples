@@ -35,8 +35,8 @@ describe('launchpad', () => {
   const tokenListKeypair = web3.Keypair.generate();
   console.log('Token list public key', tokenListKeypair.publicKey.toBase58());
 
-  const user1 = web3.Keypair.generate();
-  console.log('User 1 public key', user1.publicKey.toBase58());
+  const user1Keypair = web3.Keypair.generate();
+  console.log('User 1 public key', user1Keypair.publicKey.toBase58());
 
   it('Initialize launchpad!', async () => {
     await program.methods
@@ -61,7 +61,7 @@ describe('launchpad', () => {
 
   it('Create an SPL Token!', async () => {
     await conn
-      .requestAirdrop(user1.publicKey, web3.LAMPORTS_PER_SOL)
+      .requestAirdrop(user1Keypair.publicKey, web3.LAMPORTS_PER_SOL)
       .then((sig) => conn.confirmTransaction(sig));
     await conn
       .requestAirdrop(program.provider.publicKey!, web3.LAMPORTS_PER_SOL)
@@ -107,7 +107,7 @@ describe('launchpad', () => {
     // Derive the associated token address account for the mint and payer.
     const associatedTokenAccountAddress = getAssociatedTokenAddressSync(
       mintKeypair.publicKey,
-      payer.publicKey
+      user1Keypair.publicKey
     );
 
     // Amount of tokens to mint.
@@ -117,8 +117,9 @@ describe('launchpad', () => {
     const transactionSignature = await program.methods
       .mintToken(amount)
       .accounts({
-        mintAuthority: payer.publicKey,
-        recipient: payer.publicKey,
+        // mintAuthority: payer.publicKey,
+        payer: user1Keypair.publicKey,
+        recipient: user1Keypair.publicKey,
         mintAccount: mintKeypair.publicKey,
         associatedTokenAccount: associatedTokenAccountAddress,
         tokenProgram: TOKEN_PROGRAM_ID,

@@ -1,3 +1,4 @@
+use crate::state::TokenList;
 use anchor_lang::prelude::*;
 use anchor_spl::metadata::mpl_token_metadata::programs::MPL_TOKEN_METADATA_ID;
 use anchor_spl::{
@@ -7,8 +8,6 @@ use anchor_spl::{
     },
     token::{Mint, Token},
 };
-
-use crate::state::TokenList;
 
 #[derive(Accounts)]
 pub struct CreateToken<'info> {

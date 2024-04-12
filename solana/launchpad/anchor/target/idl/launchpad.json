@@ -86,7 +86,7 @@
       "name": "mintToken",
       "accounts": [
         {
-          "name": "mintAuthority",
+          "name": "payer",
           "isMut": true,
           "isSigner": true
         },
@@ -143,18 +143,6 @@
           }
         ]
       }
-    }
-  ],
-  "errors": [
-    {
-      "code": 6000,
-      "name": "TodoNotFound",
-      "msg": "The todo with the given id is not found"
-    },
-    {
-      "code": 6001,
-      "name": "TodoAlreadyCompleted",
-      "msg": "The todo is already completed"
     }
   ],
   "metadata": {
