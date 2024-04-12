@@ -27,7 +27,7 @@ describe('test', () => {
       .requestAirdrop(user1.publicKey, web3.LAMPORTS_PER_SOL)
       .then((sig) => conn.confirmTransaction(sig));
     await conn
-      .requestAirdrop(program.provider.publicKey, web3.LAMPORTS_PER_SOL)
+      .requestAirdrop(program.provider.publicKey!, web3.LAMPORTS_PER_SOL)
       .then((sig) => conn.confirmTransaction(sig));
 
     // =========================== Initialize the program ===========================
