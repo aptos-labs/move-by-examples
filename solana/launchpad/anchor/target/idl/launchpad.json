@@ -34,7 +34,7 @@
         {
           "name": "mintAccount",
           "isMut": true,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "metadataAccount",

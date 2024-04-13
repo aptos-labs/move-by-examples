@@ -76,7 +76,7 @@ describe('test', () => {
 
     // =========================== user 1 creates a todo list ===========================
 
-    const [todoList1Pda, _bump1] = web3.PublicKey.findProgramAddressSync(
+    const [todoList1Pda] = web3.PublicKey.findProgramAddressSync(
       [
         user1.publicKey.toBuffer(),
         new BN(user1TodoListCounter.counter).toArrayLike(Buffer, 'le', 8), // Ensure the counter is 8 bytes
@@ -170,7 +170,7 @@ describe('test', () => {
         return counter;
       });
 
-    const [todoList2Pda, _bump2] = web3.PublicKey.findProgramAddressSync(
+    const [todoList2Pda] = web3.PublicKey.findProgramAddressSync(
       [
         user1.publicKey.toBuffer(),
         new BN(user1TodoListCounter2.counter).toArrayLike(Buffer, 'le', 8), // Ensure the counter is 8 bytes

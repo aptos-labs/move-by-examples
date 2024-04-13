@@ -34,7 +34,7 @@ export type Launchpad = {
         {
           "name": "mintAccount",
           "isMut": true,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "metadataAccount",
@@ -183,7 +183,7 @@ export const IDL: Launchpad = {
         {
           "name": "mintAccount",
           "isMut": true,
-          "isSigner": true
+          "isSigner": false
         },
         {
           "name": "metadataAccount",

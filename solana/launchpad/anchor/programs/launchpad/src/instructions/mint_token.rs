@@ -7,14 +7,17 @@ use anchor_spl::{
 #[derive(Accounts)]
 pub struct MintToken<'info> {
     #[account(mut)]
-    pub payer: Signer<'info>, // Previously mint_authority
-    // pub mint_authority: Signer<'info>,
+    pub payer: Signer<'info>,
     pub recipient: SystemAccount<'info>,
-    #[account(mut)]
+    // Mint account address is a PDA
+    #[account(
+        mut,
+        seeds = [b"mint"],
+        bump
+    )]
     pub mint_account: Account<'info, Mint>,
     #[account(
         init_if_needed,
-        // payer = mint_authority,
         payer = payer,
         associated_token::mint = mint_account,
         associated_token::authority = recipient,
@@ -33,16 +36,17 @@ pub fn handle_mint_token(ctx: Context<MintToken>, amount: u64) -> Result<()> {
         &ctx.accounts.associated_token_account.key()
     );
 
-    // Invoke the mint_to instruction on the token program
+    let signer_seeds: &[&[&[u8]]] = &[&[b"mint", &[*ctx.bumps.get("mint_account").unwrap()]]];
+    
     mint_to(
-        CpiContext::new(
+        CpiContext::new_with_signer(
             ctx.accounts.token_program.to_account_info(),
             MintTo {
                 mint: ctx.accounts.mint_account.to_account_info(),
                 to: ctx.accounts.associated_token_account.to_account_info(),
-                // authority: ctx.accounts.mint_authority.to_account_info(),
-                authority: ctx.accounts.payer.to_account_info(),
+                authority: ctx.accounts.mint_account.to_account_info(),
             },
+            signer_seeds,
         ),
         amount * 10u64.pow(ctx.accounts.mint_account.decimals as u32), // Mint tokens, adjust for decimals
     )?;

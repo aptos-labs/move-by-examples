@@ -28,9 +28,11 @@ describe('launchpad', () => {
     uri: 'https://raw.githubusercontent.com/solana-developers/program-examples/new-examples/tokens/tokens/.assets/spl-token.json',
   };
 
-  // Generate new keypair to use as address for mint account.
-  const mintKeypair = web3.Keypair.generate();
-  console.log('Mint public key', mintKeypair.publicKey.toBase58());
+  const [mintPDA] = web3.PublicKey.findProgramAddressSync(
+    [Buffer.from('mint')],
+    program.programId
+  );
+  console.log('Mint public key', mintPDA.toBase58());
 
   const tokenListKeypair = web3.Keypair.generate();
   console.log('Token list public key', tokenListKeypair.publicKey.toBase58());
@@ -72,7 +74,7 @@ describe('launchpad', () => {
       [
         Buffer.from('metadata'),
         TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-        mintKeypair.publicKey.toBuffer(),
+        mintPDA.toBuffer(),
       ],
       TOKEN_METADATA_PROGRAM_ID
     );
@@ -81,7 +83,7 @@ describe('launchpad', () => {
       .createToken(metadata.name, metadata.symbol, metadata.uri)
       .accounts({
         payer: payer.publicKey,
-        mintAccount: mintKeypair.publicKey,
+        mintAccount: mintPDA,
         metadataAccount: metadataAddress,
         tokenProgram: TOKEN_PROGRAM_ID,
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
@@ -89,24 +91,23 @@ describe('launchpad', () => {
         rent: web3.SYSVAR_RENT_PUBKEY,
         tokenList: tokenListKeypair.publicKey,
       })
-      .signers([mintKeypair])
       .rpc();
 
     console.log('Success!');
-    console.log(`   Mint Address: ${mintKeypair.publicKey}`);
+    console.log(`   Mint Address: ${mintPDA}`);
     console.log(`   Transaction Signature: ${transactionSignature}`);
 
     await program.account.tokenList
       .fetch(tokenListKeypair.publicKey)
       .then((tokenList) => {
-        expect(tokenList.tokens).toEqual([mintKeypair.publicKey]);
+        expect(tokenList.tokens).toEqual([mintPDA]);
       });
   });
 
   it('Mint some tokens to your wallet!', async () => {
     // Derive the associated token address account for the mint and payer.
     const associatedTokenAccountAddress = getAssociatedTokenAddressSync(
-      mintKeypair.publicKey,
+      mintPDA,
       user1Keypair.publicKey
     );
 
@@ -117,10 +118,8 @@ describe('launchpad', () => {
     const transactionSignature = await program.methods
       .mintToken(amount)
       .accounts({
-        // mintAuthority: payer.publicKey,
-        payer: user1Keypair.publicKey,
         recipient: user1Keypair.publicKey,
-        mintAccount: mintKeypair.publicKey,
+        mintAccount: mintPDA,
         associatedTokenAccount: associatedTokenAccountAddress,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -133,5 +132,16 @@ describe('launchpad', () => {
       `   Associated Token Account Address: ${associatedTokenAccountAddress}`
     );
     console.log(`   Transaction Signature: ${transactionSignature}`);
+
+    // Check the balance of the associated token account.
+    await conn
+      .getParsedAccountInfo(associatedTokenAccountAddress)
+      .then((info) => {
+        if (info.value === null) {
+          throw new Error('Token account not found.');
+        }
+        const balance = info.value.data.parsed.info.tokenAmount.uiAmount;
+        expect(balance).toEqual(100);
+      });
   });
 });
