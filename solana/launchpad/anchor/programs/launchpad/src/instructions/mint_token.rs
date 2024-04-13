@@ -36,8 +36,8 @@ pub fn handle_mint_token(ctx: Context<MintToken>, amount: u64) -> Result<()> {
         &ctx.accounts.associated_token_account.key()
     );
 
-    let signer_seeds: &[&[&[u8]]] = &[&[b"mint", &[*ctx.bumps.get("mint_account").unwrap()]]];
-    
+    let signer_seeds: &[&[&[u8]]] = &[&[b"mint", &[ctx.bumps.mint_account]]];
+
     mint_to(
         CpiContext::new_with_signer(
             ctx.accounts.token_program.to_account_info(),
