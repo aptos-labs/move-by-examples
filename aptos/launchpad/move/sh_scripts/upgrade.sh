@@ -12,6 +12,6 @@ CONTRACT_ADDRESS=$(cat contract_address.txt)
 
 aptos move upgrade-object-package \
   --object-address $CONTRACT_ADDRESS \
-  --named-addresses advanced_todo_list_addr=$CONTRACT_ADDRESS \
+  --named-addresses launchpad_addr=$CONTRACT_ADDRESS \
   --profile $PUBLISHER_PROFILE \
   --assume-yes

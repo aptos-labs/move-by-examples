@@ -11,7 +11,7 @@ export type Launchpad = {
           "isSigner": true
         },
         {
-          "name": "tokenList",
+          "name": "registry",
           "isMut": true,
           "isSigner": true
         },
@@ -62,7 +62,7 @@ export type Launchpad = {
           "isSigner": false
         },
         {
-          "name": "tokenList",
+          "name": "registry",
           "isMut": true,
           "isSigner": false
         }
@@ -131,7 +131,7 @@ export type Launchpad = {
   ],
   "accounts": [
     {
-      "name": "tokenList",
+      "name": "registry",
       "type": {
         "kind": "struct",
         "fields": [
@@ -160,7 +160,7 @@ export const IDL: Launchpad = {
           "isSigner": true
         },
         {
-          "name": "tokenList",
+          "name": "registry",
           "isMut": true,
           "isSigner": true
         },
@@ -211,7 +211,7 @@ export const IDL: Launchpad = {
           "isSigner": false
         },
         {
-          "name": "tokenList",
+          "name": "registry",
           "isMut": true,
           "isSigner": false
         }
@@ -280,7 +280,7 @@ export const IDL: Launchpad = {
   ],
   "accounts": [
     {
-      "name": "tokenList",
+      "name": "registry",
       "type": {
         "kind": "struct",
         "fields": [

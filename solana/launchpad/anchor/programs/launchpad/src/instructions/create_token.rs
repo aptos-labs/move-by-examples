@@ -1,4 +1,4 @@
-use crate::state::TokenList;
+use crate::state::Registry;
 use anchor_lang::prelude::*;
 use anchor_spl::{
     metadata::{
@@ -43,7 +43,7 @@ pub struct CreateToken<'info> {
     pub system_program: Program<'info, System>,
     pub rent: Sysvar<'info, Rent>,
     #[account(mut)]
-    pub token_list: Account<'info, TokenList>,
+    pub registry: Account<'info, Registry>,
 }
 
 pub fn handle_create_token(
@@ -86,8 +86,8 @@ pub fn handle_create_token(
 
     msg!("Token created successfully.");
 
-    let token_list = &mut ctx.accounts.token_list;
-    token_list.tokens.push(ctx.accounts.mint_account.key());
+    let registry = &mut ctx.accounts.registry;
+    registry.tokens.push(ctx.accounts.mint_account.key());
 
     Ok(())
 }

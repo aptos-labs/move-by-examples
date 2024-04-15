@@ -34,8 +34,8 @@ describe('launchpad', () => {
   );
   console.log('Mint public key', mintPDA.toBase58());
 
-  const tokenListKeypair = web3.Keypair.generate();
-  console.log('Token list public key', tokenListKeypair.publicKey.toBase58());
+  const RegistryKeypair = web3.Keypair.generate();
+  console.log('Token list public key', RegistryKeypair.publicKey.toBase58());
 
   const user1Keypair = web3.Keypair.generate();
   console.log('User 1 public key', user1Keypair.publicKey.toBase58());
@@ -46,18 +46,18 @@ describe('launchpad', () => {
       .accounts({
         payer: payer.publicKey,
         systemProgram: web3.SystemProgram.programId,
-        tokenList: tokenListKeypair.publicKey,
+        registry: RegistryKeypair.publicKey,
       })
-      .signers([tokenListKeypair])
+      .signers([RegistryKeypair])
       .rpc()
       .then((tx) => {
         console.log('launchpad program initialized transaction signature', tx);
       });
 
-    await program.account.tokenList
-      .fetch(tokenListKeypair.publicKey)
-      .then((tokenList) => {
-        expect(tokenList.tokens).toEqual([]);
+    await program.account.registry
+      .fetch(RegistryKeypair.publicKey)
+      .then((Registry) => {
+        expect(Registry.tokens).toEqual([]);
       });
   });
 
@@ -89,7 +89,7 @@ describe('launchpad', () => {
         tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
         systemProgram: web3.SystemProgram.programId,
         rent: web3.SYSVAR_RENT_PUBKEY,
-        tokenList: tokenListKeypair.publicKey,
+        registry: RegistryKeypair.publicKey,
       })
       .rpc();
 
@@ -97,10 +97,10 @@ describe('launchpad', () => {
     console.log(`   Mint Address: ${mintPDA}`);
     console.log(`   Transaction Signature: ${transactionSignature}`);
 
-    await program.account.tokenList
-      .fetch(tokenListKeypair.publicKey)
-      .then((tokenList) => {
-        expect(tokenList.tokens).toEqual([mintPDA]);
+    await program.account.registry
+      .fetch(RegistryKeypair.publicKey)
+      .then((Registry) => {
+        expect(Registry.tokens).toEqual([mintPDA]);
       });
   });
 

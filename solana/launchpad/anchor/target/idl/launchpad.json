@@ -11,7 +11,7 @@
           "isSigner": true
         },
         {
-          "name": "tokenList",
+          "name": "registry",
           "isMut": true,
           "isSigner": true
         },
@@ -62,7 +62,7 @@
           "isSigner": false
         },
         {
-          "name": "tokenList",
+          "name": "registry",
           "isMut": true,
           "isSigner": false
         }
@@ -131,7 +131,7 @@
   ],
   "accounts": [
     {
-      "name": "TokenList",
+      "name": "Registry",
       "type": {
         "kind": "struct",
         "fields": [
