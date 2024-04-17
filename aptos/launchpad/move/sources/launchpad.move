@@ -3,11 +3,30 @@ module launchpad_addr::launchpad {
     use std::signer;
     use std::string;
     use std::vector;
+    use aptos_framework::event;
     use aptos_framework::fungible_asset;
     use aptos_framework::object;
     use aptos_framework::primary_fungible_store;
 
     const REGISTRY_OBJ_SEED: vector<u8> = b"REGISTRY";
+
+    #[event]
+    struct CraeteFAEvent has store, drop {
+        creator_addr: address,
+        fa_obj_addr: address,
+        name: string::String,
+        symbol: string::String,
+        decimals: u8,
+        icon_uri: string::String,
+        project_uri: string::String,
+    }
+
+    #[event]
+    struct MintFAEvent has store, drop {
+        fa_obj_addr: address,
+        amount: u64,
+        recipient_addr: address,
+    }
 
     struct FAController has key {
         mint_ref: fungible_asset::MintRef,
@@ -30,11 +49,11 @@ module launchpad_addr::launchpad {
     // ================================= Entry Functions ================================= //
 
     public entry fun create_fa(
-        _sender: &signer,
+        sender: &signer,
         max_supply: option::Option<u128>,
         name: string::String,
         symbol: string::String,
-        decimal: u8,
+        decimals: u8,
         icon_uri: string::String,
         project_uri: string::String
     ) acquires Registry {
@@ -46,7 +65,7 @@ module launchpad_addr::launchpad {
             max_supply,
             name,
             symbol,
-            decimal,
+            decimals,
             icon_uri,
             project_uri
         );
@@ -61,6 +80,16 @@ module launchpad_addr::launchpad {
 
         let registry = borrow_global_mut<Registry>(registry_obj_addr);
         vector::push_back(&mut registry.fa_obj_addresses, signer::address_of(&fa_obj_signer));
+
+        event::emit(CraeteFAEvent {
+            creator_addr: signer::address_of(sender),
+            fa_obj_addr: signer::address_of(&fa_obj_signer),
+            name,
+            symbol,
+            decimals,
+            icon_uri,
+            project_uri,
+        });
     }
 
     public entry fun mint_fa(sender: &signer, fa_obj_addr: address, amount: u64) acquires FAController {
@@ -68,6 +97,12 @@ module launchpad_addr::launchpad {
         let config = borrow_global<FAController>(fa_obj_addr);
         let minted_fa = fungible_asset::mint(&config.mint_ref, amount);
         primary_fungible_store::deposit(sender_addr, minted_fa);
+
+        event::emit(MintFAEvent {
+            fa_obj_addr,
+            amount,
+            recipient_addr: sender_addr,
+        });
     }
 
     // ================================= View Functions ================================== //

@@ -1,5 +1,5 @@
 export const ABI = {
-  address: "0x383d41a6def9715c2433e3fe758650be176a846886ac2badcb443412057586d9",
+  address: "0xd87cd190f597eb5e6304013c75414c12e7f8460d99817fe4541c77f9dbfc9346",
   name: "launchpad",
   friends: [],
   exposed_functions: [
@@ -86,6 +86,21 @@ export const ABI = {
   ],
   structs: [
     {
+      name: "CraeteFAEvent",
+      is_native: false,
+      abilities: ["drop", "store"],
+      generic_type_params: [],
+      fields: [
+        { name: "creator_addr", type: "address" },
+        { name: "fa_obj_addr", type: "address" },
+        { name: "name", type: "0x1::string::String" },
+        { name: "symbol", type: "0x1::string::String" },
+        { name: "decimals", type: "u8" },
+        { name: "icon_uri", type: "0x1::string::String" },
+        { name: "project_uri", type: "0x1::string::String" },
+      ],
+    },
+    {
       name: "FAController",
       is_native: false,
       abilities: ["key"],
@@ -94,6 +109,17 @@ export const ABI = {
         { name: "mint_ref", type: "0x1::fungible_asset::MintRef" },
         { name: "burn_ref", type: "0x1::fungible_asset::BurnRef" },
         { name: "transfer_ref", type: "0x1::fungible_asset::TransferRef" },
+      ],
+    },
+    {
+      name: "MintFAEvent",
+      is_native: false,
+      abilities: ["drop", "store"],
+      generic_type_params: [],
+      fields: [
+        { name: "fa_obj_addr", type: "address" },
+        { name: "amount", type: "u64" },
+        { name: "recipient_addr", type: "address" },
       ],
     },
     {
