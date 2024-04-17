@@ -21,11 +21,11 @@ script {
         );
         let registry = launchpad::get_registry();
         let fa_obj_addr_1 = *vector::borrow(&registry, vector::length(&registry) - 1);
-        assert!(launchpad::getTotalSupply(fa_obj_addr_1) == 0, 1);
+        assert!(launchpad::get_current_supply(fa_obj_addr_1) == 0, 1);
 
         launchpad::mint_fa(sender, fa_obj_addr_1, 2);
-        assert!(launchpad::getTotalSupply(fa_obj_addr_1) == 2, 2);
-        assert!(launchpad::getBalance(fa_obj_addr_1, sender_addr) == 2, 3);
+        assert!(launchpad::get_current_supply(fa_obj_addr_1) == 2, 2);
+        assert!(launchpad::get_balance(fa_obj_addr_1, sender_addr) == 2, 3);
 
         // create second FA
 
@@ -40,10 +40,10 @@ script {
         );
         let registry = launchpad::get_registry();
         let fa_obj_addr_2 = *vector::borrow(&registry, vector::length(&registry) - 1);
-        assert!(launchpad::getTotalSupply(fa_obj_addr_2) == 0, 4);
+        assert!(launchpad::get_current_supply(fa_obj_addr_2) == 0, 4);
 
         launchpad::mint_fa(sender, fa_obj_addr_2, 3);
-        assert!(launchpad::getTotalSupply(fa_obj_addr_2) == 3, 5);
-        assert!(launchpad::getBalance(fa_obj_addr_2, sender_addr) == 3, 6);
+        assert!(launchpad::get_current_supply(fa_obj_addr_2) == 3, 5);
+        assert!(launchpad::get_balance(fa_obj_addr_2, sender_addr) == 3, 6);
     }
 }

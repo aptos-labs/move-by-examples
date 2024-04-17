@@ -35,8 +35,8 @@ module launchpad_addr::launchpad {
         name: string::String,
         symbol: string::String,
         decimal: u8,
-        icon_url: string::String,
-        project_url: string::String
+        icon_uri: string::String,
+        project_uri: string::String
     ) acquires Registry {
         let registry_obj_addr = get_registry_obj_address();
         let fa_obj_constructor_ref = &object::create_sticky_object(registry_obj_addr);
@@ -47,8 +47,8 @@ module launchpad_addr::launchpad {
             name,
             symbol,
             decimal,
-            icon_url,
-            project_url
+            icon_uri,
+            project_uri
         );
         let mint_ref = fungible_asset::generate_mint_ref(fa_obj_constructor_ref);
         let burn_ref = fungible_asset::generate_burn_ref(fa_obj_constructor_ref);
@@ -85,7 +85,17 @@ module launchpad_addr::launchpad {
     }
 
     #[view]
-    public fun getTotalSupply(fa_obj_addr: address): u128 {
+    public fun get_metadata(fa_obj_addr: address): (string::String, string::String, u8) {
+        let metadata_obj = object::address_to_object<fungible_asset::Metadata>(fa_obj_addr);
+        (
+            fungible_asset::name(metadata_obj),
+            fungible_asset::symbol(metadata_obj),
+            fungible_asset::decimals(metadata_obj),
+        )
+    }
+
+    #[view]
+    public fun get_current_supply(fa_obj_addr: address): u128 {
         let fa_obj = object::address_to_object<object::ObjectCore>(fa_obj_addr);
         let maybe_supply = fungible_asset::supply(fa_obj);
         if (option::is_some(&maybe_supply)) {
@@ -96,7 +106,18 @@ module launchpad_addr::launchpad {
     }
 
     #[view]
-    public fun getBalance(fa_obj_addr: address, user: address): u64 {
+    public fun get_max_supply(fa_obj_addr: address): u128 {
+        let fa_obj = object::address_to_object<object::ObjectCore>(fa_obj_addr);
+        let maybe_supply = fungible_asset::maximum(fa_obj);
+        if (option::is_some(&maybe_supply)) {
+            option::extract(&mut maybe_supply)
+        } else {
+            0
+        }
+    }
+
+    #[view]
+    public fun get_balance(fa_obj_addr: address, user: address): u64 {
         let fa_obj = object::address_to_object<object::ObjectCore>(fa_obj_addr);
         primary_fungible_store::balance(user, fa_obj)
     }
@@ -122,11 +143,11 @@ module launchpad_addr::launchpad {
         );
         let registry = get_registry();
         let fa_obj_addr_1 = *vector::borrow(&registry, vector::length(&registry) - 1);
-        assert!(getTotalSupply(fa_obj_addr_1) == 0, 1);
+        assert!(get_current_supply(fa_obj_addr_1) == 0, 1);
 
         mint_fa(sender, fa_obj_addr_1, 2);
-        assert!(getTotalSupply(fa_obj_addr_1) == 2, 2);
-        assert!(getBalance(fa_obj_addr_1, sender_addr) == 2, 3);
+        assert!(get_current_supply(fa_obj_addr_1) == 2, 2);
+        assert!(get_balance(fa_obj_addr_1, sender_addr) == 2, 3);
 
         // create second FA
 
@@ -141,10 +162,10 @@ module launchpad_addr::launchpad {
         );
         let registry = get_registry();
         let fa_obj_addr_2 = *vector::borrow(&registry, vector::length(&registry) - 1);
-        assert!(getTotalSupply(fa_obj_addr_2) == 0, 4);
+        assert!(get_current_supply(fa_obj_addr_2) == 0, 4);
 
         mint_fa(sender, fa_obj_addr_2, 3);
-        assert!(getTotalSupply(fa_obj_addr_2) == 3, 5);
-        assert!(getBalance(fa_obj_addr_2, sender_addr) == 3, 6);
+        assert!(get_current_supply(fa_obj_addr_2) == 3, 5);
+        assert!(get_balance(fa_obj_addr_2, sender_addr) == 3, 6);
     }
 }
