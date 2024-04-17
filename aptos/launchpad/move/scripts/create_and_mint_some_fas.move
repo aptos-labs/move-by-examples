@@ -24,8 +24,8 @@ script {
         assert!(launchpad::get_current_supply(fa_obj_addr_1) == 0, 1);
 
         launchpad::mint_fa(sender, fa_obj_addr_1, 2);
-        assert!(launchpad::get_current_supply(fa_obj_addr_1) == 2, 2);
-        assert!(launchpad::get_balance(fa_obj_addr_1, sender_addr) == 2, 3);
+        assert!(launchpad::get_current_supply(fa_obj_addr_1) == 200, 2);
+        assert!(launchpad::get_balance(fa_obj_addr_1, sender_addr) == 200, 3);
 
         // create second FA
 
@@ -34,7 +34,7 @@ script {
             option::some(100),
             string::utf8(b"FA2"),
             string::utf8(b"FA2"),
-            2,
+            3,
             string::utf8(b"icon_url"),
             string::utf8(b"project_url")
         );
@@ -43,7 +43,7 @@ script {
         assert!(launchpad::get_current_supply(fa_obj_addr_2) == 0, 4);
 
         launchpad::mint_fa(sender, fa_obj_addr_2, 3);
-        assert!(launchpad::get_current_supply(fa_obj_addr_2) == 3, 5);
-        assert!(launchpad::get_balance(fa_obj_addr_2, sender_addr) == 3, 6);
+        assert!(launchpad::get_current_supply(fa_obj_addr_2) == 3000, 5);
+        assert!(launchpad::get_balance(fa_obj_addr_2, sender_addr) == 3000, 6);
     }
 }

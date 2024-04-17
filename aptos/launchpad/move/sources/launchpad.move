@@ -3,6 +3,8 @@ module launchpad_addr::launchpad {
     use std::signer;
     use std::string;
     use std::vector;
+    use aptos_std::math128;
+    use aptos_std::math64;
     use aptos_framework::event;
     use aptos_framework::fungible_asset;
     use aptos_framework::object;
@@ -14,6 +16,7 @@ module launchpad_addr::launchpad {
     struct CraeteFAEvent has store, drop {
         creator_addr: address,
         fa_obj_addr: address,
+        max_supply: option::Option<u128>,
         name: string::String,
         symbol: string::String,
         decimals: u8,
@@ -57,12 +60,16 @@ module launchpad_addr::launchpad {
         icon_uri: string::String,
         project_uri: string::String
     ) acquires Registry {
-        let registry_obj_addr = get_registry_obj_address();
-        let fa_obj_constructor_ref = &object::create_sticky_object(registry_obj_addr);
+        let fa_obj_constructor_ref = &object::create_sticky_object(@launchpad_addr);
         let fa_obj_signer = object::generate_signer(fa_obj_constructor_ref);
+        let converted_max_supply = if (option::is_some(&max_supply)) {
+            option::some(option::extract(&mut max_supply) * math128::pow(10, (decimals as u128)))
+        } else {
+            option::none()
+        };
         primary_fungible_store::create_primary_store_enabled_fungible_asset(
             fa_obj_constructor_ref,
-            max_supply,
+            converted_max_supply,
             name,
             symbol,
             decimals,
@@ -78,12 +85,14 @@ module launchpad_addr::launchpad {
             transfer_ref,
         });
 
+        let registry_obj_addr = get_registry_obj_address();
         let registry = borrow_global_mut<Registry>(registry_obj_addr);
         vector::push_back(&mut registry.fa_obj_addresses, signer::address_of(&fa_obj_signer));
 
         event::emit(CraeteFAEvent {
             creator_addr: signer::address_of(sender),
             fa_obj_addr: signer::address_of(&fa_obj_signer),
+            max_supply: converted_max_supply,
             name,
             symbol,
             decimals,
@@ -95,7 +104,8 @@ module launchpad_addr::launchpad {
     public entry fun mint_fa(sender: &signer, fa_obj_addr: address, amount: u64) acquires FAController {
         let sender_addr = signer::address_of(sender);
         let config = borrow_global<FAController>(fa_obj_addr);
-        let minted_fa = fungible_asset::mint(&config.mint_ref, amount);
+        let (_, _, decimals) = get_metadata(fa_obj_addr);
+        let minted_fa = fungible_asset::mint(&config.mint_ref, amount * math64::pow(10, (decimals as u64)));
         primary_fungible_store::deposit(sender_addr, minted_fa);
 
         event::emit(MintFAEvent {
@@ -181,8 +191,8 @@ module launchpad_addr::launchpad {
         assert!(get_current_supply(fa_obj_addr_1) == 0, 1);
 
         mint_fa(sender, fa_obj_addr_1, 2);
-        assert!(get_current_supply(fa_obj_addr_1) == 2, 2);
-        assert!(get_balance(fa_obj_addr_1, sender_addr) == 2, 3);
+        assert!(get_current_supply(fa_obj_addr_1) == 200, 2);
+        assert!(get_balance(fa_obj_addr_1, sender_addr) == 200, 3);
 
         // create second FA
 
@@ -191,7 +201,7 @@ module launchpad_addr::launchpad {
             option::some(100),
             string::utf8(b"FA2"),
             string::utf8(b"FA2"),
-            2,
+            3,
             string::utf8(b"icon_url"),
             string::utf8(b"project_url")
         );
@@ -200,7 +210,7 @@ module launchpad_addr::launchpad {
         assert!(get_current_supply(fa_obj_addr_2) == 0, 4);
 
         mint_fa(sender, fa_obj_addr_2, 3);
-        assert!(get_current_supply(fa_obj_addr_2) == 3, 5);
-        assert!(get_balance(fa_obj_addr_2, sender_addr) == 3, 6);
+        assert!(get_current_supply(fa_obj_addr_2) == 3000, 5);
+        assert!(get_balance(fa_obj_addr_2, sender_addr) == 3000, 6);
     }
 }
