@@ -23,7 +23,7 @@ On explorer, you can read the contract code, call entry functions (need to conne
 
 ## Development
 
-In each contract's directory, you can run below commands.
+In each contract's `move` directory, you can run below commands.
 
 Run unit test
 
