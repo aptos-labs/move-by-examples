@@ -1,9 +1,9 @@
 export const ABI = {
-  address: "0xc40c1ebf2a95cddafe2bc464dc2e5e49233a28412806be90f09e9aeaacbbf4b5",
+  address: "0x5fabcf94a1fd786fc26226c6e33350450d3aca5a84b92090c815466b118e4ddc",
   name: "launchpad",
   friends: [],
   exposed_functions: [
-    {create_fa: {
+    {
       name: "create_fa",
       visibility: "public",
       is_entry: true,
@@ -19,7 +19,7 @@ export const ABI = {
         "0x1::string::String",
       ],
       return: [],
-    },},
+    },
     {
       name: "get_balance",
       visibility: "public",
@@ -66,15 +66,6 @@ export const ABI = {
       return: ["vector<address>"],
     },
     {
-      name: "get_registry_obj_address",
-      visibility: "public",
-      is_entry: false,
-      is_view: true,
-      generic_type_params: [],
-      params: [],
-      return: ["address"],
-    },
-    {
       name: "mint_fa",
       visibility: "public",
       is_entry: true,
@@ -86,7 +77,7 @@ export const ABI = {
   ],
   structs: [
     {
-      name: "CraeteFAEvent",
+      name: "CreateFAEvent",
       is_native: false,
       abilities: ["drop", "store"],
       generic_type_params: [],

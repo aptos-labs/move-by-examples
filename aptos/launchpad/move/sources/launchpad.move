@@ -10,10 +10,8 @@ module launchpad_addr::launchpad {
     use aptos_framework::object;
     use aptos_framework::primary_fungible_store;
 
-    const REGISTRY_OBJ_SEED: vector<u8> = b"REGISTRY";
-
     #[event]
-    struct CraeteFAEvent has store, drop {
+    struct CreateFAEvent has store, drop {
         creator_addr: address,
         fa_obj_addr: address,
         max_supply: option::Option<u128>,
@@ -42,9 +40,7 @@ module launchpad_addr::launchpad {
     }
 
     fun init_module(sender: &signer) {
-        let registry_obj = object::create_named_object(sender, REGISTRY_OBJ_SEED);
-        let registry_obj_signer = object::generate_signer(&registry_obj);
-        move_to(&registry_obj_signer, Registry {
+        move_to(sender, Registry {
             fa_obj_addresses: vector::empty<address>()
         });
     }
@@ -85,11 +81,10 @@ module launchpad_addr::launchpad {
             transfer_ref,
         });
 
-        let registry_obj_addr = get_registry_obj_address();
-        let registry = borrow_global_mut<Registry>(registry_obj_addr);
+        let registry = borrow_global_mut<Registry>(@launchpad_addr);
         vector::push_back(&mut registry.fa_obj_addresses, signer::address_of(&fa_obj_signer));
 
-        event::emit(CraeteFAEvent {
+        event::emit(CreateFAEvent {
             creator_addr: signer::address_of(sender),
             fa_obj_addr: signer::address_of(&fa_obj_signer),
             max_supply: converted_max_supply,
@@ -118,14 +113,8 @@ module launchpad_addr::launchpad {
     // ================================= View Functions ================================== //
 
     #[view]
-    public fun get_registry_obj_address(): address {
-        object::create_object_address(&@launchpad_addr, REGISTRY_OBJ_SEED)
-    }
-
-    #[view]
     public fun get_registry(): vector<address> acquires Registry {
-        let registry_obj_addr = get_registry_obj_address();
-        let registry = borrow_global<Registry>(registry_obj_addr);
+        let registry = borrow_global<Registry>(@launchpad_addr);
         registry.fa_obj_addresses
     }
 
