@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Providers } from "@/app/providers";
 import { ReactNode } from "react";
 import { NavBar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { Box } from "@chakra-ui/react";
 
 export const metadata: Metadata = {
@@ -19,7 +18,6 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <Box marginX={16} marginTop={8} marginBottom={80}>
             {children}
           </Box>
-          <Footer />
         </Providers>
       </body>
     </html>

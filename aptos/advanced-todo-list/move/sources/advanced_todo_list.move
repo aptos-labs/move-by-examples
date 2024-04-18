@@ -116,9 +116,6 @@ module advanced_todo_list_addr::advanced_todo_list {
         exists<TodoList>(todo_list_obj_addr)
     }
 
-    // Usually we don't return custom struct (e.g. TodoList or Todo) from view functions,
-    // we return only the necessary data from the struct,
-    // because custom struct is private and only visible in the module defines it.
     #[view]
     public fun get_todo_list(sender: address, todo_list_idx: u64): (address, u64) acquires TodoList {
         let todo_list_obj_addr = get_todo_list_obj_addr(sender, todo_list_idx);
