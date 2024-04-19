@@ -39,6 +39,8 @@ module launchpad_addr::launchpad {
         fa_obj_addresses: vector<address>
     }
 
+    // If you deploy the module under an object, sender is the object's signer
+    // If you deploy the moduelr under your own account, sender is your account's signer
     fun init_module(sender: &signer) {
         move_to(sender, Registry {
             fa_obj_addresses: vector::empty<address>()
