@@ -56,11 +56,9 @@ export const MintFungibleAsset = ({ fungibleAssetAddress }: Props) => {
   return (
     account &&
     balance && (
-      <Stack divider={<StackDivider />} spacing="4">
+      <Stack divider={<StackDivider />} spacing="4" textAlign="center">
         <Box>
-          <Heading size="xs" textTransform="uppercase">
-            Balance
-          </Heading>
+          <Heading size="xs">Balance</Heading>
           <Text pt="2" fontSize="sm">
             {balance}
           </Text>

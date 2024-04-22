@@ -3,7 +3,14 @@
 import { useGetFungibleAssetCurrentSupply } from "@/hooks/useGetFungibleAssetCurrentSupply";
 import { useGetFungibleAssetMaxSupply } from "@/hooks/useGetFungibleAssetMaxSupply";
 import { useGetFungibleAssetMetadata } from "@/hooks/useGetFungibleAssetMetadata";
-import { Heading, Box, Stack, StackDivider, Text } from "@chakra-ui/react";
+import {
+  Heading,
+  Box,
+  Stack,
+  StackDivider,
+  Text,
+  Link,
+} from "@chakra-ui/react";
 
 type Props = {
   fungibleAssetAddress: string;
@@ -17,7 +24,7 @@ export const FungibleAssetInfo = ({ fungibleAssetAddress }: Props) => {
     metadata &&
     maxSupply &&
     currentSupply && (
-      <Stack divider={<StackDivider />} spacing="4">
+      <Stack divider={<StackDivider />} spacing="4" textAlign="center">
         <Box>
           <Heading size="xs" textTransform="uppercase">
             Name
@@ -57,6 +64,19 @@ export const FungibleAssetInfo = ({ fungibleAssetAddress }: Props) => {
           <Text pt="2" fontSize="sm">
             {currentSupply}
           </Text>
+        </Box>
+        <Box>
+          <Heading size="xs" textTransform="uppercase">
+            View on explorer
+          </Heading>
+          <Link
+            target="_blank"
+            href={`https://explorer.aptoslabs.com/object/${fungibleAssetAddress}?network=testnet`}
+          >
+            <Text pt="2" fontSize="sm">
+              {fungibleAssetAddress}
+            </Text>
+          </Link>
         </Box>
       </Stack>
     )

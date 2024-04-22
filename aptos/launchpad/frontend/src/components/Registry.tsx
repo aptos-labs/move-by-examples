@@ -11,6 +11,8 @@ import {
   TableCaption,
   TableContainer,
   Link,
+  Box,
+  VStack,
 } from "@chakra-ui/react";
 
 export const Registry = () => {
@@ -19,20 +21,29 @@ export const Registry = () => {
     <TableContainer>
       <Table variant="simple">
         <TableCaption>
-          All fungible assets created by the launchpad
+          <VStack>
+            <Box>Discover all fungible assets created by the launchpad. </Box>
+            <Link
+              href="https://learn.aptoslabs.com/example/ERC-20-token-standard"
+              target="_blank"
+              color="blue.500"
+            >
+              Learn more about the Fungible Asset Standard
+            </Link>
+          </VStack>
         </TableCaption>
         <Thead>
           <Tr>
-            <Th>FA Address</Th>
+            <Th textAlign="center">FA Address</Th>
           </Tr>
         </Thead>
         <Tbody>
           {registry.map((faAddress) => {
             return (
               <Tr key={faAddress}>
-                <Link href={`/fungible_asset/${faAddress}`}>
-                  <Td>{faAddress}</Td>
-                </Link>
+                <Td textAlign="center">
+                  <Link href={`/fungible_asset/${faAddress}`}>{faAddress}</Link>
+                </Td>
               </Tr>
             );
           })}

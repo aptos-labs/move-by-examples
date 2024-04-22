@@ -15,7 +15,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <Providers>
           <NavBar />
-          <Box marginX={16} marginTop={8} marginBottom={80}>
+          <Box marginX={16} marginTop={8} marginBottom={16}>
             {children}
           </Box>
         </Providers>

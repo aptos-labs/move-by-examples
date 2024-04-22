@@ -9,8 +9,9 @@ export const NavBar = () => {
       color="white"
       px={16}
       py={4}
-      justify="space-between"
-      align="center"
+      justifyContent="space-between"
+      alignItems="center"
+      position="relative"
     >
       <Link
         px={4}
@@ -27,7 +28,12 @@ export const NavBar = () => {
           Launchpad
         </Text>
       </Link>
-      <HStack>
+      <HStack
+        position="absolute"
+        left="50%"
+        transform="translateX(-50%)"
+        spacing={8}
+      >
         <Link
           px={4}
           py={4}
