@@ -16,5 +16,3 @@ We covered topics like
 - Deploy contract to testnet.
 - Create Move script to atomically calling multiple functions.
 - Interact with the contract using TypeScript SDK.
-
-See both subdirectories' readmes for more details.

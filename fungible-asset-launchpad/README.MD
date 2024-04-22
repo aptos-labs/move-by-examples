@@ -1,4 +1,4 @@
-# Simple Todo List
+# Fungible Asset Launchpad
 
 ## Overview
 
