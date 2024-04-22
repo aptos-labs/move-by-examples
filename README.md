@@ -1,16 +1,10 @@
-# Solana to Aptos Guide
+# Move by Examples
 
-This repo contains a side by side comparison of a series of contracts implemented in Move for Aptos and Rust (Anchor) for Solana. The purpose of this repo is to help Solana developers interesting in Aptos to get started with codes and concepts they are already familiar with.
+This repos contains a list of Move examples built on Aptos. Some of the examples are accompanied with a Solana version or a Solidity Version to help developers from other ecosystems to have a better comparison. Check out each example's readme for more details.
 
-We also have step by step tutorials for these examples on [Aptos Learn](https://learn.aptoslabs.com/examples), just search for Solana on the page.
+We also have [Aptos Learn](https://learn.aptoslabs.com/examples) which contains overview of Aptos and Move and more step by step tutorials.
 
-There are 3 contracts so far
-
-- simple todo list: anyone can create todo list, create todo and complete todo.
-- advanced todo list: difference from simple todo list user can own multiple todo list contract.
-- token launchpad: anyone can create new token, discover tokens created by others and mint them.
-
-So far we covered topics like
+We covered topics like
 
 - Create single contract app.
 - Define custom data structures.

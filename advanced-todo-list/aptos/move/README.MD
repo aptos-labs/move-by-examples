@@ -1,14 +1,3 @@
-# Example Contracts on Aptos using Move
-
-You can find the overview of all contracts in the root directory's readme.
-
-Some Aptos specific things here:
-
-- simple todo list: each user can only have one todo list, stored directly under the user's account
-- advanced todo list: each user can have multiple todo lists, each todo list is stored under an object owned by the user, this is similar to PDA on Solana
-- token launchpad: mint ref of each fungible asset is stored in the fungible asset object owned by the launchpad contract.
-  - there's a simple frontend for the launchpad, deployed [here](https://fungible-asset-launchpad.vercel.app/).
-
 ## Env setup
 
 Check out the guide from [Aptos Learn](https://learn.aptoslabs.com/example/aptogotchi-beginner/env-setup).
