@@ -49,13 +49,9 @@ export const CreateFungibleAsset = () => {
         ],
       },
     });
-    await aptosClient
-      .waitForTransaction({
-        transactionHash: response.hash,
-      })
-      .then((resp) => {
-        console.log("Created FA, TX hash", resp.hash);
-      });
+    await aptosClient.waitForTransaction({
+      transactionHash: response.hash,
+    });
   };
 
   return (

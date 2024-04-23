@@ -1,6 +1,5 @@
-"use client";
-
-import { useGetRegistry } from "@/hooks/useGetRegistry";
+import { ABI } from "@/utils/abi";
+import { aptosClient } from "@/utils/aptos";
 import {
   Table,
   Thead,
@@ -15,8 +14,20 @@ import {
   VStack,
 } from "@chakra-ui/react";
 
-export const Registry = () => {
-  const registry = useGetRegistry();
+export const Registry = async () => {
+  const registry = await aptosClient
+    .view({
+      payload: {
+        function: `${ABI.address}::launchpad::get_registry`,
+        typeArguments: [],
+        functionArguments: [],
+      },
+    })
+    .then((res) => {
+      const faObjects = res[0] as { inner: string }[];
+      return faObjects.map((faObject) => faObject.inner);
+    });
+
   return registry ? (
     <TableContainer>
       <Table variant="simple">

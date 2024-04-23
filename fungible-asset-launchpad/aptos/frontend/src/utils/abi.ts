@@ -1,5 +1,5 @@
 export const ABI = {
-  address: "0x5fabcf94a1fd786fc26226c6e33350450d3aca5a84b92090c815466b118e4ddc",
+  address: "0xb439206f340d4136e6a862a49477475c3de540363205bb523826e4c84a9f5b49",
   name: "launchpad",
   friends: [],
   exposed_functions: [
@@ -26,7 +26,7 @@ export const ABI = {
       is_entry: false,
       is_view: true,
       generic_type_params: [],
-      params: ["address", "address"],
+      params: ["0x1::object::Object<0x1::fungible_asset::Metadata>", "address"],
       return: ["u64"],
     },
     {
@@ -35,7 +35,7 @@ export const ABI = {
       is_entry: false,
       is_view: true,
       generic_type_params: [],
-      params: ["address"],
+      params: ["0x1::object::Object<0x1::fungible_asset::Metadata>"],
       return: ["u128"],
     },
     {
@@ -44,7 +44,7 @@ export const ABI = {
       is_entry: false,
       is_view: true,
       generic_type_params: [],
-      params: ["address"],
+      params: ["0x1::object::Object<0x1::fungible_asset::Metadata>"],
       return: ["u128"],
     },
     {
@@ -53,7 +53,7 @@ export const ABI = {
       is_entry: false,
       is_view: true,
       generic_type_params: [],
-      params: ["address"],
+      params: ["0x1::object::Object<0x1::fungible_asset::Metadata>"],
       return: ["0x1::string::String", "0x1::string::String", "u8"],
     },
     {
@@ -63,7 +63,7 @@ export const ABI = {
       is_view: true,
       generic_type_params: [],
       params: [],
-      return: ["vector<address>"],
+      return: ["vector<0x1::object::Object<0x1::fungible_asset::Metadata>>"],
     },
     {
       name: "mint_fa",
@@ -71,7 +71,11 @@ export const ABI = {
       is_entry: true,
       is_view: false,
       generic_type_params: [],
-      params: ["&signer", "address", "u64"],
+      params: [
+        "&signer",
+        "0x1::object::Object<0x1::fungible_asset::Metadata>",
+        "u64",
+      ],
       return: [],
     },
   ],
@@ -119,7 +123,12 @@ export const ABI = {
       is_native: false,
       abilities: ["key"],
       generic_type_params: [],
-      fields: [{ name: "fa_obj_addresses", type: "vector<address>" }],
+      fields: [
+        {
+          name: "fa_objects",
+          type: "vector<0x1::object::Object<0x1::fungible_asset::Metadata>>",
+        },
+      ],
     },
   ],
 } as const;

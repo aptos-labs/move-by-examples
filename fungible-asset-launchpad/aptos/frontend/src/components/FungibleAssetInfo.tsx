@@ -1,8 +1,5 @@
-"use client";
-
-import { useGetFungibleAssetCurrentSupply } from "@/hooks/useGetFungibleAssetCurrentSupply";
-import { useGetFungibleAssetMaxSupply } from "@/hooks/useGetFungibleAssetMaxSupply";
-import { useGetFungibleAssetMetadata } from "@/hooks/useGetFungibleAssetMetadata";
+import { ABI } from "@/utils/abi";
+import { aptosClient } from "@/utils/aptos";
 import {
   Heading,
   Box,
@@ -16,10 +13,47 @@ type Props = {
   fungibleAssetAddress: string;
 };
 
-export const FungibleAssetInfo = ({ fungibleAssetAddress }: Props) => {
-  const metadata = useGetFungibleAssetMetadata(fungibleAssetAddress);
-  const maxSupply = useGetFungibleAssetMaxSupply(fungibleAssetAddress);
-  const currentSupply = useGetFungibleAssetCurrentSupply(fungibleAssetAddress);
+export const FungibleAssetInfo = async ({ fungibleAssetAddress }: Props) => {
+  const metadata = await aptosClient
+    .view({
+      payload: {
+        function: `${ABI.address}::launchpad::get_metadata`,
+        typeArguments: [],
+        functionArguments: [fungibleAssetAddress],
+      },
+    })
+    .then((res) => {
+      return {
+        name: res[0] as string,
+        symbol: res[1] as string,
+        decimals: res[2] as number,
+      };
+    });
+
+  const maxSupply = await aptosClient
+    .view({
+      payload: {
+        function: `${ABI.address}::launchpad::get_max_supply`,
+        typeArguments: [],
+        functionArguments: [fungibleAssetAddress],
+      },
+    })
+    .then((res) => {
+      return res[0] as string;
+    });
+
+  const currentSupply = await aptosClient
+    .view({
+      payload: {
+        function: `${ABI.address}::launchpad::get_current_supply`,
+        typeArguments: [],
+        functionArguments: [fungibleAssetAddress],
+      },
+    })
+    .then((res) => {
+      return res[0] as string;
+    });
+
   return (
     metadata &&
     maxSupply &&
