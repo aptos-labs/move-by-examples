@@ -1,5 +1,4 @@
-import { ABI } from "@/utils/abi";
-import { aptosClient } from "@/utils/aptos";
+import { surfClient } from "@/utils/aptos";
 import {
   Table,
   Thead,
@@ -15,13 +14,10 @@ import {
 } from "@chakra-ui/react";
 
 export const Registry = async () => {
-  const registry = await aptosClient
-    .view({
-      payload: {
-        function: `${ABI.address}::launchpad::get_registry`,
-        typeArguments: [],
-        functionArguments: [],
-      },
+  const registry = await surfClient.view
+    .get_registry({
+      typeArguments: [],
+      functionArguments: [],
     })
     .then((res) => {
       const faObjects = res[0] as { inner: string }[];
