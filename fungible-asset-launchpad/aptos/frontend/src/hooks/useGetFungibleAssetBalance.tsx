@@ -1,5 +1,4 @@
-import { ABI } from "@/utils/abi";
-import { aptosClient } from "@/utils/aptos";
+import { surfClient } from "@/utils/aptos";
 import { useEffect, useState } from "react";
 
 export const useGetFungibleAssetBalance = (
@@ -11,13 +10,13 @@ export const useGetFungibleAssetBalance = (
     if (!walletAddress) {
       return;
     }
-    aptosClient
-      .view({
-        payload: {
-          function: `${ABI.address}::launchpad::get_balance`,
-          typeArguments: [],
-          functionArguments: [fungibleAssetAddress, walletAddress],
-        },
+    surfClient.view
+      .get_balance({
+        typeArguments: [],
+        functionArguments: [
+          fungibleAssetAddress as `0x${string}`,
+          walletAddress as `0x${string}`,
+        ],
       })
       .then((res) => {
         setBalance(res[0] as string);

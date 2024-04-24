@@ -1,5 +1,4 @@
-import { ABI } from "@/utils/abi";
-import { aptosClient } from "@/utils/aptos";
+import { surfClient } from "@/utils/aptos";
 import {
   Heading,
   Box,
@@ -14,13 +13,10 @@ type Props = {
 };
 
 export const FungibleAssetInfo = async ({ fungibleAssetAddress }: Props) => {
-  const metadata = await aptosClient
-    .view({
-      payload: {
-        function: `${ABI.address}::launchpad::get_metadata`,
-        typeArguments: [],
-        functionArguments: [fungibleAssetAddress],
-      },
+  const metadata = await surfClient.view
+    .get_metadata({
+      typeArguments: [],
+      functionArguments: [fungibleAssetAddress as `0x${string}`],
     })
     .then((res) => {
       return {
@@ -30,25 +26,19 @@ export const FungibleAssetInfo = async ({ fungibleAssetAddress }: Props) => {
       };
     });
 
-  const maxSupply = await aptosClient
-    .view({
-      payload: {
-        function: `${ABI.address}::launchpad::get_max_supply`,
-        typeArguments: [],
-        functionArguments: [fungibleAssetAddress],
-      },
+  const maxSupply = await surfClient.view
+    .get_max_supply({
+      typeArguments: [],
+      functionArguments: [fungibleAssetAddress as `0x${string}`],
     })
     .then((res) => {
       return res[0] as string;
     });
 
-  const currentSupply = await aptosClient
-    .view({
-      payload: {
-        function: `${ABI.address}::launchpad::get_current_supply`,
-        typeArguments: [],
-        functionArguments: [fungibleAssetAddress],
-      },
+  const currentSupply = await surfClient.view
+    .get_current_supply({
+      typeArguments: [],
+      functionArguments: [fungibleAssetAddress as `0x${string}`],
     })
     .then((res) => {
       return res[0] as string;
