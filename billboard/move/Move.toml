@@ -1,0 +1,11 @@
+[package]
+name = "billboard"
+version = "1.0.0"
+
+[addresses]
+billboard_address = "0x1337"
+
+[dependencies.AptosFramework]
+git = "https://github.com/aptos-labs/aptos-core.git"
+rev = "mainnet"
+subdir = "aptos-move/framework/aptos-framework"
