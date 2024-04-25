@@ -60,6 +60,7 @@ module launchpad_addr::launchpad {
     ) acquires Registry {
         let fa_obj_constructor_ref = &object::create_sticky_object(@launchpad_addr);
         let fa_obj_signer = object::generate_signer(fa_obj_constructor_ref);
+        let fa_obj_addr = signer::address_of(&fa_obj_signer);
         let converted_max_supply = if (option::is_some(&max_supply)) {
             option::some(option::extract(&mut max_supply) * math128::pow(10, (decimals as u128)))
         } else {
@@ -84,11 +85,11 @@ module launchpad_addr::launchpad {
         });
 
         let registry = borrow_global_mut<Registry>(@launchpad_addr);
-        vector::push_back(&mut registry.fa_objects, object::address_to_object(signer::address_of(&fa_obj_signer)));
+        vector::push_back(&mut registry.fa_objects, object::address_to_object(fa_obj_addr));
 
         event::emit(CreateFAEvent {
             creator_addr: signer::address_of(sender),
-            fa_obj_addr: signer::address_of(&fa_obj_signer),
+            fa_obj_addr,
             max_supply: converted_max_supply,
             name,
             symbol,
@@ -106,10 +107,8 @@ module launchpad_addr::launchpad {
         let sender_addr = signer::address_of(sender);
         let fa_obj_addr = object::object_address(&fa);
         let config = borrow_global<FAController>(fa_obj_addr);
-        let (_, _, decimals) = get_metadata(fa);
-        let minted_fa = fungible_asset::mint(&config.mint_ref, amount * math64::pow(10, (decimals as u64)));
-        primary_fungible_store::deposit(sender_addr, minted_fa);
-
+        let decimals = fungible_asset::decimals(fa);
+        primary_fungible_store::mint(&config.mint_ref, sender_addr, amount * math64::pow(10, (decimals as u64)));
         event::emit(MintFAEvent {
             fa_obj_addr,
             amount,

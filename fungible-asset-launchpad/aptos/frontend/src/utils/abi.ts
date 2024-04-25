@@ -1,5 +1,5 @@
 export const ABI = {
-  address: "0xb439206f340d4136e6a862a49477475c3de540363205bb523826e4c84a9f5b49",
+  address: "0xd747d5ede4eec56d3876ff3479c63cc4867b169a783b26c48f45f52f2e0fa28a",
   name: "launchpad",
   friends: [],
   exposed_functions: [
