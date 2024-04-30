@@ -148,10 +148,6 @@ export type FriendTech = {
       ],
       "args": [
         {
-          "name": "oldShare",
-          "type": "u16"
-        },
-        {
           "name": "k",
           "type": "u64"
         }
@@ -219,10 +215,6 @@ export type FriendTech = {
         {
           "name": "vaultBump",
           "type": "u8"
-        },
-        {
-          "name": "oldShare",
-          "type": "u16"
         },
         {
           "name": "k",
@@ -445,10 +437,6 @@ export const IDL: FriendTech = {
       ],
       "args": [
         {
-          "name": "oldShare",
-          "type": "u16"
-        },
-        {
           "name": "k",
           "type": "u64"
         }
@@ -516,10 +504,6 @@ export const IDL: FriendTech = {
         {
           "name": "vaultBump",
           "type": "u8"
-        },
-        {
-          "name": "oldShare",
-          "type": "u16"
         },
         {
           "name": "k",

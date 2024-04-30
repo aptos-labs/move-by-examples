@@ -24,12 +24,9 @@ pub struct TransactHoldings<'info> {
     pub rent: Sysvar<'info, Rent>,
 }
 
-pub fn handle_buy_holdings(ctx: Context<TransactHoldings>, old_share: u16, k: u64) -> Result<()> {
+pub fn handle_buy_holdings(ctx: Context<TransactHoldings>, k: u64) -> Result<()> {
     msg!("current share {}", ctx.accounts.issuer.shares);
-    if old_share != ctx.accounts.issuer.shares {
-        msg!("front ran");
-        panic!()
-    }
+    let old_share = ctx.accounts.issuer.shares;
 
     let supply = old_share as u64;
     let temp1 = supply.clone().checked_sub(1).unwrap();
@@ -146,14 +143,11 @@ pub fn handle_buy_holdings(ctx: Context<TransactHoldings>, old_share: u16, k: u6
 pub fn handle_sell_holdings(
     ctx: Context<TransactHoldings>,
     vault_bump: u8,
-    old_share: u16,
+    // old_share: u16,
     k: u64,
 ) -> Result<()> {
     msg!("current share {}", ctx.accounts.issuer.shares);
-    if old_share != ctx.accounts.issuer.shares {
-        msg!("front ran");
-        panic!()
-    }
+    let old_share = ctx.accounts.issuer.shares;
     if ctx.accounts.issuer.shares == 0 || ctx.accounts.holding.shares == 0 {
         msg!(
             "out of shares to sell, total {}, you own {} ",

@@ -148,10 +148,6 @@
       ],
       "args": [
         {
-          "name": "oldShare",
-          "type": "u16"
-        },
-        {
           "name": "k",
           "type": "u64"
         }
@@ -219,10 +215,6 @@
         {
           "name": "vaultBump",
           "type": "u8"
-        },
-        {
-          "name": "oldShare",
-          "type": "u16"
         },
         {
           "name": "k",
