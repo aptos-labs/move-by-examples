@@ -35,6 +35,7 @@ describe('friend-tech', () => {
       [Buffer.from(utils.bytes.utf8.encode('config'))],
       program.programId
     );
+
     const [vault, vaultBump] = web3.PublicKey.findProgramAddressSync(
       [Buffer.from(utils.bytes.utf8.encode('vault'))],
       program.programId
@@ -52,20 +53,21 @@ describe('friend-tech', () => {
       .rpc();
     console.log('Your transaction signature', tx);
 
-    const [ownerShare, ownerShareBump] = web3.PublicKey.findProgramAddressSync(
-      [
-        Buffer.from(utils.bytes.utf8.encode('owner_share')),
-        user1.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
+    const [issuerShare, issuerShareBump] =
+      web3.PublicKey.findProgramAddressSync(
+        [
+          Buffer.from(utils.bytes.utf8.encode('issuer_share')),
+          user1.publicKey.toBuffer(),
+        ],
+        program.programId
+      );
 
     await program.methods
-      .initOwnerShare(ownerShareBump, configBump)
+      .initIssuerShare(issuerShareBump, configBump)
       .accounts({
         config,
-        ownerShare,
-        ownerPubkey: user1.publicKey,
+        issuerShare,
+        issuerPubkey: user1.publicKey,
         socialMediaHandle: user1.publicKey,
         signer: admin.publicKey,
         systemProgram: web3.SystemProgram.programId,
@@ -86,12 +88,12 @@ describe('friend-tech', () => {
     );
 
     await program.methods
-      .initOwnerHolding(holdingBump, configBump)
+      .initIssuerHolding(holdingBump, configBump)
       .accounts({
         config,
-        ownerShare,
+        issuerShare,
         holding,
-        ownerPubkey: user1.publicKey,
+        issuerPubkey: user1.publicKey,
         signer: admin.publicKey,
         systemProgram: web3.SystemProgram.programId,
         rent: web3.SYSVAR_RENT_PUBKEY,
@@ -113,9 +115,9 @@ describe('friend-tech', () => {
     await program.methods
       .buyHoldings(newHoldingBump, vaultBump, configBump, 1, new BN(10))
       .accounts({
-        ownerShare,
+        issuerShare,
         holding: newHolding,
-        ownerPubkey: user1.publicKey,
+        issuerPubkey: user1.publicKey,
         vault: vault,
         signer: admin.publicKey,
         config,
@@ -133,9 +135,9 @@ describe('friend-tech', () => {
     await program.methods
       .buyHoldings(newHoldingBump, vaultBump, configBump, 11, new BN(10))
       .accounts({
-        ownerShare,
+        issuerShare,
         holding: newHolding,
-        ownerPubkey: user1.publicKey,
+        issuerPubkey: user1.publicKey,
         vault: vault,
         signer: admin.publicKey,
         config,
@@ -153,9 +155,9 @@ describe('friend-tech', () => {
     await program.methods
       .sellHoldings(newHoldingBump, vaultBump, configBump, 21, new BN(1))
       .accounts({
-        ownerShare,
+        issuerShare,
         holding: newHolding,
-        ownerPubkey: user1.publicKey,
+        issuerPubkey: user1.publicKey,
         vault: vault,
         signer: admin.publicKey,
         config,
@@ -169,7 +171,7 @@ describe('friend-tech', () => {
       .then(console.log)
       .catch(console.log);
 
-    await program.account.ownerShare.fetch(ownerShare).then(console.log);
+    await program.account.issuerShare.fetch(issuerShare).then(console.log);
     await program.account.holding.fetch(holding).then(console.log);
     await conn.getBalance(vault).then(console.log);
   });

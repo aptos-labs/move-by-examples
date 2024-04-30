@@ -17,24 +17,20 @@ pub mod friend_tech {
         handle_initialize(ctx)
     }
 
-    pub fn init_vault(ctx: Context<InitVault>) -> Result<()> {
-        handle_init_vault(ctx)
-    }
-
-    pub fn init_owner_share(
-        ctx: Context<InitOwnerShare>,
+    pub fn init_issuer_share(
+        ctx: Context<InitIssuerShare>,
         bump: u8,
         _config_bump: u8,
     ) -> Result<()> {
-        handle_init_owner_share(ctx, bump)
+        handle_init_issuer_share(ctx, bump)
     }
 
-    pub fn init_owner_holding(
-        ctx: Context<InitOwnerHolding>,
+    pub fn init_issuer_holding(
+        ctx: Context<InitIssuerHolding>,
         _bump: u8,
         _config_bump: u8,
     ) -> Result<()> {
-        handle_init_owner_holding(ctx)
+        handle_init_issuer_holding(ctx)
     }
 
     pub fn buy_holdings(

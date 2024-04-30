@@ -37,34 +37,10 @@ export type FriendTech = {
       ]
     },
     {
-      "name": "initVault",
+      "name": "initIssuerShare",
       "accounts": [
         {
-          "name": "signer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "Solana Stuff"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "initOwnerShare",
-      "accounts": [
-        {
-          "name": "ownerShare",
+          "name": "issuerShare",
           "isMut": true,
           "isSigner": false
         },
@@ -74,11 +50,11 @@ export type FriendTech = {
           "isSigner": false
         },
         {
-          "name": "ownerPubkey",
+          "name": "issuerPubkey",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "CHECK owner pubkey"
+            "CHECK issuer pubkey"
           ]
         },
         {
@@ -117,10 +93,10 @@ export type FriendTech = {
       ]
     },
     {
-      "name": "initOwnerHolding",
+      "name": "initIssuerHolding",
       "accounts": [
         {
-          "name": "ownerShare",
+          "name": "issuerShare",
           "isMut": true,
           "isSigner": false
         },
@@ -135,11 +111,11 @@ export type FriendTech = {
           "isSigner": false
         },
         {
-          "name": "ownerPubkey",
+          "name": "issuerPubkey",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "CHECK owner pubkey"
+            "CHECK issuer pubkey"
           ]
         },
         {
@@ -173,7 +149,7 @@ export type FriendTech = {
       "name": "buyHoldings",
       "accounts": [
         {
-          "name": "ownerShare",
+          "name": "issuerShare",
           "isMut": true,
           "isSigner": false
         },
@@ -191,11 +167,11 @@ export type FriendTech = {
           ]
         },
         {
-          "name": "ownerPubkey",
+          "name": "issuerPubkey",
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "CHECK owner pubkey"
+            "CHECK issuer pubkey"
           ]
         },
         {
@@ -254,7 +230,7 @@ export type FriendTech = {
       "name": "sellHoldings",
       "accounts": [
         {
-          "name": "ownerShare",
+          "name": "issuerShare",
           "isMut": true,
           "isSigner": false
         },
@@ -272,11 +248,11 @@ export type FriendTech = {
           ]
         },
         {
-          "name": "ownerPubkey",
+          "name": "issuerPubkey",
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "CHECK owner pubkey"
+            "CHECK issuer pubkey"
           ]
         },
         {
@@ -358,12 +334,12 @@ export type FriendTech = {
       }
     },
     {
-      "name": "ownerShare",
+      "name": "issuerShare",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "owner",
+            "name": "issuer",
             "type": "publicKey"
           },
           {
@@ -435,34 +411,10 @@ export const IDL: FriendTech = {
       ]
     },
     {
-      "name": "initVault",
+      "name": "initIssuerShare",
       "accounts": [
         {
-          "name": "signer",
-          "isMut": true,
-          "isSigner": true,
-          "docs": [
-            "Solana Stuff"
-          ]
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": []
-    },
-    {
-      "name": "initOwnerShare",
-      "accounts": [
-        {
-          "name": "ownerShare",
+          "name": "issuerShare",
           "isMut": true,
           "isSigner": false
         },
@@ -472,11 +424,11 @@ export const IDL: FriendTech = {
           "isSigner": false
         },
         {
-          "name": "ownerPubkey",
+          "name": "issuerPubkey",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "CHECK owner pubkey"
+            "CHECK issuer pubkey"
           ]
         },
         {
@@ -515,10 +467,10 @@ export const IDL: FriendTech = {
       ]
     },
     {
-      "name": "initOwnerHolding",
+      "name": "initIssuerHolding",
       "accounts": [
         {
-          "name": "ownerShare",
+          "name": "issuerShare",
           "isMut": true,
           "isSigner": false
         },
@@ -533,11 +485,11 @@ export const IDL: FriendTech = {
           "isSigner": false
         },
         {
-          "name": "ownerPubkey",
+          "name": "issuerPubkey",
           "isMut": false,
           "isSigner": false,
           "docs": [
-            "CHECK owner pubkey"
+            "CHECK issuer pubkey"
           ]
         },
         {
@@ -571,7 +523,7 @@ export const IDL: FriendTech = {
       "name": "buyHoldings",
       "accounts": [
         {
-          "name": "ownerShare",
+          "name": "issuerShare",
           "isMut": true,
           "isSigner": false
         },
@@ -589,11 +541,11 @@ export const IDL: FriendTech = {
           ]
         },
         {
-          "name": "ownerPubkey",
+          "name": "issuerPubkey",
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "CHECK owner pubkey"
+            "CHECK issuer pubkey"
           ]
         },
         {
@@ -652,7 +604,7 @@ export const IDL: FriendTech = {
       "name": "sellHoldings",
       "accounts": [
         {
-          "name": "ownerShare",
+          "name": "issuerShare",
           "isMut": true,
           "isSigner": false
         },
@@ -670,11 +622,11 @@ export const IDL: FriendTech = {
           ]
         },
         {
-          "name": "ownerPubkey",
+          "name": "issuerPubkey",
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "CHECK owner pubkey"
+            "CHECK issuer pubkey"
           ]
         },
         {
@@ -756,12 +708,12 @@ export const IDL: FriendTech = {
       }
     },
     {
-      "name": "ownerShare",
+      "name": "issuerShare",
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "owner",
+            "name": "issuer",
             "type": "publicKey"
           },
           {

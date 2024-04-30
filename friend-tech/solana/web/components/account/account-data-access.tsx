@@ -43,10 +43,10 @@ export function useGetTokenAccounts({ address }: { address: PublicKey }) {
     ],
     queryFn: async () => {
       const [tokenAccounts, token2022Accounts] = await Promise.all([
-        connection.getParsedTokenAccountsByOwner(address, {
+        connection.getParsedTokenAccountsByIssuer(address, {
           programId: TOKEN_PROGRAM_ID,
         }),
-        connection.getParsedTokenAccountsByOwner(address, {
+        connection.getParsedTokenAccountsByIssuer(address, {
           programId: TOKEN_2022_PROGRAM_ID,
         }),
       ]);

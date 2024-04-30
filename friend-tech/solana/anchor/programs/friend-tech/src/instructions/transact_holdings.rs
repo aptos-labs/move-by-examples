@@ -1,19 +1,19 @@
-use crate::state::{Config, Holding, OwnerShare};
+use crate::state::{Config, Holding, IssuerShare};
 use anchor_lang::{prelude::*, solana_program::native_token::LAMPORTS_PER_SOL};
 
 #[derive(Accounts, Clone)]
 #[instruction(bump: u8, vault_bump: u8, config_bump: u8)]
 pub struct TransactHoldings<'info> {
-    #[account(mut, seeds = [b"owner_share", owner_pubkey.key.as_ref()], bump = owner_share.bump)]
-    pub owner_share: Account<'info, OwnerShare>,
-    #[account(init_if_needed, seeds = [b"holding", owner_pubkey.key.as_ref(), signer.key.as_ref()], bump, payer = signer, space = std::mem::size_of::< Holding > () + 8)]
+    #[account(mut, seeds = [b"issuer_share", issuer_pubkey.key.as_ref()], bump = issuer_share.bump)]
+    pub issuer_share: Account<'info, IssuerShare>,
+    #[account(init_if_needed, seeds = [b"holding", issuer_pubkey.key.as_ref(), signer.key.as_ref()], bump, payer = signer, space = std::mem::size_of::< Holding > () + 8)]
     pub holding: Account<'info, Holding>,
     /// CHECK vault
     #[account(mut, seeds = [b"vault"], bump = vault_bump)]
     pub vault: AccountInfo<'info>,
-    /// CHECK owner pubkey
+    /// CHECK issuer pubkey
     #[account(mut)]
-    pub owner_pubkey: AccountInfo<'info>,
+    pub issuer_pubkey: AccountInfo<'info>,
     #[account(seeds = [b"config"], bump = config_bump)]
     pub config: Account<'info, Config>,
     /// CHECK admin key checked with config
@@ -26,8 +26,8 @@ pub struct TransactHoldings<'info> {
 }
 
 pub fn handle_buy_holdings(ctx: Context<TransactHoldings>, old_share: u16, k: u64) -> Result<()> {
-    msg!("current share {}", ctx.accounts.owner_share.shares);
-    if old_share != ctx.accounts.owner_share.shares {
+    msg!("current share {}", ctx.accounts.issuer_share.shares);
+    if old_share != ctx.accounts.issuer_share.shares {
         msg!("front ran");
         panic!()
     }
@@ -66,7 +66,7 @@ pub fn handle_buy_holdings(ctx: Context<TransactHoldings>, old_share: u16, k: u6
         .unwrap();
     let summation: u64 = (sum2.checked_sub(sum1)).unwrap() as u64;
     let price = (summation * LAMPORTS_PER_SOL).checked_div(16000).unwrap();
-    let owner_fee = price
+    let issuer_fee = price
         .checked_mul(50000000)
         .unwrap()
         .checked_div(LAMPORTS_PER_SOL)
@@ -97,18 +97,18 @@ pub fn handle_buy_holdings(ctx: Context<TransactHoldings>, old_share: u16, k: u6
     {
         let ix = anchor_lang::solana_program::system_instruction::transfer(
             &ctx.accounts.signer.key(),
-            &ctx.accounts.owner_pubkey.key(),
-            owner_fee,
+            &ctx.accounts.issuer_pubkey.key(),
+            issuer_fee,
         );
 
         anchor_lang::solana_program::program::invoke(
             &ix,
             &[
                 ctx.accounts.signer.to_account_info(),
-                ctx.accounts.owner_pubkey.to_account_info(),
+                ctx.accounts.issuer_pubkey.to_account_info(),
             ],
         )?;
-        msg!("transferred {} as owner fee for key", owner_fee);
+        msg!("transferred {} as issuer fee for key", issuer_fee);
     }
 
     {
@@ -129,9 +129,9 @@ pub fn handle_buy_holdings(ctx: Context<TransactHoldings>, old_share: u16, k: u6
     }
 
     msg!("price {} supply {} k {}", price, old_share, k);
-    ctx.accounts.owner_share.shares = ctx
+    ctx.accounts.issuer_share.shares = ctx
         .accounts
-        .owner_share
+        .issuer_share
         .shares
         .checked_add(k.clone() as u16)
         .unwrap();
@@ -150,15 +150,15 @@ pub fn handle_sell_holdings(
     old_share: u16,
     k: u64,
 ) -> Result<()> {
-    msg!("current share {}", ctx.accounts.owner_share.shares);
-    if old_share != ctx.accounts.owner_share.shares {
+    msg!("current share {}", ctx.accounts.issuer_share.shares);
+    if old_share != ctx.accounts.issuer_share.shares {
         msg!("front ran");
         panic!()
     }
-    if ctx.accounts.owner_share.shares == 0 || ctx.accounts.holding.shares == 0 {
+    if ctx.accounts.issuer_share.shares == 0 || ctx.accounts.holding.shares == 0 {
         msg!(
             "out of shares to sell, total {}, you own {} ",
-            ctx.accounts.owner_share.shares,
+            ctx.accounts.issuer_share.shares,
             ctx.accounts.holding.shares
         );
         panic!()
@@ -198,7 +198,7 @@ pub fn handle_sell_holdings(
     let summation: u64 = (sum2.checked_sub(sum1)).unwrap() as u64;
     let price = (summation * LAMPORTS_PER_SOL).checked_div(16000).unwrap();
 
-    let owner_fee = price
+    let issuer_fee = price
         .checked_mul(50000000)
         .unwrap()
         .checked_div(LAMPORTS_PER_SOL)
@@ -228,18 +228,18 @@ pub fn handle_sell_holdings(
     {
         let ix = anchor_lang::solana_program::system_instruction::transfer(
             &ctx.accounts.signer.key(),
-            &ctx.accounts.owner_pubkey.key(),
-            owner_fee,
+            &ctx.accounts.issuer_pubkey.key(),
+            issuer_fee,
         );
 
         anchor_lang::solana_program::program::invoke(
             &ix,
             &[
                 ctx.accounts.signer.to_account_info(),
-                ctx.accounts.owner_pubkey.to_account_info(),
+                ctx.accounts.issuer_pubkey.to_account_info(),
             ],
         )?;
-        msg!("transferred {} as owner fee for key", owner_fee);
+        msg!("transferred {} as issuer fee for key", issuer_fee);
     }
 
     {
@@ -260,9 +260,9 @@ pub fn handle_sell_holdings(
     }
 
     msg!("price {} supply {} k {}", price, old_share, k);
-    ctx.accounts.owner_share.shares = ctx
+    ctx.accounts.issuer_share.shares = ctx
         .accounts
-        .owner_share
+        .issuer_share
         .shares
         .checked_sub(k.clone() as u16)
         .unwrap();
