@@ -1,20 +1,19 @@
-use crate::state::{Config, Holding, IssuerShare};
+use crate::state::{Config, Holding, Issuer};
 use anchor_lang::{prelude::*, solana_program::native_token::LAMPORTS_PER_SOL};
 
 #[derive(Accounts, Clone)]
-#[instruction(bump: u8, vault_bump: u8, config_bump: u8)]
 pub struct TransactHoldings<'info> {
-    #[account(mut, seeds = [b"issuer_share", issuer_pubkey.key.as_ref()], bump = issuer_share.bump)]
-    pub issuer_share: Account<'info, IssuerShare>,
+    #[account(mut, seeds = [b"issuer", issuer_pubkey.key.as_ref()], bump = issuer.bump)]
+    pub issuer: Account<'info, Issuer>,
     #[account(init_if_needed, seeds = [b"holding", issuer_pubkey.key.as_ref(), signer.key.as_ref()], bump, payer = signer, space = std::mem::size_of::< Holding > () + 8)]
     pub holding: Account<'info, Holding>,
     /// CHECK vault
-    #[account(mut, seeds = [b"vault"], bump = vault_bump)]
+    #[account(mut, seeds = [b"vault"], bump)]
     pub vault: AccountInfo<'info>,
     /// CHECK issuer pubkey
     #[account(mut)]
     pub issuer_pubkey: AccountInfo<'info>,
-    #[account(seeds = [b"config"], bump = config_bump)]
+    #[account(seeds = [b"config"], bump)]
     pub config: Account<'info, Config>,
     /// CHECK admin key checked with config
     #[account(mut, constraint = admin.key().as_ref() == config.admin.key().as_ref())]
@@ -26,8 +25,8 @@ pub struct TransactHoldings<'info> {
 }
 
 pub fn handle_buy_holdings(ctx: Context<TransactHoldings>, old_share: u16, k: u64) -> Result<()> {
-    msg!("current share {}", ctx.accounts.issuer_share.shares);
-    if old_share != ctx.accounts.issuer_share.shares {
+    msg!("current share {}", ctx.accounts.issuer.shares);
+    if old_share != ctx.accounts.issuer.shares {
         msg!("front ran");
         panic!()
     }
@@ -129,9 +128,9 @@ pub fn handle_buy_holdings(ctx: Context<TransactHoldings>, old_share: u16, k: u6
     }
 
     msg!("price {} supply {} k {}", price, old_share, k);
-    ctx.accounts.issuer_share.shares = ctx
+    ctx.accounts.issuer.shares = ctx
         .accounts
-        .issuer_share
+        .issuer
         .shares
         .checked_add(k.clone() as u16)
         .unwrap();
@@ -150,15 +149,15 @@ pub fn handle_sell_holdings(
     old_share: u16,
     k: u64,
 ) -> Result<()> {
-    msg!("current share {}", ctx.accounts.issuer_share.shares);
-    if old_share != ctx.accounts.issuer_share.shares {
+    msg!("current share {}", ctx.accounts.issuer.shares);
+    if old_share != ctx.accounts.issuer.shares {
         msg!("front ran");
         panic!()
     }
-    if ctx.accounts.issuer_share.shares == 0 || ctx.accounts.holding.shares == 0 {
+    if ctx.accounts.issuer.shares == 0 || ctx.accounts.holding.shares == 0 {
         msg!(
             "out of shares to sell, total {}, you own {} ",
-            ctx.accounts.issuer_share.shares,
+            ctx.accounts.issuer.shares,
             ctx.accounts.holding.shares
         );
         panic!()
@@ -260,9 +259,9 @@ pub fn handle_sell_holdings(
     }
 
     msg!("price {} supply {} k {}", price, old_share, k);
-    ctx.accounts.issuer_share.shares = ctx
+    ctx.accounts.issuer.shares = ctx
         .accounts
-        .issuer_share
+        .issuer
         .shares
         .checked_sub(k.clone() as u16)
         .unwrap();

@@ -29,24 +29,24 @@
           "isSigner": false
         }
       ],
-      "args": [
-        {
-          "name": "bump",
-          "type": "u8"
-        }
-      ]
+      "args": []
     },
     {
-      "name": "initIssuerShare",
+      "name": "issueKey",
       "accounts": [
         {
-          "name": "issuerShare",
+          "name": "issuer",
           "isMut": true,
           "isSigner": false
         },
         {
           "name": "config",
           "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "holding",
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -85,63 +85,6 @@
         {
           "name": "bump",
           "type": "u8"
-        },
-        {
-          "name": "configBump",
-          "type": "u8"
-        }
-      ]
-    },
-    {
-      "name": "initIssuerHolding",
-      "accounts": [
-        {
-          "name": "issuerShare",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "config",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "holding",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "issuerPubkey",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "CHECK issuer pubkey"
-          ]
-        },
-        {
-          "name": "signer",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "bump",
-          "type": "u8"
-        },
-        {
-          "name": "configBump",
-          "type": "u8"
         }
       ]
     },
@@ -149,7 +92,7 @@
       "name": "buyHoldings",
       "accounts": [
         {
-          "name": "issuerShare",
+          "name": "issuer",
           "isMut": true,
           "isSigner": false
         },
@@ -204,18 +147,6 @@
         }
       ],
       "args": [
-        {
-          "name": "bump",
-          "type": "u8"
-        },
-        {
-          "name": "vaultBump",
-          "type": "u8"
-        },
-        {
-          "name": "configBump",
-          "type": "u8"
-        },
         {
           "name": "oldShare",
           "type": "u16"
@@ -230,7 +161,7 @@
       "name": "sellHoldings",
       "accounts": [
         {
-          "name": "issuerShare",
+          "name": "issuer",
           "isMut": true,
           "isSigner": false
         },
@@ -286,15 +217,7 @@
       ],
       "args": [
         {
-          "name": "bump",
-          "type": "u8"
-        },
-        {
           "name": "vaultBump",
-          "type": "u8"
-        },
-        {
-          "name": "configBump",
           "type": "u8"
         },
         {
@@ -334,7 +257,7 @@
       }
     },
     {
-      "name": "IssuerShare",
+      "name": "Issuer",
       "type": {
         "kind": "struct",
         "fields": [

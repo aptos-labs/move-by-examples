@@ -2,7 +2,6 @@ use crate::state::Config;
 use anchor_lang::prelude::*;
 
 #[derive(Accounts)]
-#[instruction(bump: u8)]
 pub struct Initialize<'info> {
     #[account(init, seeds = [b"config"], bump, payer = signer, space = std::mem::size_of::< Config > () + 8)]
     pub config: Account<'info, Config>,

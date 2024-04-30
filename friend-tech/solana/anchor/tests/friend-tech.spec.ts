@@ -27,11 +27,8 @@ describe('friend-tech', () => {
     await conn
       .requestAirdrop(user1.publicKey, 1e9)
       .then((sig) => conn.confirmTransaction(sig));
-    await conn
-      .requestAirdrop(program.provider.publicKey!, 1e9)
-      .then((sig) => conn.confirmTransaction(sig));
 
-    const [config, configBump] = web3.PublicKey.findProgramAddressSync(
+    const [config] = web3.PublicKey.findProgramAddressSync(
       [Buffer.from(utils.bytes.utf8.encode('config'))],
       program.programId
     );
@@ -42,7 +39,7 @@ describe('friend-tech', () => {
     );
 
     const tx = await program.methods
-      .initialize(configBump)
+      .initialize()
       .accounts({
         config,
         signer: admin.publicKey,
@@ -53,20 +50,32 @@ describe('friend-tech', () => {
       .rpc();
     console.log('Your transaction signature', tx);
 
-    const [issuerShare, issuerShareBump] =
-      web3.PublicKey.findProgramAddressSync(
-        [
-          Buffer.from(utils.bytes.utf8.encode('issuer_share')),
-          user1.publicKey.toBuffer(),
-        ],
-        program.programId
-      );
+    // user 1 is issuer
+    const [issuer, issuerBump] = web3.PublicKey.findProgramAddressSync(
+      [
+        Buffer.from(utils.bytes.utf8.encode('issuer')),
+        user1.publicKey.toBuffer(),
+      ],
+      program.programId
+    );
 
+    // user 1's holding of keys issued by itself
+    const [holding1] = web3.PublicKey.findProgramAddressSync(
+      [
+        Buffer.from(utils.bytes.utf8.encode('holding')),
+        user1.publicKey.toBuffer(),
+        user1.publicKey.toBuffer(),
+      ],
+      program.programId
+    );
+
+    // user 1 issues its key
     await program.methods
-      .initIssuerShare(issuerShareBump, configBump)
+      .issueKey(issuerBump)
       .accounts({
         config,
-        issuerShare,
+        issuer,
+        holding: holding1,
         issuerPubkey: user1.publicKey,
         socialMediaHandle: user1.publicKey,
         signer: admin.publicKey,
@@ -75,35 +84,17 @@ describe('friend-tech', () => {
       })
       .signers([admin])
       .rpc()
-      .then((sig) => conn.confirmTransaction(sig))
-      .catch(console.log);
+      .then((sig) => conn.confirmTransaction(sig));
+    await program.account.issuer.fetch(issuer).then((value) => {
+      expect(value.issuer.toBase58()).toEqual(user1.publicKey.toBase58());
+      expect(value.socialMediaHandle.toBase58()).toEqual(
+        user1.publicKey.toBase58()
+      );
+      expect(value.shares).toEqual(1);
+    });
 
-    const [holding, holdingBump] = web3.PublicKey.findProgramAddressSync(
-      [
-        Buffer.from(utils.bytes.utf8.encode('holding')),
-        user1.publicKey.toBuffer(),
-        user1.publicKey.toBuffer(),
-      ],
-      program.programId
-    );
-
-    await program.methods
-      .initIssuerHolding(holdingBump, configBump)
-      .accounts({
-        config,
-        issuerShare,
-        holding,
-        issuerPubkey: user1.publicKey,
-        signer: admin.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        rent: web3.SYSVAR_RENT_PUBKEY,
-      })
-      .signers([admin])
-      .rpc()
-      .then((sig) => conn.confirmTransaction(sig))
-      .catch(console.log);
-
-    const [newHolding, newHoldingBump] = web3.PublicKey.findProgramAddressSync(
+    // admin's holding of keys issued by user 1
+    const [holding2] = web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from(utils.bytes.utf8.encode('holding')),
         user1.publicKey.toBuffer(),
@@ -112,11 +103,36 @@ describe('friend-tech', () => {
       program.programId
     );
 
+    // user 1 buys 10 keys of itself
     await program.methods
-      .buyHoldings(newHoldingBump, vaultBump, configBump, 1, new BN(10))
+      .buyHoldings(1, new BN(10))
       .accounts({
-        issuerShare,
-        holding: newHolding,
+        issuer,
+        holding: holding1,
+        issuerPubkey: user1.publicKey,
+        vault: vault,
+        signer: user1.publicKey,
+        config,
+        admin: admin.publicKey,
+        systemProgram: web3.SystemProgram.programId,
+        rent: web3.SYSVAR_RENT_PUBKEY,
+      })
+      .signers([user1])
+      .rpc()
+      .then((sig) => conn.confirmTransaction(sig));
+    await program.account.holding.fetch(holding1).then((value) => {
+      expect(value.shares).toEqual(11);
+    });
+    await program.account.issuer.fetch(issuer).then((value) => {
+      expect(value.shares).toEqual(11);
+    });
+
+    // admin buy 10 keys of user 1
+    await program.methods
+      .buyHoldings(11, new BN(10))
+      .accounts({
+        issuer,
+        holding: holding2,
         issuerPubkey: user1.publicKey,
         vault: vault,
         signer: admin.publicKey,
@@ -127,16 +143,23 @@ describe('friend-tech', () => {
       })
       .signers([admin])
       .rpc()
-      .then((sig) => conn.confirmTransaction(sig))
-      .then(console.log)
-      .catch(console.log);
-    await conn.getBalance(vault).then(console.log);
+      .then((sig) => conn.confirmTransaction(sig));
+    await program.account.holding.fetch(holding1).then((value) => {
+      expect(value.shares).toEqual(11);
+    });
+    await program.account.holding.fetch(holding2).then((value) => {
+      expect(value.shares).toEqual(10);
+    });
+    await program.account.issuer.fetch(issuer).then((value) => {
+      expect(value.shares).toEqual(21);
+    });
 
+    // admin sell 1 keys of user 1
     await program.methods
-      .buyHoldings(newHoldingBump, vaultBump, configBump, 11, new BN(10))
+      .sellHoldings(vaultBump, 21, new BN(1))
       .accounts({
-        issuerShare,
-        holding: newHolding,
+        issuer,
+        holding: holding2,
         issuerPubkey: user1.publicKey,
         vault: vault,
         signer: admin.publicKey,
@@ -147,32 +170,19 @@ describe('friend-tech', () => {
       })
       .signers([admin])
       .rpc()
-      .then((sig) => conn.confirmTransaction(sig))
-      .then(console.log)
-      .catch(console.log);
-    await conn.getBalance(vault).then(console.log);
+      .then((sig) => conn.confirmTransaction(sig));
+    await program.account.holding.fetch(holding1).then((value) => {
+      expect(value.shares).toEqual(11);
+    });
+    await program.account.holding.fetch(holding2).then((value) => {
+      expect(value.shares).toEqual(9);
+    });
+    await program.account.issuer.fetch(issuer).then((value) => {
+      expect(value.shares).toEqual(20);
+    });
 
-    await program.methods
-      .sellHoldings(newHoldingBump, vaultBump, configBump, 21, new BN(1))
-      .accounts({
-        issuerShare,
-        holding: newHolding,
-        issuerPubkey: user1.publicKey,
-        vault: vault,
-        signer: admin.publicKey,
-        config,
-        admin: admin.publicKey,
-        systemProgram: web3.SystemProgram.programId,
-        rent: web3.SYSVAR_RENT_PUBKEY,
-      })
-      .signers([admin])
-      .rpc()
-      .then((sig) => conn.confirmTransaction(sig))
-      .then(console.log)
-      .catch(console.log);
-
-    await program.account.issuerShare.fetch(issuerShare).then(console.log);
-    await program.account.holding.fetch(holding).then(console.log);
-    await conn.getBalance(vault).then(console.log);
+    await conn.getBalance(vault).then((value) => {
+      console.log('vault balance: ', value);
+    });
   });
 });

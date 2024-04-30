@@ -1,7 +1,7 @@
 mod config;
 mod holding;
-mod issuer_share;
+mod issuer;
 
 pub use config::*;
 pub use holding::*;
-pub use issuer_share::*;
+pub use issuer::*;

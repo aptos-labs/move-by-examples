@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 
 #[account]
 #[derive(Default)]
-pub struct IssuerShare {
+pub struct Issuer {
     pub issuer: Pubkey,
     pub social_media_handle: Pubkey,
     pub shares: u16,

@@ -13,42 +13,21 @@ pub mod friend_tech {
 
     use super::*;
 
-    pub fn initialize(ctx: Context<Initialize>, _bump: u8) -> Result<()> {
+    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
         handle_initialize(ctx)
     }
 
-    pub fn init_issuer_share(
-        ctx: Context<InitIssuerShare>,
-        bump: u8,
-        _config_bump: u8,
-    ) -> Result<()> {
-        handle_init_issuer_share(ctx, bump)
+    pub fn issue_key(ctx: Context<IssueKey>, bump: u8) -> Result<()> {
+        handle_issue_key(ctx, bump)
     }
 
-    pub fn init_issuer_holding(
-        ctx: Context<InitIssuerHolding>,
-        _bump: u8,
-        _config_bump: u8,
-    ) -> Result<()> {
-        handle_init_issuer_holding(ctx)
-    }
-
-    pub fn buy_holdings(
-        ctx: Context<TransactHoldings>,
-        _bump: u8,
-        _vault_bump: u8,
-        _config_bump: u8,
-        old_share: u16,
-        k: u64,
-    ) -> Result<()> {
+    pub fn buy_holdings(ctx: Context<TransactHoldings>, old_share: u16, k: u64) -> Result<()> {
         handle_buy_holdings(ctx, old_share, k)
     }
 
     pub fn sell_holdings(
         ctx: Context<TransactHoldings>,
-        _bump: u8,
         vault_bump: u8,
-        _config_bump: u8,
         old_share: u16,
         k: u64,
     ) -> Result<()> {

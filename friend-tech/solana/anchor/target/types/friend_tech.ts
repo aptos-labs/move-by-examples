@@ -29,24 +29,24 @@ export type FriendTech = {
           "isSigner": false
         }
       ],
-      "args": [
-        {
-          "name": "bump",
-          "type": "u8"
-        }
-      ]
+      "args": []
     },
     {
-      "name": "initIssuerShare",
+      "name": "issueKey",
       "accounts": [
         {
-          "name": "issuerShare",
+          "name": "issuer",
           "isMut": true,
           "isSigner": false
         },
         {
           "name": "config",
           "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "holding",
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -85,63 +85,6 @@ export type FriendTech = {
         {
           "name": "bump",
           "type": "u8"
-        },
-        {
-          "name": "configBump",
-          "type": "u8"
-        }
-      ]
-    },
-    {
-      "name": "initIssuerHolding",
-      "accounts": [
-        {
-          "name": "issuerShare",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "config",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "holding",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "issuerPubkey",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "CHECK issuer pubkey"
-          ]
-        },
-        {
-          "name": "signer",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "bump",
-          "type": "u8"
-        },
-        {
-          "name": "configBump",
-          "type": "u8"
         }
       ]
     },
@@ -149,7 +92,7 @@ export type FriendTech = {
       "name": "buyHoldings",
       "accounts": [
         {
-          "name": "issuerShare",
+          "name": "issuer",
           "isMut": true,
           "isSigner": false
         },
@@ -204,18 +147,6 @@ export type FriendTech = {
         }
       ],
       "args": [
-        {
-          "name": "bump",
-          "type": "u8"
-        },
-        {
-          "name": "vaultBump",
-          "type": "u8"
-        },
-        {
-          "name": "configBump",
-          "type": "u8"
-        },
         {
           "name": "oldShare",
           "type": "u16"
@@ -230,7 +161,7 @@ export type FriendTech = {
       "name": "sellHoldings",
       "accounts": [
         {
-          "name": "issuerShare",
+          "name": "issuer",
           "isMut": true,
           "isSigner": false
         },
@@ -286,15 +217,7 @@ export type FriendTech = {
       ],
       "args": [
         {
-          "name": "bump",
-          "type": "u8"
-        },
-        {
           "name": "vaultBump",
-          "type": "u8"
-        },
-        {
-          "name": "configBump",
           "type": "u8"
         },
         {
@@ -334,7 +257,7 @@ export type FriendTech = {
       }
     },
     {
-      "name": "issuerShare",
+      "name": "issuer",
       "type": {
         "kind": "struct",
         "fields": [
@@ -403,24 +326,24 @@ export const IDL: FriendTech = {
           "isSigner": false
         }
       ],
-      "args": [
-        {
-          "name": "bump",
-          "type": "u8"
-        }
-      ]
+      "args": []
     },
     {
-      "name": "initIssuerShare",
+      "name": "issueKey",
       "accounts": [
         {
-          "name": "issuerShare",
+          "name": "issuer",
           "isMut": true,
           "isSigner": false
         },
         {
           "name": "config",
           "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "holding",
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -459,63 +382,6 @@ export const IDL: FriendTech = {
         {
           "name": "bump",
           "type": "u8"
-        },
-        {
-          "name": "configBump",
-          "type": "u8"
-        }
-      ]
-    },
-    {
-      "name": "initIssuerHolding",
-      "accounts": [
-        {
-          "name": "issuerShare",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "config",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "holding",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "issuerPubkey",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "CHECK issuer pubkey"
-          ]
-        },
-        {
-          "name": "signer",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "rent",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "bump",
-          "type": "u8"
-        },
-        {
-          "name": "configBump",
-          "type": "u8"
         }
       ]
     },
@@ -523,7 +389,7 @@ export const IDL: FriendTech = {
       "name": "buyHoldings",
       "accounts": [
         {
-          "name": "issuerShare",
+          "name": "issuer",
           "isMut": true,
           "isSigner": false
         },
@@ -578,18 +444,6 @@ export const IDL: FriendTech = {
         }
       ],
       "args": [
-        {
-          "name": "bump",
-          "type": "u8"
-        },
-        {
-          "name": "vaultBump",
-          "type": "u8"
-        },
-        {
-          "name": "configBump",
-          "type": "u8"
-        },
         {
           "name": "oldShare",
           "type": "u16"
@@ -604,7 +458,7 @@ export const IDL: FriendTech = {
       "name": "sellHoldings",
       "accounts": [
         {
-          "name": "issuerShare",
+          "name": "issuer",
           "isMut": true,
           "isSigner": false
         },
@@ -660,15 +514,7 @@ export const IDL: FriendTech = {
       ],
       "args": [
         {
-          "name": "bump",
-          "type": "u8"
-        },
-        {
           "name": "vaultBump",
-          "type": "u8"
-        },
-        {
-          "name": "configBump",
           "type": "u8"
         },
         {
@@ -708,7 +554,7 @@ export const IDL: FriendTech = {
       }
     },
     {
-      "name": "issuerShare",
+      "name": "issuer",
       "type": {
         "kind": "struct",
         "fields": [

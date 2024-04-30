@@ -1,9 +1,7 @@
-mod init_issuer_holding;
-mod init_issuer_share;
 mod initialize;
+mod issue_key;
 mod transact_holdings;
 
-pub use init_issuer_holding::*;
-pub use init_issuer_share::*;
 pub use initialize::*;
+pub use issue_key::*;
 pub use transact_holdings::*;
