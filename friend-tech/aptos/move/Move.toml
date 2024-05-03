@@ -1,0 +1,17 @@
+[package]
+name = "friend-tech"
+version = "1.0.0"
+authors = []
+
+[addresses]
+friend_tech_addr = "_"
+
+[dev-addresses]
+friend_tech_addr = "0x999"
+
+[dependencies.AptosFramework]
+git = "https://github.com/aptos-labs/aptos-core.git"
+rev = "mainnet"
+subdir = "aptos-move/framework/aptos-framework"
+
+[dev-dependencies]
