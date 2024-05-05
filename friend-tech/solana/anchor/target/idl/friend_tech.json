@@ -58,14 +58,6 @@
           ]
         },
         {
-          "name": "socialMediaHandle",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "CHECK social media pda"
-          ]
-        },
-        {
           "name": "signer",
           "isMut": true,
           "isSigner": true
@@ -85,6 +77,10 @@
         {
           "name": "bump",
           "type": "u8"
+        },
+        {
+          "name": "username",
+          "type": "string"
         }
       ]
     },
@@ -258,8 +254,8 @@
             "type": "publicKey"
           },
           {
-            "name": "socialMediaHandle",
-            "type": "publicKey"
+            "name": "username",
+            "type": "string"
           },
           {
             "name": "shares",
@@ -271,18 +267,6 @@
           }
         ]
       }
-    }
-  ],
-  "errors": [
-    {
-      "code": 6000,
-      "name": "TodoNotFound",
-      "msg": "The todo with the given id is not found"
-    },
-    {
-      "code": 6001,
-      "name": "TodoAlreadyCompleted",
-      "msg": "The todo is already completed"
     }
   ],
   "metadata": {

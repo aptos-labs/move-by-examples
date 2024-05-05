@@ -143,7 +143,6 @@ pub fn handle_buy_holdings(ctx: Context<TransactHoldings>, k: u64) -> Result<()>
 pub fn handle_sell_holdings(
     ctx: Context<TransactHoldings>,
     vault_bump: u8,
-    // old_share: u16,
     k: u64,
 ) -> Result<()> {
     msg!("current share {}", ctx.accounts.issuer.shares);

@@ -35,25 +35,22 @@ module friend_tech_addr::friend_tech {
     //     transfer_ref: fungible_asset::TransferRef
     // }
 
-    struct Holder {
-        addr: address,
+    struct Holding {
+        issuer_obj: object::Object<Issuer>,
+        holder: address,
         shares: u64,
+    }
+
+    struct User has key {
+        holdings: vector<object::Object<Holding>>,
     }
 
     struct Issuer has key {
         addr: address,
         social_media_handle: string::String,
         total_issued_shares: u64,
-        holders: vector<object::Object<Holder>>,
-    }
-
-    struct Holding {
-        issuer: object::Object<Issuer>,
-        shares: u64,
-    }
-
-    struct User has key {
-        holdings: vector<object::Object<Holding>>,
+        // all share holders' holdings
+        holder_holdings: vector<object::Object<Holding>>,
     }
 
     struct IssuerRegistry has key {

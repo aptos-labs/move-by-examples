@@ -11,18 +11,16 @@ pub struct IssueKey<'info> {
     pub holding: Account<'info, Holding>,
     /// CHECK issuer pubkey
     pub issuer_pubkey: AccountInfo<'info>,
-    /// CHECK social media pda
-    pub social_media_handle: AccountInfo<'info>,
     // Solana stuff
-    #[account(mut, constraint = signer.key().as_ref() == config.admin.key().as_ref())]
+    #[account(mut)]
     pub signer: Signer<'info>,
     pub system_program: Program<'info, System>,
     pub rent: Sysvar<'info, Rent>,
 }
 
-pub fn handle_issue_key(ctx: Context<IssueKey>, bump: u8) -> Result<()> {
+pub fn handle_issue_key(ctx: Context<IssueKey>, bump: u8, username: String) -> Result<()> {
     ctx.accounts.issuer.issuer = ctx.accounts.issuer_pubkey.key();
-    ctx.accounts.issuer.social_media_handle = ctx.accounts.social_media_handle.key();
+    ctx.accounts.issuer.username = username;
     ctx.accounts.issuer.bump = bump;
     ctx.accounts.holding.shares = 1;
     ctx.accounts.issuer.shares = 1;

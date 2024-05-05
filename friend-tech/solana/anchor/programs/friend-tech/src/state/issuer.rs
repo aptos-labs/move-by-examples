@@ -4,7 +4,7 @@ use anchor_lang::prelude::*;
 #[derive(Default)]
 pub struct Issuer {
     pub issuer: Pubkey,
-    pub social_media_handle: Pubkey,
+    pub username: String,
     pub shares: u16,
     pub bump: u8,
 }

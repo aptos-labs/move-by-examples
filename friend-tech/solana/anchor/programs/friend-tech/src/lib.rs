@@ -1,7 +1,6 @@
 #![allow(clippy::result_large_err)]
 
 use instructions::*;
-mod error;
 mod instructions;
 mod state;
 use anchor_lang::prelude::*;
@@ -17,8 +16,8 @@ pub mod friend_tech {
         handle_initialize(ctx)
     }
 
-    pub fn issue_key(ctx: Context<IssueKey>, bump: u8) -> Result<()> {
-        handle_issue_key(ctx, bump)
+    pub fn issue_key(ctx: Context<IssueKey>, bump: u8, username: String) -> Result<()> {
+        handle_issue_key(ctx, bump, username)
     }
 
     pub fn buy_holdings(ctx: Context<TransactHoldings>, k: u64) -> Result<()> {

@@ -71,25 +71,22 @@ describe('friend-tech', () => {
 
     // user 1 issues its key
     await program.methods
-      .issueKey(issuerBump)
+      .issueKey(issuerBump, 'user1')
       .accounts({
         config,
         issuer,
         holding: holding1,
         issuerPubkey: user1.publicKey,
-        socialMediaHandle: user1.publicKey,
-        signer: admin.publicKey,
+        signer: user1.publicKey,
         systemProgram: web3.SystemProgram.programId,
         rent: web3.SYSVAR_RENT_PUBKEY,
       })
-      .signers([admin])
+      .signers([user1])
       .rpc()
       .then((sig) => conn.confirmTransaction(sig));
     await program.account.issuer.fetch(issuer).then((value) => {
       expect(value.issuer.toBase58()).toEqual(user1.publicKey.toBase58());
-      expect(value.socialMediaHandle.toBase58()).toEqual(
-        user1.publicKey.toBase58()
-      );
+      expect(value.username).toEqual('user1');
       expect(value.shares).toEqual(1);
     });
 

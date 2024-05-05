@@ -58,14 +58,6 @@ export type FriendTech = {
           ]
         },
         {
-          "name": "socialMediaHandle",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "CHECK social media pda"
-          ]
-        },
-        {
           "name": "signer",
           "isMut": true,
           "isSigner": true
@@ -85,6 +77,10 @@ export type FriendTech = {
         {
           "name": "bump",
           "type": "u8"
+        },
+        {
+          "name": "username",
+          "type": "string"
         }
       ]
     },
@@ -258,8 +254,8 @@ export type FriendTech = {
             "type": "publicKey"
           },
           {
-            "name": "socialMediaHandle",
-            "type": "publicKey"
+            "name": "username",
+            "type": "string"
           },
           {
             "name": "shares",
@@ -271,18 +267,6 @@ export type FriendTech = {
           }
         ]
       }
-    }
-  ],
-  "errors": [
-    {
-      "code": 6000,
-      "name": "TodoNotFound",
-      "msg": "The todo with the given id is not found"
-    },
-    {
-      "code": 6001,
-      "name": "TodoAlreadyCompleted",
-      "msg": "The todo is already completed"
     }
   ]
 };
@@ -347,14 +331,6 @@ export const IDL: FriendTech = {
           ]
         },
         {
-          "name": "socialMediaHandle",
-          "isMut": false,
-          "isSigner": false,
-          "docs": [
-            "CHECK social media pda"
-          ]
-        },
-        {
           "name": "signer",
           "isMut": true,
           "isSigner": true
@@ -374,6 +350,10 @@ export const IDL: FriendTech = {
         {
           "name": "bump",
           "type": "u8"
+        },
+        {
+          "name": "username",
+          "type": "string"
         }
       ]
     },
@@ -547,8 +527,8 @@ export const IDL: FriendTech = {
             "type": "publicKey"
           },
           {
-            "name": "socialMediaHandle",
-            "type": "publicKey"
+            "name": "username",
+            "type": "string"
           },
           {
             "name": "shares",
@@ -560,18 +540,6 @@ export const IDL: FriendTech = {
           }
         ]
       }
-    }
-  ],
-  "errors": [
-    {
-      "code": 6000,
-      "name": "TodoNotFound",
-      "msg": "The todo with the given id is not found"
-    },
-    {
-      "code": 6001,
-      "name": "TodoAlreadyCompleted",
-      "msg": "The todo is already completed"
     }
   ]
 };
