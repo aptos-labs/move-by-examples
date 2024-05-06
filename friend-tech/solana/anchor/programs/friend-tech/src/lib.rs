@@ -20,11 +20,11 @@ pub mod friend_tech {
         handle_issue_key(ctx, bump, username)
     }
 
-    pub fn buy_holdings(ctx: Context<TransactHoldings>, k: u64) -> Result<()> {
-        handle_buy_holdings(ctx, k)
+    pub fn buy_key(ctx: Context<TransactHoldings>, k: u64) -> Result<()> {
+        handle_buy_key(ctx, k)
     }
 
-    pub fn sell_holdings(ctx: Context<TransactHoldings>, vault_bump: u8, k: u64) -> Result<()> {
-        handle_sell_holdings(ctx, vault_bump, k)
+    pub fn sell_key(ctx: Context<TransactHoldings>, vault_bump: u8, k: u64) -> Result<()> {
+        handle_sell_key(ctx, vault_bump, k)
     }
 }

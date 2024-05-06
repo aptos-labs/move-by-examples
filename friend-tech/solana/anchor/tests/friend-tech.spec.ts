@@ -102,7 +102,7 @@ describe('friend-tech', () => {
 
     // user 1 buys 10 keys of itself
     await program.methods
-      .buyHoldings(new BN(10))
+      .buyKey(new BN(10))
       .accounts({
         issuer,
         holding: holding1,
@@ -126,7 +126,7 @@ describe('friend-tech', () => {
 
     // admin buy 10 keys of user 1
     await program.methods
-      .buyHoldings(new BN(10))
+      .buyKey(new BN(10))
       .accounts({
         issuer,
         holding: holding2,
@@ -153,7 +153,7 @@ describe('friend-tech', () => {
 
     // admin sell 1 keys of user 1
     await program.methods
-      .sellHoldings(vaultBump, new BN(1))
+      .sellKey(vaultBump, new BN(1))
       .accounts({
         issuer,
         holding: holding2,

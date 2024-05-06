@@ -24,7 +24,7 @@ pub struct TransactHoldings<'info> {
     pub rent: Sysvar<'info, Rent>,
 }
 
-pub fn handle_buy_holdings(ctx: Context<TransactHoldings>, k: u64) -> Result<()> {
+pub fn handle_buy_key(ctx: Context<TransactHoldings>, k: u64) -> Result<()> {
     msg!("current share {}", ctx.accounts.issuer.shares);
     let old_share = ctx.accounts.issuer.shares;
 
@@ -140,11 +140,7 @@ pub fn handle_buy_holdings(ctx: Context<TransactHoldings>, k: u64) -> Result<()>
     Ok(())
 }
 
-pub fn handle_sell_holdings(
-    ctx: Context<TransactHoldings>,
-    vault_bump: u8,
-    k: u64,
-) -> Result<()> {
+pub fn handle_sell_key(ctx: Context<TransactHoldings>, vault_bump: u8, k: u64) -> Result<()> {
     msg!("current share {}", ctx.accounts.issuer.shares);
     let old_share = ctx.accounts.issuer.shares;
     if ctx.accounts.issuer.shares == 0 || ctx.accounts.holding.shares == 0 {

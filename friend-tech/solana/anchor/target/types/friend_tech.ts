@@ -85,7 +85,7 @@ export type FriendTech = {
       ]
     },
     {
-      "name": "buyHoldings",
+      "name": "buyKey",
       "accounts": [
         {
           "name": "issuer",
@@ -150,7 +150,7 @@ export type FriendTech = {
       ]
     },
     {
-      "name": "sellHoldings",
+      "name": "sellKey",
       "accounts": [
         {
           "name": "issuer",
@@ -358,7 +358,7 @@ export const IDL: FriendTech = {
       ]
     },
     {
-      "name": "buyHoldings",
+      "name": "buyKey",
       "accounts": [
         {
           "name": "issuer",
@@ -423,7 +423,7 @@ export const IDL: FriendTech = {
       ]
     },
     {
-      "name": "sellHoldings",
+      "name": "sellKey",
       "accounts": [
         {
           "name": "issuer",
