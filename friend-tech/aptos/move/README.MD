@@ -36,5 +36,5 @@ Run Move scripts. Move scripts are off-chain Move functions that let you call mu
 
 ```sh
 # You can explorer what other scripts are available in sh_scripts
-./sh_scripts/create_todo_list_if_not_exists_and_todos.sh
+./sh_scripts/issue_key_and_buy_key.sh
 ```
