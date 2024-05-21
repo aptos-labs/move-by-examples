@@ -1,6 +1,7 @@
 "use client";
 
 import { useGetFungibleAssetBalance } from "@/hooks/useGetFungibleAssetBalance";
+import { humanReadableToOnChain, onChainToHumanReadable } from "@/utils/math";
 import { ABI } from "@/utils/abi";
 import { aptosClient } from "@/utils/aptos";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
@@ -22,9 +23,13 @@ import { useState } from "react";
 
 type Props = {
   fungibleAssetAddress: string;
+  decimals: number;
 };
 
-export const MintFungibleAsset = ({ fungibleAssetAddress }: Props) => {
+export const MintFungibleAsset = ({
+  fungibleAssetAddress,
+  decimals,
+}: Props) => {
   const [mintAmount, setMintAmount] = useState("1");
   const { account, signAndSubmitTransaction } = useWallet();
   const balance = useGetFungibleAssetBalance(
@@ -41,7 +46,10 @@ export const MintFungibleAsset = ({ fungibleAssetAddress }: Props) => {
       data: {
         function: `${ABI.address}::launchpad::mint_fa`,
         typeArguments: [],
-        functionArguments: [fungibleAssetAddress, mintAmount],
+        functionArguments: [
+          fungibleAssetAddress,
+          humanReadableToOnChain(parseFloat(mintAmount), decimals),
+        ],
       },
     });
     await aptosClient
@@ -60,12 +68,14 @@ export const MintFungibleAsset = ({ fungibleAssetAddress }: Props) => {
         <Box>
           <Heading size="xs">Balance</Heading>
           <Text pt="2" fontSize="sm">
-            {balance}
+            {onChainToHumanReadable(parseInt(balance), decimals)}
           </Text>
         </Box>
         <Flex>
           <Button onClick={onMint}>Mint</Button>
           <NumberInput
+            precision={decimals}
+            step={1 / Math.pow(10, decimals)}
             onChange={(value) => {
               setMintAmount(value);
             }}

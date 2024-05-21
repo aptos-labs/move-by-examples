@@ -3,8 +3,6 @@ module launchpad_addr::launchpad {
     use std::signer;
     use std::string;
     use std::vector;
-    use aptos_std::math128;
-    use aptos_std::math64;
     use aptos_framework::event;
     use aptos_framework::fungible_asset;
     use aptos_framework::object;
@@ -61,14 +59,9 @@ module launchpad_addr::launchpad {
         let fa_obj_constructor_ref = &object::create_sticky_object(@launchpad_addr);
         let fa_obj_signer = object::generate_signer(fa_obj_constructor_ref);
         let fa_obj_addr = signer::address_of(&fa_obj_signer);
-        let converted_max_supply = if (option::is_some(&max_supply)) {
-            option::some(option::extract(&mut max_supply) * math128::pow(10, (decimals as u128)))
-        } else {
-            option::none()
-        };
         primary_fungible_store::create_primary_store_enabled_fungible_asset(
             fa_obj_constructor_ref,
-            converted_max_supply,
+            max_supply,
             name,
             symbol,
             decimals,
@@ -90,7 +83,7 @@ module launchpad_addr::launchpad {
         event::emit(CreateFAEvent {
             creator_addr: signer::address_of(sender),
             fa_obj_addr,
-            max_supply: converted_max_supply,
+            max_supply,
             name,
             symbol,
             decimals,
@@ -107,8 +100,7 @@ module launchpad_addr::launchpad {
         let sender_addr = signer::address_of(sender);
         let fa_obj_addr = object::object_address(&fa);
         let config = borrow_global<FAController>(fa_obj_addr);
-        let decimals = fungible_asset::decimals(fa);
-        primary_fungible_store::mint(&config.mint_ref, sender_addr, amount * math64::pow(10, (decimals as u64)));
+        primary_fungible_store::mint(&config.mint_ref, sender_addr, amount);
         event::emit(MintFAEvent {
             fa_obj_addr,
             amount,
@@ -172,7 +164,7 @@ module launchpad_addr::launchpad {
 
         create_fa(
             sender,
-            option::some(100),
+            option::some(1000),
             string::utf8(b"FA1"),
             string::utf8(b"FA1"),
             2,
@@ -183,15 +175,15 @@ module launchpad_addr::launchpad {
         let fa_1 = *vector::borrow(&registry, vector::length(&registry) - 1);
         assert!(get_current_supply(fa_1) == 0, 1);
 
-        mint_fa(sender, fa_1, 2);
-        assert!(get_current_supply(fa_1) == 200, 2);
-        assert!(get_balance(fa_1, sender_addr) == 200, 3);
+        mint_fa(sender, fa_1, 20);
+        assert!(get_current_supply(fa_1) == 20, 2);
+        assert!(get_balance(fa_1, sender_addr) == 20, 3);
 
         // create second FA
 
         create_fa(
             sender,
-            option::some(100),
+            option::some(1000),
             string::utf8(b"FA2"),
             string::utf8(b"FA2"),
             3,
@@ -202,8 +194,8 @@ module launchpad_addr::launchpad {
         let fa_2 = *vector::borrow(&registry, vector::length(&registry) - 1);
         assert!(get_current_supply(fa_2) == 0, 4);
 
-        mint_fa(sender, fa_2, 3);
-        assert!(get_current_supply(fa_2) == 3000, 5);
-        assert!(get_balance(fa_2, sender_addr) == 3000, 6);
+        mint_fa(sender, fa_2, 300);
+        assert!(get_current_supply(fa_2) == 300, 5);
+        assert!(get_balance(fa_2, sender_addr) == 300, 6);
     }
 }
