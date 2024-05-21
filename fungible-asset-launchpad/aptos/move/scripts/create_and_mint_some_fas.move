@@ -12,7 +12,7 @@ script {
 
         launchpad::create_fa(
             sender,
-            option::some(100),
+            option::some(1000),
             string::utf8(b"FA1"),
             string::utf8(b"FA1"),
             2,
@@ -23,15 +23,15 @@ script {
         let fa_1 = *vector::borrow(&registry, vector::length(&registry) - 1);
         assert!(launchpad::get_current_supply(fa_1) == 0, 1);
 
-        launchpad::mint_fa(sender, fa_1, 2);
-        assert!(launchpad::get_current_supply(fa_1) == 200, 2);
-        assert!(launchpad::get_balance(fa_1, sender_addr) == 200, 3);
+        launchpad::mint_fa(sender, fa_1, 20);
+        assert!(launchpad::get_current_supply(fa_1) == 20, 2);
+        assert!(launchpad::get_balance(fa_1, sender_addr) == 20, 3);
 
         // create second FA
 
         launchpad::create_fa(
             sender,
-            option::some(100),
+            option::some(500),
             string::utf8(b"FA2"),
             string::utf8(b"FA2"),
             3,
@@ -42,8 +42,8 @@ script {
         let fa_2 = *vector::borrow(&registry, vector::length(&registry) - 1);
         assert!(launchpad::get_current_supply(fa_2) == 0, 4);
 
-        launchpad::mint_fa(sender, fa_2, 3);
-        assert!(launchpad::get_current_supply(fa_2) == 3000, 5);
-        assert!(launchpad::get_balance(fa_2, sender_addr) == 3000, 6);
+        launchpad::mint_fa(sender, fa_2, 300);
+        assert!(launchpad::get_current_supply(fa_2) == 300, 5);
+        assert!(launchpad::get_balance(fa_2, sender_addr) == 300, 6);
     }
 }

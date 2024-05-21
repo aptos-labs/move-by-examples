@@ -1,6 +1,7 @@
 "use client";
 
 import { ABI } from "@/utils/abi";
+import { humanReadableToOnChain } from "@/utils/math";
 import { aptosClient } from "@/utils/aptos";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { Box, Button, FormControl, FormLabel, Input } from "@chakra-ui/react";
@@ -40,7 +41,7 @@ export const CreateFungibleAsset = () => {
         function: `${ABI.address}::launchpad::create_fa`,
         typeArguments: [],
         functionArguments: [
-          maxSupply,
+          humanReadableToOnChain(parseInt(maxSupply), parseInt(decimals)),
           fungibleAssetName,
           symbol,
           decimals,

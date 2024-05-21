@@ -1,4 +1,5 @@
 import { surfClient } from "@/utils/aptos";
+import { onChainToHumanReadable } from "@/utils/math";
 import {
   Heading,
   Box,
@@ -10,22 +11,17 @@ import {
 
 type Props = {
   fungibleAssetAddress: string;
+  metadata: {
+    name: string;
+    symbol: string;
+    decimals: number;
+  };
 };
 
-export const FungibleAssetInfo = async ({ fungibleAssetAddress }: Props) => {
-  const metadata = await surfClient.view
-    .get_metadata({
-      typeArguments: [],
-      functionArguments: [fungibleAssetAddress as `0x${string}`],
-    })
-    .then((res) => {
-      return {
-        name: res[0] as string,
-        symbol: res[1] as string,
-        decimals: res[2] as number,
-      };
-    });
-
+export const FungibleAssetInfo = async ({
+  fungibleAssetAddress,
+  metadata,
+}: Props) => {
   const maxSupply = await surfClient.view
     .get_max_supply({
       typeArguments: [],
@@ -77,16 +73,15 @@ export const FungibleAssetInfo = async ({ fungibleAssetAddress }: Props) => {
           <Heading size="xs" textTransform="uppercase">
             Max Supply
           </Heading>
-          <Text pt="2" fontSize="sm">
-            {maxSupply}
-          </Text>
+          <Text pt="2" fontSize="sm"></Text>
+          {onChainToHumanReadable(parseInt(maxSupply), metadata.decimals)}
         </Box>
         <Box>
           <Heading size="xs" textTransform="uppercase">
             Current Supply
           </Heading>
           <Text pt="2" fontSize="sm">
-            {currentSupply}
+            {onChainToHumanReadable(parseInt(currentSupply), metadata.decimals)}
           </Text>
         </Box>
         <Box>
