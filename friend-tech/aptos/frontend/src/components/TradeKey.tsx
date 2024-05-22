@@ -19,6 +19,7 @@ import {
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useGetHolding } from "@/hooks/useGetHolding";
+import { useRouter } from "next/navigation";
 
 type Props = {
   issuerInfo: {
@@ -32,6 +33,7 @@ type Props = {
 export const TradeKey = ({ issuerInfo }: Props) => {
   const [tradeAmount, setTradeAmount] = useState(1);
   const { account, signAndSubmitTransaction } = useWallet();
+  const router = useRouter();
   const balance = useGetHolding(
     issuerInfo.issuerAddress,
     account?.address as `0x${string}`
@@ -55,6 +57,7 @@ export const TradeKey = ({ issuerInfo }: Props) => {
       })
       .then((resp) => {
         console.log("Traded Key, TX hash", resp.hash);
+        router.refresh();
       });
   };
 

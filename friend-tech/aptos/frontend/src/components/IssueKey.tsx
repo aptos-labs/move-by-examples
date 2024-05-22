@@ -1,6 +1,7 @@
 "use client";
 
 import { ABI } from "@/utils/abi";
+import { clearRegistryCache } from "@/utils/serverActions";
 import { aptosClient } from "@/utils/aptos";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import {
@@ -12,10 +13,12 @@ import {
   Input,
 } from "@chakra-ui/react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export const IssueKey = () => {
   const [username, setUsername] = useState("Move Friend 123");
   const { account, signAndSubmitTransaction } = useWallet();
+  const router = useRouter();
 
   const onIssueKey = async () => {
     if (!account) {
@@ -35,6 +38,8 @@ export const IssueKey = () => {
       })
       .then((resp) => {
         console.log("Issued Key, TX hash", resp.hash);
+        clearRegistryCache();
+        router.refresh();
       });
   };
 
