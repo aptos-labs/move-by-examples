@@ -8,10 +8,11 @@ type Props = {
 };
 
 export const Issuer = async ({ issuerObjectAddress }: Props) => {
+  console.log("issuerObjectAddress", issuerObjectAddress);
   const issuerInfo = await surfClient.view
     .get_issuer({
       typeArguments: [],
-      functionArguments: [issuerObjectAddress as `0x${string}`],
+      functionArguments: [issuerObjectAddress],
     })
     .then((res) => {
       const holderHoldingObjects = res[3] as { inner: `0x${string}` }[];
