@@ -13,6 +13,8 @@ Holding data is stored in Object where seed is issuer's public key + holder's pu
 Additionally, to make the contract easier to query without an indexer, we created registry for all issuers, all holders for each issuer and all holdings for each user.
 In production, we would use off-chain indexer to store the registry so it's more performant.
 
+There's a simple frontend for the app, deployed [here](https://aptos-move-friends.vercel.app/).
+
 ## Solana Specific Things
 
 Issuer data is stored in PDA where seed is issuer's public key.
