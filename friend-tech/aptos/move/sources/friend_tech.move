@@ -42,7 +42,7 @@ module friend_tech_addr::friend_tech {
 
     struct Issuer has key {
         addr: address,
-        social_media_handle: string::String,
+        username: string::String,
         total_issued_shares: u64,
         holder_holdings: vector<object::Object<Holding>>,
     }
@@ -130,7 +130,7 @@ module friend_tech_addr::friend_tech {
 
         move_to(&issuer_obj_signer, Issuer {
             addr: sender_addr,
-            social_media_handle: username,
+            username,
             total_issued_shares: 1,
             holder_holdings: vector[get_holding_obj(sender_addr, sender_addr)],
         });
@@ -345,7 +345,7 @@ module friend_tech_addr::friend_tech {
         issuer_obj: object::Object<Issuer>
     ): (address, string::String, u64, vector<object::Object<Holding>>) acquires Issuer {
         let issuer = borrow_global<Issuer>(object::object_address(&issuer_obj));
-        (issuer.addr, issuer.social_media_handle, issuer.total_issued_shares, issuer.holder_holdings)
+        (issuer.addr, issuer.username, issuer.total_issued_shares, issuer.holder_holdings)
     }
 
     #[view]
@@ -364,9 +364,9 @@ module friend_tech_addr::friend_tech {
     public fun calculate_buy_key_cost(issuer_addr: address, amount: u64): (u64, u64, u64, u64) acquires Issuer {
         let issuer_obj_addr = get_issuer_obj_addr(issuer_addr);
         let issuer = borrow_global<Issuer>(issuer_obj_addr);
-        let old_share = issuer.total_issued_shares;
+        let old_supply = issuer.total_issued_shares;
 
-        let key_cost = calculate_key_cost(old_share, amount);
+        let key_cost = calculate_key_cost(old_supply, amount);
         let issuer_fee = key_cost * 5 / 100;
         let protocol_fee = key_cost * 5 / 100;
         let total_cost = key_cost + issuer_fee + protocol_fee;
@@ -378,9 +378,9 @@ module friend_tech_addr::friend_tech {
     public fun calculate_sell_key_cost(issuer_addr: address, amount: u64): (u64, u64, u64, u64) acquires Issuer {
         let issuer_obj_addr = get_issuer_obj_addr(issuer_addr);
         let issuer = borrow_global<Issuer>(issuer_obj_addr);
-        let old_share = issuer.total_issued_shares;
+        let old_supply = issuer.total_issued_shares;
 
-        let key_cost = calculate_key_cost(old_share - amount, amount);
+        let key_cost = calculate_key_cost(old_supply - amount, amount);
         let issuer_fee = key_cost * 5 / 100;
         let protocol_fee = key_cost * 5 / 100;
         let total_cost = issuer_fee + protocol_fee;
@@ -472,12 +472,12 @@ module friend_tech_addr::friend_tech {
             let issuer_obj = get_issuer_obj(user_1_addr);
             let (
                 addr,
-                social_media_handle,
+                username,
                 total_issued_shares,
                 holder_holdings
             ) = get_issuer(issuer_obj);
             assert!(addr == user_1_addr, 1);
-            assert!(social_media_handle == string::utf8(b"test_user_1"), 1);
+            assert!(username == string::utf8(b"test_user_1"), 1);
             assert!(total_issued_shares == 1, 1);
             assert!(vector::length(&holder_holdings) == 1, 1);
             assert!(vector::borrow(&holder_holdings, 0) == &get_holding_obj(user_1_addr, user_1_addr), 1);
