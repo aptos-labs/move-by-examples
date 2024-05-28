@@ -6,6 +6,7 @@ import {
   Wallet,
   isRedirectable,
   WalletName,
+  AptosStandardSupportedWallet,
 } from "@aptos-labs/wallet-adapter-react";
 import { Button, Text } from "@chakra-ui/react";
 
@@ -20,10 +21,14 @@ export const WalletButtons = () => {
     return <Text>Loading...</Text>;
   }
 
-  return <WalletView wallet={wallets[0]} />;
+  return <WalletView wallet={wallets[0] as Wallet} />;
 };
 
-const WalletView = ({ wallet }: { wallet: Wallet }) => {
+const WalletView = ({
+  wallet,
+}: {
+  wallet: Wallet;
+}) => {
   const { connect } = useWallet();
   const isWalletReady =
     wallet.readyState === WalletReadyState.Installed ||
