@@ -6,7 +6,6 @@ import {
   Wallet,
   isRedirectable,
   WalletName,
-  AptosStandardSupportedWallet,
 } from "@aptos-labs/wallet-adapter-react";
 import { Button, Text } from "@chakra-ui/react";
 
@@ -17,18 +16,14 @@ export const WalletButtons = () => {
     return <Button onClick={disconnect}>Disconnect</Button>;
   }
 
-  if (isLoading || !wallets || !wallets[0]) {
+  if (isLoading || !wallets[0]) {
     return <Text>Loading...</Text>;
   }
 
   return <WalletView wallet={wallets[0] as Wallet} />;
 };
 
-const WalletView = ({
-  wallet,
-}: {
-  wallet: Wallet;
-}) => {
+const WalletView = ({ wallet }: { wallet: Wallet }) => {
   const { connect } = useWallet();
   const isWalletReady =
     wallet.readyState === WalletReadyState.Installed ||
@@ -58,16 +53,47 @@ const WalletView = ({
     // wallet has mobile app
     if (mobileSupport) {
       return (
+        // <button
+        //   className={cn(buttonStyles, "hover:bg-blue-700")}
+        //   disabled={false}
+        //   key={wallet.name}
+        //   onClick={() => onWalletConnectRequest(wallet.name)}
+        //   style={{ maxWidth: "300px" }}
+        // >
+        //   Connect Wallet
+        // </button>
         <Button onClick={() => onWalletConnectRequest(wallet.name)}>
           Connect Wallet
         </Button>
       );
     }
     // wallet does not have mobile app
-    return <Button isDisabled={true}>Connect Wallet - Desktop Only</Button>;
+    return (
+      // <button
+      //   className={cn(buttonStyles, "opacity-50 cursor-not-allowed")}
+      //   disabled={true}
+      //   key={wallet.name}
+      //   style={{ maxWidth: "300px" }}
+      // >
+      //   Connect Wallet - Desktop Only
+      // </button>
+      <Button isDisabled={true}>Connect Wallet - Desktop Only</Button>
+    );
   } else {
     // desktop
     return (
+      // <button
+      //   className={cn(
+      //     buttonStyles,
+      //     isWalletReady ? "hover:bg-blue-700" : "opacity-50 cursor-not-allowed"
+      //   )}
+      //   disabled={!isWalletReady}
+      //   key={wallet.name}
+      //   onClick={() => onWalletConnectRequest(wallet.name)}
+      //   style={{ maxWidth: "300px" }}
+      // >
+      //   Connect Wallet
+      // </button>
       <Button
         isDisabled={!isWalletReady}
         onClick={() => onWalletConnectRequest(wallet.name)}

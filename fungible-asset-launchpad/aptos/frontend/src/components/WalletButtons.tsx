@@ -20,7 +20,7 @@ export const WalletButtons = () => {
     return <Text>Loading...</Text>;
   }
 
-  return <WalletView wallet={wallets[0]} />;
+  return <WalletView wallet={wallets[0] as Wallet} />;
 };
 
 const WalletView = ({ wallet }: { wallet: Wallet }) => {

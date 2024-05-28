@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Providers } from "@/app/providers";
+import { Providers } from "./provider";
 import { ReactNode } from "react";
 import { NavBar } from "@/components/Navbar";
-import { Box } from "@chakra-ui/react";
+import Page from "@/components/Page";
 
 export const metadata: Metadata = {
-  title: "Aptos Move Friends",
-  description: "Friend Tech on Aptos",
+  title: "NFT Marketplace",
+  description: "NFT Marketplace for Aptogotchi Collection",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -15,9 +15,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <Providers>
           <NavBar />
-          <Box marginX={16} marginTop={8} marginBottom={16}>
-            {children}
-          </Box>
+          <Page>{children}</Page>
         </Providers>
       </body>
     </html>
