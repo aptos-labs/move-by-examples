@@ -2,7 +2,7 @@
 
 ## Overview
 
-Anyone can mint new NFT, list NFT and buy NFT.
+Anyone can mint new NFT from Aptogotchi collection, list NFT and buy NFT.
 
 ## Aptos Specific Things
 
