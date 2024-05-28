@@ -1,0 +1,133 @@
+export const ABI = {
+  address: "0x37e99215fe71a4efb1d2ad2940a80c77f20ff4159309a2bd967cfe99f28a7ab9",
+  name: "marketplace",
+  friends: [],
+  exposed_functions: [
+    {
+      name: "get_seller_listings",
+      visibility: "public",
+      is_entry: false,
+      is_view: true,
+      generic_type_params: [],
+      params: ["address"],
+      return: ["vector<address>"],
+    },
+    {
+      name: "get_sellers",
+      visibility: "public",
+      is_entry: false,
+      is_view: true,
+      generic_type_params: [],
+      params: [],
+      return: ["vector<address>"],
+    },
+    {
+      name: "list_with_fixed_price",
+      visibility: "public",
+      is_entry: true,
+      is_view: false,
+      generic_type_params: [{ constraints: [] }],
+      params: [
+        "&signer",
+        "0x1::object::Object<0x1::object::ObjectCore>",
+        "u64",
+      ],
+      return: [],
+    },
+    {
+      name: "list_with_fixed_price_internal",
+      visibility: "friend",
+      is_entry: false,
+      is_view: false,
+      generic_type_params: [{ constraints: [] }],
+      params: [
+        "&signer",
+        "0x1::object::Object<0x1::object::ObjectCore>",
+        "u64",
+      ],
+      return: [
+        "0x1::object::Object<0x37e99215fe71a4efb1d2ad2940a80c77f20ff4159309a2bd967cfe99f28a7ab9::marketplace::Listing>",
+      ],
+    },
+    {
+      name: "listing",
+      visibility: "public",
+      is_entry: false,
+      is_view: true,
+      generic_type_params: [],
+      params: [
+        "0x1::object::Object<0x37e99215fe71a4efb1d2ad2940a80c77f20ff4159309a2bd967cfe99f28a7ab9::marketplace::Listing>",
+      ],
+      return: ["0x1::object::Object<0x1::object::ObjectCore>", "address"],
+    },
+    {
+      name: "price",
+      visibility: "public",
+      is_entry: false,
+      is_view: true,
+      generic_type_params: [{ constraints: [] }],
+      params: [
+        "0x1::object::Object<0x37e99215fe71a4efb1d2ad2940a80c77f20ff4159309a2bd967cfe99f28a7ab9::marketplace::Listing>",
+      ],
+      return: ["0x1::option::Option<u64>"],
+    },
+    {
+      name: "purchase",
+      visibility: "public",
+      is_entry: true,
+      is_view: false,
+      generic_type_params: [{ constraints: [] }],
+      params: ["&signer", "0x1::object::Object<0x1::object::ObjectCore>"],
+      return: [],
+    },
+  ],
+  structs: [
+    {
+      name: "FixedPriceListing",
+      is_native: false,
+      abilities: ["key"],
+      generic_type_params: [{ constraints: [] }],
+      fields: [{ name: "price", type: "u64" }],
+    },
+    {
+      name: "Listing",
+      is_native: false,
+      abilities: ["key"],
+      generic_type_params: [],
+      fields: [
+        {
+          name: "object",
+          type: "0x1::object::Object<0x1::object::ObjectCore>",
+        },
+        { name: "seller", type: "address" },
+        { name: "delete_ref", type: "0x1::object::DeleteRef" },
+        { name: "extend_ref", type: "0x1::object::ExtendRef" },
+      ],
+    },
+    {
+      name: "MarketplaceSigner",
+      is_native: false,
+      abilities: ["key"],
+      generic_type_params: [],
+      fields: [{ name: "extend_ref", type: "0x1::object::ExtendRef" }],
+    },
+    {
+      name: "SellerListings",
+      is_native: false,
+      abilities: ["key"],
+      generic_type_params: [],
+      fields: [
+        { name: "listings", type: "0x1::smart_vector::SmartVector<address>" },
+      ],
+    },
+    {
+      name: "Sellers",
+      is_native: false,
+      abilities: ["key"],
+      generic_type_params: [],
+      fields: [
+        { name: "addresses", type: "0x1::smart_vector::SmartVector<address>" },
+      ],
+    },
+  ],
+} as const;
