@@ -18,3 +18,4 @@ So far we have covered topics like
 - Upgrade deployed contract.
 - Create a Move script to atomically call multiple functions in 1 tx.
 - Interact with the contract using TypeScript SDK.
+- Using Dispatchable Fungible Asset standard to impose a tax on withdraw.

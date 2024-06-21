@@ -1,0 +1,14 @@
+[package]
+name = "taxed_fa"
+version = "0.0.0"
+
+[dev-addresses]
+deployer = "0xcafe"
+kc = "0xfeed"
+
+[addresses]
+deployer = "_"
+kc = "_"
+
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework", rev = "main" }
