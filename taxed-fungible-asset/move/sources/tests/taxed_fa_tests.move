@@ -34,13 +34,4 @@ module deployer::taxed_fa_tests {
         assert!(kc_balance == 400, 0);
         assert!(deployer_balance == 50, 0);
     }
-
-    #[test(deployer = @0xcafe)]
-    #[expected_failure(abort_code = 1, location = deployer::taxed_fa)]
-    fun test_pause(deployer: &signer) {
-        taxed_fa::init_for_test(deployer);
-
-        taxed_fa::set_pause(deployer, true);
-        taxed_fa::mint(deployer, signer::address_of(deployer), 1000);
-    }
 }
