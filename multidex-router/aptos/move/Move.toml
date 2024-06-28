@@ -1,0 +1,34 @@
+[package]
+name = "multidex_router"
+version = "1.0.0"
+authors = []
+
+[addresses]
+multidex_router_addr = "_"
+
+[dev-addresses]
+multidex_router_addr = "0x803"
+
+[dependencies.AptosFramework]
+git = "https://github.com/aptos-labs/aptos-core.git"
+rev = "mainnet"
+subdir = "aptos-move/framework/aptos-framework"
+
+[dependencies.Liquidswap]
+git = 'https://github.com/pontem-network/liquidswap.git'
+rev = 'main'
+
+[dependencies.LiquidswapRouterV2]
+git = 'https://github.com/pontem-network/liquidswap.git'
+subdir = 'liquidswap_router_v2/'
+rev = 'main'
+
+[dependencies.LiquidswapLP]
+git = 'https://github.com/pontem-network/liquidswap.git'
+subdir = 'liquidswap_lp/'
+rev = 'main'
+
+[dependencies.PancakeSwap]
+local = './third_party_dependencies/PancakeSwap'
+
+[dev-dependencies]
