@@ -1,5 +1,5 @@
 export const ABI = {
-  address: "0x6b3c4116b76752fab7caf18641ea2fe886f984bc725c95a2a4c3a18065e1cd8b",
+  address: "0xe7ce55d8dc68c348bb180f44510f73555b53981f1be98406d9f63be2074b4f2d",
   name: "message_board",
   friends: [],
   exposed_functions: [
@@ -10,15 +10,21 @@ export const ABI = {
       is_view: true,
       generic_type_params: [],
       params: [
-        "0x1::object::Object<0x6b3c4116b76752fab7caf18641ea2fe886f984bc725c95a2a4c3a18065e1cd8b::message_board::Message>",
+        "0x1::object::Object<0xe7ce55d8dc68c348bb180f44510f73555b53981f1be98406d9f63be2074b4f2d::message_board::Message>",
       ],
       return: [
+        "bool",
         "0x1::string::String",
         "u64",
         "address",
+        "0x1::object::Object<0x1::object::ObjectCore>",
+        "vector<0x1::string::String>",
+        "0x1::option::Option<bool>",
         "0x1::option::Option<0x1::string::String>",
         "0x1::option::Option<u64>",
         "0x1::option::Option<address>",
+        "0x1::option::Option<0x1::object::Object<0x1::object::ObjectCore>>",
+        "0x1::option::Option<vector<0x1::string::String>>",
       ],
     },
     {
@@ -28,10 +34,10 @@ export const ABI = {
       is_view: true,
       generic_type_params: [],
       params: [
-        "0x1::object::Object<0x6b3c4116b76752fab7caf18641ea2fe886f984bc725c95a2a4c3a18065e1cd8b::message_board::Message>",
+        "0x1::object::Object<0xe7ce55d8dc68c348bb180f44510f73555b53981f1be98406d9f63be2074b4f2d::message_board::Message>",
       ],
       return: [
-        "0x6b3c4116b76752fab7caf18641ea2fe886f984bc725c95a2a4c3a18065e1cd8b::message_board::Message",
+        "0xe7ce55d8dc68c348bb180f44510f73555b53981f1be98406d9f63be2074b4f2d::message_board::Message",
       ],
     },
     {
@@ -42,7 +48,7 @@ export const ABI = {
       generic_type_params: [],
       params: ["0x1::option::Option<u64>", "0x1::option::Option<u64>"],
       return: [
-        "vector<0x1::object::Object<0x6b3c4116b76752fab7caf18641ea2fe886f984bc725c95a2a4c3a18065e1cd8b::message_board::Message>>",
+        "vector<0x1::object::Object<0xe7ce55d8dc68c348bb180f44510f73555b53981f1be98406d9f63be2074b4f2d::message_board::Message>>",
       ],
     },
     {
@@ -53,12 +59,18 @@ export const ABI = {
       generic_type_params: [],
       params: [
         "&signer",
+        "bool",
         "0x1::string::String",
         "u64",
         "address",
+        "0x1::object::Object<0x1::object::ObjectCore>",
+        "vector<0x1::string::String>",
+        "0x1::option::Option<bool>",
         "0x1::option::Option<0x1::string::String>",
         "0x1::option::Option<u64>",
         "0x1::option::Option<address>",
+        "0x1::option::Option<0x1::object::Object<0x1::object::ObjectCore>>",
+        "0x1::option::Option<vector<0x1::string::String>>",
       ],
       return: [],
     },
@@ -67,12 +79,19 @@ export const ABI = {
     {
       name: "Message",
       is_native: false,
-      abilities: ["copy", "key"],
+      abilities: ["copy", "drop", "key"],
       generic_type_params: [],
       fields: [
+        { name: "boolean_content", type: "bool" },
         { name: "string_content", type: "0x1::string::String" },
         { name: "number_content", type: "u64" },
         { name: "address_content", type: "address" },
+        {
+          name: "object_content",
+          type: "0x1::object::Object<0x1::object::ObjectCore>",
+        },
+        { name: "vector_content", type: "vector<0x1::string::String>" },
+        { name: "optional_boolean_content", type: "0x1::option::Option<bool>" },
         {
           name: "optional_string_content",
           type: "0x1::option::Option<0x1::string::String>",
@@ -81,6 +100,14 @@ export const ABI = {
         {
           name: "optional_address_content",
           type: "0x1::option::Option<address>",
+        },
+        {
+          name: "optional_object_content",
+          type: "0x1::option::Option<0x1::object::Object<0x1::object::ObjectCore>>",
+        },
+        {
+          name: "optional_vector_content",
+          type: "0x1::option::Option<vector<0x1::string::String>>",
         },
       ],
     },
@@ -92,7 +119,7 @@ export const ABI = {
       fields: [
         {
           name: "messages",
-          type: "vector<0x1::object::Object<0x6b3c4116b76752fab7caf18641ea2fe886f984bc725c95a2a4c3a18065e1cd8b::message_board::Message>>",
+          type: "vector<0x1::object::Object<0xe7ce55d8dc68c348bb180f44510f73555b53981f1be98406d9f63be2074b4f2d::message_board::Message>>",
         },
       ],
     },
