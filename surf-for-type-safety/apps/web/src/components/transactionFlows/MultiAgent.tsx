@@ -1,4 +1,4 @@
-import { aptosClient, isSendableNetwork } from "@/utils";
+import { aptosClient, isSendableNetwork } from "@/utils/aptos";
 import {
   Account,
   AccountAuthenticator,
@@ -49,7 +49,7 @@ export function MultiAgent() {
     setSecondarySignerAccount(secondarySigner);
 
     const transactionToSign = await aptosClient(
-      network,
+      network
     ).transaction.build.multiAgent({
       sender: account.address,
       secondarySignerAddresses: [secondarySigner.accountAddress],

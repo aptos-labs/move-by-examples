@@ -1,4 +1,4 @@
-import { aptosClient, isSendableNetwork } from "@/utils";
+import { aptosClient, isSendableNetwork } from "@/utils/aptos";
 import {
   AccountAddress,
   AccountAuthenticator,
@@ -34,7 +34,7 @@ export function Sponsor() {
       throw new Error("no account");
     }
     const transactionToSign = await aptosClient(
-      network,
+      network
     ).transaction.build.simple({
       sender: account.address,
       withFeePayer: true,

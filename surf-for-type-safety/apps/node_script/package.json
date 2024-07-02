@@ -9,9 +9,9 @@
     "post-message": "ts-node src/post_message.ts"
   },
   "dependencies": {
-    "@repo/move-contract-abis": "*",
+    "@repo/contract-abis": "*",
     "@aptos-labs/ts-sdk": "^1.22.2",
-    "@thalalabs/surf": "^1.6.0"
+    "@thalalabs/surf": "^1.6.1"
   },
   "devDependencies": {
     "@repo/eslint-config-adapter": "*",

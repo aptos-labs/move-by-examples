@@ -1,10 +1,12 @@
 "use client";
 
 import { useAutoConnect } from "@/components/AutoConnectProvider";
+import { useWalletClient } from "@thalalabs/surf/hooks";
 import { DisplayValue, LabelValueGrid } from "@/components/LabelValueGrid";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { WalletSelector as ShadcnWalletSelector } from "@/components/WalletSelector";
 import { MultiAgent } from "@/components/transactionFlows/MultiAgent";
+import { PostMessageWithSurf } from "@/components/transactionFlows/PostMessageWithSurf";
 import { SingleSigner } from "@/components/transactionFlows/SingleSigner";
 import { Sponsor } from "@/components/transactionFlows/Sponsor";
 import { TransactionParameters } from "@/components/transactionFlows/TransactionParameters";
@@ -19,7 +21,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
-import { isMainnet } from "@/utils";
+import { isMainnet } from "@/utils/aptos";
 import { Network } from "@aptos-labs/ts-sdk";
 import {
   AccountInfo,
@@ -33,14 +35,17 @@ import { AlertCircle } from "lucide-react";
 import Image from "next/image";
 
 export default function Home() {
-  const { account, connected, network, wallet, changeNetwork } = useWallet();
+  const { account, network, wallet, changeNetwork } = useWallet();
+  const { connected, client: walletClient } = useWalletClient();
+
+  // console.log("account", account, "network", network, "wallet", wallet, "connected", connected, "walletClient", walletClient);
 
   return (
     <main className="flex flex-col w-full max-w-[1000px] p-6 pb-12 md:px-8 gap-6">
       <div className="flex justify-between gap-6 pb-10">
         <div className="flex flex-col gap-2 md:gap-3">
           <h1 className="text-xl sm:text-3xl font-semibold tracking-tight">
-            Aptos Wallet Adapter Tester
+            Aptos Full Stack Demo App
             {network?.name ? ` — ${network.name}` : ""}
           </h1>
           <a
@@ -74,7 +79,8 @@ export default function Home() {
       )}
       {connected && (
         <>
-          <TransactionParameters />
+          <PostMessageWithSurf />
+          {/* <TransactionParameters /> */}
           <SingleSigner />
           <Sponsor />
           <MultiAgent />
@@ -85,7 +91,7 @@ export default function Home() {
 }
 
 function WalletSelection() {
-  const { autoConnect, setAutoConnect } = useAutoConnect();
+  // const { autoConnect, setAutoConnect } = useAutoConnect();
 
   return (
     <Card>
@@ -102,7 +108,7 @@ function WalletSelection() {
             <ShadcnWalletSelector />
           </div>
         </div>
-        <label className="flex items-center gap-4 cursor-pointer">
+        {/* <label className="flex items-center gap-4 cursor-pointer">
           <Switch
             id="auto-connect-switch"
             checked={autoConnect}
@@ -111,7 +117,7 @@ function WalletSelection() {
           <Label htmlFor="auto-connect-switch">
             Auto reconnect on page load
           </Label>
-        </label>
+        </label> */}
       </CardContent>
     </Card>
   );

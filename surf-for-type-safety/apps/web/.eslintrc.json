@@ -1,4 +1,4 @@
 {
   "root": true,
-  "extends": ["@aptos-labs/eslint-config-adapter"]
+  "extends": ["@repo/eslint-config-adapter"]
 }

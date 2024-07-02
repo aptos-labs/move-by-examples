@@ -1,5 +1,7 @@
+import { ABI } from "@repo/contract-abis/src/message_board_abi";
+import { createSurfClient } from "@thalalabs/surf";
 import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk";
-import { NetworkInfo } from "@aptos-labs/wallet-adapter-core";
+import { NetworkInfo } from "@aptos-labs/wallet-adapter-react";
 
 export const aptosClient = (network?: NetworkInfo | null) => {
   if (network?.name === Network.DEVNET) {
@@ -17,6 +19,10 @@ export const aptosClient = (network?: NetworkInfo | null) => {
   }
 };
 
+export const surfClient = (network?: NetworkInfo | null) => {
+  return createSurfClient(aptosClient(network)).useABI(ABI);
+};
+
 // Devnet client
 export const DEVNET_CONFIG = new AptosConfig({
   network: Network.DEVNET,
@@ -29,14 +35,14 @@ export const TESTNET_CLIENT = new Aptos(TESTNET_CONFIG);
 
 export const isSendableNetwork = (
   connected: boolean,
-  networkName?: string,
+  networkName?: string
 ): boolean => {
   return connected && !isMainnet(connected, networkName);
 };
 
 export const isMainnet = (
   connected: boolean,
-  networkName?: string,
+  networkName?: string
 ): boolean => {
   return connected && networkName === Network.MAINNET;
 };

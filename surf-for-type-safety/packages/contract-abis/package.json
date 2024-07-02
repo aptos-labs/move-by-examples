@@ -1,5 +1,5 @@
 {
-  "name": "@repo/move-contract-abis",
+  "name": "@repo/contract-abis",
   "version": "0.0.1",
   "private": true,
   "scripts": {
