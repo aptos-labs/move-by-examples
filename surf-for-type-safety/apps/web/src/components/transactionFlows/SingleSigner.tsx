@@ -1,5 +1,4 @@
 import { isSendableNetwork, aptosClient } from "@/utils/aptos";
-import { parseTypeTag, AccountAddress, U64 } from "@aptos-labs/ts-sdk";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { Button } from "../ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
@@ -67,49 +66,7 @@ export function SingleSigner() {
     }
   };
 
-  const onSignAndSubmitBCSTransaction = async () => {
-    if (!account) return;
-
-    try {
-      const response = await signAndSubmitTransaction({
-        data: {
-          function: "0x1::coin::transfer",
-          typeArguments: [parseTypeTag(APTOS_COIN)],
-          functionArguments: [AccountAddress.from(account.address), new U64(1)], // 1 is in Octas
-        },
-      });
-      await aptosClient(network).waitForTransaction({
-        transactionHash: response.hash,
-      });
-      toast({
-        title: "Success",
-        description: <TransactionHash hash={response.hash} network={network} />,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  // Legacy typescript sdk support
   const onSignTransaction = async () => {
-    try {
-      const payload = {
-        type: "entry_function_payload",
-        function: "0x1::coin::transfer",
-        type_arguments: ["0x1::aptos_coin::AptosCoin"],
-        arguments: [account?.address, 1], // 1 is in Octas
-      };
-      const response = await signTransaction(payload);
-      toast({
-        title: "Success",
-        description: JSON.stringify(response),
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const onSignTransactionV2 = async () => {
     if (!account) return;
 
     try {
@@ -142,14 +99,8 @@ export function SingleSigner() {
         <Button onClick={onSignAndSubmitTransaction} disabled={!sendable}>
           Sign and submit transaction
         </Button>
-        <Button onClick={onSignAndSubmitBCSTransaction} disabled={!sendable}>
-          Sign and submit BCS transaction
-        </Button>
         <Button onClick={onSignTransaction} disabled={!sendable}>
           Sign transaction
-        </Button>
-        <Button onClick={onSignTransactionV2} disabled={!sendable}>
-          Sign transaction V2
         </Button>
         <Button onClick={onSignMessage} disabled={!sendable}>
           Sign message

@@ -22,12 +22,18 @@ import {
 import { Input } from "@/components/ui/input";
 
 const FormSchema = z.object({
+  boolContent: z.boolean(),
   stringContent: z.string().min(2),
   numberContent: z.number().int(),
-  addressContent: z.string(),
+  addressContent: z.string().startsWith("0x"),
+  objectContent: z.string().startsWith("0x"),
+  vectorContent: z.array(z.string()),
+  optionalBoolContent: z.boolean().optional(),
   optionalStringContent: z.string().optional(),
   optionalNumberContent: z.number().int().optional(),
-  optionalAddressContent: z.string().optional(),
+  optionalAddressContent: z.string().startsWith("0x").optional(),
+  optionalObjectContent: z.string().startsWith("0x").optional(),
+  optionalVectorContent: z.array(z.string()).optional(),
 });
 
 export function PostMessageWithSurf() {
@@ -40,12 +46,18 @@ export function PostMessageWithSurf() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
+      boolContent: false,
       stringContent: "",
       numberContent: 0,
       addressContent: "0x1",
+      objectContent: "",
+      vectorContent: [],
+      optionalBoolContent: undefined,
       optionalStringContent: undefined,
       optionalNumberContent: undefined,
       optionalAddressContent: undefined,
+      optionalObjectContent: undefined,
+      optionalVectorContent: undefined,
     },
   });
 
@@ -63,15 +75,30 @@ export function PostMessageWithSurf() {
         .post_message({
           type_arguments: [],
           arguments: [
-            // "Hello World!",
-            data.username,
-            123,
-            account.address as `0x${string}`,
-            // passing null will trigger error at this line: https://github.com/ThalaLabs/surf/blob/3815bcf024438026f7dce87cd4971f3698768374/src/core/WalletClient.ts#L32
-            // passing undefine works, but i got warning on VSCode as Surf expects `null` instead of `undefined` for option::none()
-            undefined as any,
-            undefined as any,
-            undefined as any,
+            data.boolContent,
+            data.stringContent,
+            data.numberContent,
+            data.addressContent as `0x${string}`,
+            data.objectContent as `0x${string}`,
+            data.vectorContent,
+            data.optionalBoolContent
+              ? data.optionalBoolContent
+              : (undefined as any),
+            data.optionalStringContent
+              ? data.optionalStringContent
+              : (undefined as any),
+            data.optionalNumberContent
+              ? data.optionalNumberContent
+              : (undefined as any),
+            data.optionalAddressContent
+              ? data.optionalAddressContent
+              : (undefined as any),
+            data.optionalObjectContent
+              ? data.optionalObjectContent
+              : (undefined as any),
+            data.optionalVectorContent
+              ? data.optionalVectorContent
+              : (undefined as any),
           ],
         });
       const executedTransaction = await aptosClient(network).waitForTransaction(
@@ -101,15 +128,191 @@ export function PostMessageWithSurf() {
           >
             <FormField
               control={form.control}
-              name="username"
+              name="boolContent"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Username</FormLabel>
+                  <FormLabel>Bool Content</FormLabel>
+                  <FormControl>
+                    <Input type="checkbox" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Store a bool content in the message on-chain
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="stringContent"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>String Content</FormLabel>
                   <FormControl>
                     <Input placeholder="shadcn" {...field} />
                   </FormControl>
                   <FormDescription>
-                    This is your public display name.
+                    Store a string content in the message on-chain
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="numberContent"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Number Content</FormLabel>
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Store a number content in the message on-chain
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="addressContent"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Address Content</FormLabel>
+                  <FormControl>
+                    <Input placeholder="0x1" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Store an address content in the message on-chain
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="objectContent"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Object Content</FormLabel>
+                  <FormControl>
+                    <Input placeholder="0x1" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Store an object content in the message on-chain
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="vectorContent"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Vector Content</FormLabel>
+                  <FormControl>
+                    <Input placeholder="0x1" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Store a vector content in the message on-chain
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="optionalBoolContent"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Optional Bool Content</FormLabel>
+                  <FormControl>
+                    <Input type="checkbox" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Store an optional bool content in the message on-chain
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="optionalStringContent"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Optional String Content</FormLabel>
+                  <FormControl>
+                    <Input placeholder="shadcn" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Store an optional string content in the message on-chain
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="optionalNumberContent"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Optional Number Content</FormLabel>
+                  <FormControl>
+                    <Input type="number" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Store an optional number content in the message on-chain
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="optionalAddressContent"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Optional Address Content</FormLabel>
+                  <FormControl>
+                    <Input placeholder="0x1" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Store an optional address content in the message on-chain
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="optionalObjectContent"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Optional Object Content</FormLabel>
+                  <FormControl>
+                    <Input placeholder="0x1" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Store an optional object content in the message on-chain
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="optionalVectorContent"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Optional Vector Content</FormLabel>
+                  <FormControl>
+                    <Input placeholder="0x1" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Store an optional vector content in the message on-chain
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
