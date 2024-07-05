@@ -23,7 +23,7 @@ export const NavBar = () => {
       </Box>
       <HStack>
         <NextLink href="/" passHref>
-          <Link
+          <Text
             px={4}
             py={4}
             rounded={"md"}
@@ -31,10 +31,10 @@ export const NavBar = () => {
             _hover={{ textDecoration: "none", bg: "teal.600" }}
           >
             Home
-          </Link>
+          </Text>
         </NextLink>
         <NextLink href="/mint" passHref>
-          <Link
+          <Text
             px={4}
             py={4}
             rounded={"md"}
@@ -42,10 +42,10 @@ export const NavBar = () => {
             _hover={{ textDecoration: "none", bg: "teal.600" }}
           >
             Mint
-          </Link>
+          </Text>
         </NextLink>
         <NextLink href="/portfolio" passHref>
-          <Link
+          <Text
             px={4}
             py={4}
             rounded={"md"}
@@ -53,7 +53,7 @@ export const NavBar = () => {
             _hover={{ textDecoration: "none", bg: "teal.600" }}
           >
             My Portfolio
-          </Link>
+          </Text>
         </NextLink>
       </HStack>
       <WalletButtons />
