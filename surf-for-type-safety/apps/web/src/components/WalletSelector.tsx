@@ -38,7 +38,6 @@ import { useToast } from "./ui/use-toast";
 export function WalletSelector() {
   const { account, connected, disconnect, wallet } = useWallet();
 
-  console.log("connected", connected);
   const { toast } = useToast();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
@@ -119,10 +118,6 @@ function ConnectWalletDialog({ close }: ConnectWalletDialogProps) {
     /** Wallets that are NOT currently installed or loadable. */
     moreWallets,
   } = partitionWallets(otherWallets);
-
-  console.log("aptosConnectWallets", aptosConnectWallets);
-  console.log("defaultWallets", defaultWallets);
-  console.log("moreWallets", moreWallets);
 
   return (
     <DialogContent className="max-h-screen overflow-auto">

@@ -38,8 +38,6 @@ export default function Home() {
   const { account, network, wallet, changeNetwork } = useWallet();
   const { connected, client: walletClient } = useWalletClient();
 
-  // console.log("account", account, "network", network, "wallet", wallet, "connected", connected, "walletClient", walletClient);
-
   return (
     <main className="flex flex-col w-full max-w-[1000px] p-6 pb-12 md:px-8 gap-6">
       <div className="flex justify-between gap-6 pb-10">
@@ -91,7 +89,7 @@ export default function Home() {
 }
 
 function WalletSelection() {
-  // const { autoConnect, setAutoConnect } = useAutoConnect();
+  const { autoConnect, setAutoConnect } = useAutoConnect();
 
   return (
     <Card>
@@ -108,7 +106,7 @@ function WalletSelection() {
             <ShadcnWalletSelector />
           </div>
         </div>
-        {/* <label className="flex items-center gap-4 cursor-pointer">
+        <label className="flex items-center gap-4 cursor-pointer">
           <Switch
             id="auto-connect-switch"
             checked={autoConnect}
@@ -117,7 +115,7 @@ function WalletSelection() {
           <Label htmlFor="auto-connect-switch">
             Auto reconnect on page load
           </Label>
-        </label> */}
+        </label>
       </CardContent>
     </Card>
   );

@@ -20,10 +20,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const FormSchema = z.object({
   boolContent: z.boolean(),
-  stringContent: z.string().min(2),
+  stringContent: z.string(),
   numberContent: z.number().int(),
   addressContent: z.string().startsWith("0x"),
   objectContent: z.string().startsWith("0x"),
@@ -46,12 +47,13 @@ export function PostMessageWithSurf() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      boolContent: false,
-      stringContent: "",
-      numberContent: 0,
+      boolContent: true,
+      stringContent: "hello world",
+      numberContent: 1,
       addressContent: "0x1",
-      objectContent: "",
-      vectorContent: [],
+      objectContent:
+        "0x577f6d824628353ce99463e2b85e76160db72c3445215ccb1ecbbe332dc631e8",
+      vectorContent: ["hello", "world"],
       optionalBoolContent: undefined,
       optionalStringContent: undefined,
       optionalNumberContent: undefined,
@@ -81,24 +83,24 @@ export function PostMessageWithSurf() {
             data.addressContent as `0x${string}`,
             data.objectContent as `0x${string}`,
             data.vectorContent,
-            data.optionalBoolContent
-              ? data.optionalBoolContent
-              : (undefined as any),
-            data.optionalStringContent
-              ? data.optionalStringContent
-              : (undefined as any),
-            data.optionalNumberContent
-              ? data.optionalNumberContent
-              : (undefined as any),
-            data.optionalAddressContent
-              ? data.optionalAddressContent
-              : (undefined as any),
-            data.optionalObjectContent
-              ? data.optionalObjectContent
-              : (undefined as any),
-            data.optionalVectorContent
-              ? data.optionalVectorContent
-              : (undefined as any),
+            data.optionalBoolContent === undefined
+              ? (undefined as any)
+              : data.optionalBoolContent,
+            data.optionalStringContent === undefined
+              ? (undefined as any)
+              : data.optionalStringContent,
+            data.optionalNumberContent === undefined
+              ? (undefined as any)
+              : data.optionalNumberContent,
+            data.optionalAddressContent === undefined
+              ? (undefined as any)
+              : data.optionalAddressContent,
+            data.optionalObjectContent === undefined
+              ? (undefined as any)
+              : data.optionalObjectContent,
+            data.optionalVectorContent === undefined
+              ? (undefined as any)
+              : data.optionalVectorContent,
           ],
         });
       const executedTransaction = await aptosClient(network).waitForTransaction(
@@ -120,26 +122,42 @@ export function PostMessageWithSurf() {
       <CardHeader>
         <CardTitle>Post a Message to Message Board</CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-wrap gap-4">
+      <CardContent className="flex flex-wrap">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSignAndSubmitTransaction)}
-            className="w-2/3 space-y-6"
+            className="grid justify-between gap-4 grid-cols-2 w-full"
           >
             <FormField
               control={form.control}
               name="boolContent"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Bool Content</FormLabel>
-                  <FormControl>
-                    <Input type="checkbox" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Store a bool content in the message on-chain
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
+                <RadioGroup
+                  value={String(field.value)}
+                  onValueChange={(value) => {
+                    if (value === "true") {
+                      field.onChange(true);
+                    } else {
+                      field.onChange(false);
+                    }
+                  }}
+                  className="flex flex-col space-y-1"
+                >
+                  <FormLabel>Boolean Content</FormLabel>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="true" />
+                    </FormControl>
+                    <FormLabel className="font-normal">True</FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="false" />
+                    </FormControl>
+                    <FormLabel className="font-normal">False</FormLabel>
+                  </FormItem>
+                  <FormDescription>Store a boolean content</FormDescription>
+                </RadioGroup>
               )}
             />
             <FormField
@@ -149,11 +167,9 @@ export function PostMessageWithSurf() {
                 <FormItem>
                   <FormLabel>String Content</FormLabel>
                   <FormControl>
-                    <Input placeholder="shadcn" {...field} />
+                    <Input {...field} />
                   </FormControl>
-                  <FormDescription>
-                    Store a string content in the message on-chain
-                  </FormDescription>
+                  <FormDescription>Store a string content</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -165,11 +181,15 @@ export function PostMessageWithSurf() {
                 <FormItem>
                   <FormLabel>Number Content</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} />
+                    <Input
+                      type="number"
+                      {...field}
+                      onChange={(event) => {
+                        field.onChange(parseInt(event.target.value));
+                      }}
+                    />
                   </FormControl>
-                  <FormDescription>
-                    Store a number content in the message on-chain
-                  </FormDescription>
+                  <FormDescription>Store a number content</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -181,11 +201,9 @@ export function PostMessageWithSurf() {
                 <FormItem>
                   <FormLabel>Address Content</FormLabel>
                   <FormControl>
-                    <Input placeholder="0x1" {...field} />
+                    <Input {...field} />
                   </FormControl>
-                  <FormDescription>
-                    Store an address content in the message on-chain
-                  </FormDescription>
+                  <FormDescription>Store an address content</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -197,11 +215,9 @@ export function PostMessageWithSurf() {
                 <FormItem>
                   <FormLabel>Object Content</FormLabel>
                   <FormControl>
-                    <Input placeholder="0x1" {...field} />
+                    <Input {...field} />
                   </FormControl>
-                  <FormDescription>
-                    Store an object content in the message on-chain
-                  </FormDescription>
+                  <FormDescription>Store an object content</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -213,11 +229,14 @@ export function PostMessageWithSurf() {
                 <FormItem>
                   <FormLabel>Vector Content</FormLabel>
                   <FormControl>
-                    <Input placeholder="0x1" {...field} />
+                    <Input
+                      {...field}
+                      onChange={(event) => {
+                        field.onChange(event.target.value.split(","));
+                      }}
+                    />
                   </FormControl>
-                  <FormDescription>
-                    Store a vector content in the message on-chain
-                  </FormDescription>
+                  <FormDescription>Store a vector content</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -226,16 +245,42 @@ export function PostMessageWithSurf() {
               control={form.control}
               name="optionalBoolContent"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Optional Bool Content</FormLabel>
-                  <FormControl>
-                    <Input type="checkbox" {...field} />
-                  </FormControl>
+                <RadioGroup
+                  value={String(field.value)}
+                  onValueChange={(value) => {
+                    if (value === "true") {
+                      field.onChange(true);
+                    } else if (value === "false") {
+                      field.onChange(false);
+                    } else {
+                      field.onChange(undefined);
+                    }
+                  }}
+                  className="flex flex-col space-y-1"
+                >
+                  <FormLabel>Optional Boolean Content</FormLabel>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="undefined" />
+                    </FormControl>
+                    <FormLabel className="font-normal">Null</FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="true" />
+                    </FormControl>
+                    <FormLabel className="font-normal">True</FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="false" />
+                    </FormControl>
+                    <FormLabel className="font-normal">False</FormLabel>
+                  </FormItem>
                   <FormDescription>
-                    Store an optional bool content in the message on-chain
+                    Store an optional boolean content
                   </FormDescription>
-                  <FormMessage />
-                </FormItem>
+                </RadioGroup>
               )}
             />
             <FormField
@@ -245,10 +290,10 @@ export function PostMessageWithSurf() {
                 <FormItem>
                   <FormLabel>Optional String Content</FormLabel>
                   <FormControl>
-                    <Input placeholder="shadcn" {...field} />
+                    <Input {...field} />
                   </FormControl>
                   <FormDescription>
-                    Store an optional string content in the message on-chain
+                    Store an optional string content
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -261,10 +306,20 @@ export function PostMessageWithSurf() {
                 <FormItem>
                   <FormLabel>Optional Number Content</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} />
+                    <Input
+                      type="number"
+                      {...field}
+                      onChange={(event) => {
+                        if (event.target.value === "") {
+                          field.onChange(undefined);
+                        } else {
+                          field.onChange(parseInt(event.target.value));
+                        }
+                      }}
+                    />
                   </FormControl>
                   <FormDescription>
-                    Store an optional number content in the message on-chain
+                    Store an optional number content
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -277,10 +332,10 @@ export function PostMessageWithSurf() {
                 <FormItem>
                   <FormLabel>Optional Address Content</FormLabel>
                   <FormControl>
-                    <Input placeholder="0x1" {...field} />
+                    <Input {...field} />
                   </FormControl>
                   <FormDescription>
-                    Store an optional address content in the message on-chain
+                    Store an optional address content
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -293,10 +348,10 @@ export function PostMessageWithSurf() {
                 <FormItem>
                   <FormLabel>Optional Object Content</FormLabel>
                   <FormControl>
-                    <Input placeholder="0x1" {...field} />
+                    <Input {...field} />
                   </FormControl>
                   <FormDescription>
-                    Store an optional object content in the message on-chain
+                    Store an optional object content
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -309,16 +364,18 @@ export function PostMessageWithSurf() {
                 <FormItem>
                   <FormLabel>Optional Vector Content</FormLabel>
                   <FormControl>
-                    <Input placeholder="0x1" {...field} />
+                    <Input {...field} />
                   </FormControl>
                   <FormDescription>
-                    Store an optional vector content in the message on-chain
+                    Store an optional vector content
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit"> disabled={!sendable}Post</Button>
+            <Button type="submit" disabled={!sendable} className="w-40 gap-8">
+              Post
+            </Button>
           </form>
         </Form>
       </CardContent>
