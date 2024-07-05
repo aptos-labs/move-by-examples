@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { TransactionHash } from "@/components/TransactionHash";
 
 const FormSchema = z.object({
   boolContent: z.boolean(),
@@ -110,7 +111,9 @@ export function PostMessageWithSurf() {
       );
       toast({
         title: "Success",
-        description: `${wallet?.name ?? "Wallet"} transaction ${executedTransaction.hash} executed`,
+        description: (
+          <TransactionHash hash={executedTransaction.hash} network={network} />
+        ),
       });
     } catch (error) {
       console.error(error);

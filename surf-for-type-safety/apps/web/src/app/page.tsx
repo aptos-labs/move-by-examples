@@ -1,7 +1,6 @@
 "use client";
 
-import { useAutoConnect } from "@/components/AutoConnectProvider";
-import { useWalletClient } from "@thalalabs/surf/hooks";
+import { useAutoConnect } from "@/components/providers/AutoConnectProvider";
 import { DisplayValue, LabelValueGrid } from "@/components/LabelValueGrid";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { WalletSelector as ShadcnWalletSelector } from "@/components/WalletSelector";
@@ -9,7 +8,6 @@ import { MultiAgent } from "@/components/transactionFlows/MultiAgent";
 import { PostMessageWithSurf } from "@/components/transactionFlows/PostMessageWithSurf";
 import { SingleSigner } from "@/components/transactionFlows/SingleSigner";
 import { Sponsor } from "@/components/transactionFlows/Sponsor";
-import { TransactionParameters } from "@/components/transactionFlows/TransactionParameters";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Card,
@@ -33,10 +31,10 @@ import {
 } from "@aptos-labs/wallet-adapter-react";
 import { AlertCircle } from "lucide-react";
 import Image from "next/image";
+import { MessageBoard } from "@/components/MessageBoard";
 
 export default function Home() {
-  const { account, network, wallet, changeNetwork } = useWallet();
-  const { connected, client: walletClient } = useWalletClient();
+  const { account, connected, network, wallet, changeNetwork } = useWallet();
 
   return (
     <main className="flex flex-col w-full max-w-[1000px] p-6 pb-12 md:px-8 gap-6">
@@ -77,8 +75,8 @@ export default function Home() {
       )}
       {connected && (
         <>
+          <MessageBoard network={network} />
           <PostMessageWithSurf />
-          {/* <TransactionParameters /> */}
           <SingleSigner />
           <Sponsor />
           <MultiAgent />
