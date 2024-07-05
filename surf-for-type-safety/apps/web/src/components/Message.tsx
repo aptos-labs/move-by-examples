@@ -1,25 +1,16 @@
 import { surfClient } from "@/utils/aptos";
 import { NetworkInfo } from "@aptos-labs/wallet-adapter-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { useEffect, useState } from "react";
 
-interface MessageBoardProps {
+interface MessageProps {
   network: NetworkInfo | null;
 }
 
-export function MessageBoard({ network }: MessageBoardProps) {
-  const [messageObjects, setMessageObjects] = useState<{ inner: string }[]>([]);
-
-  useEffect(() => {
-    surfClient(network)
-      .view.get_messages({
-        typeArguments: [],
-        functionArguments: [null, null],
-      })
-      .then((res) => {
-        setMessageObjects(res[0] as { inner: string }[]);
-      });
-  }, [network]);
+export async function Message({ network }: MessageProps) {
+  const message = await surfClient(network).view.get_message_struct({
+    typeArguments: [],
+    functionArguments: [null],
+  });
 
   return (
     <Card>
