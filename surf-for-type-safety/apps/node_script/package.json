@@ -16,8 +16,6 @@
   "devDependencies": {
     "@repo/eslint-config": "*",
     "@repo/tsconfig": "*",
-    "eslint": "^8",
-    "eslint-config-next": "15.0.0-rc.0",
     "ts-node": "^10.9.2",
     "typescript": "^5"
   }
