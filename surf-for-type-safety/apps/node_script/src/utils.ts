@@ -12,8 +12,8 @@ export const client = createSurfClient(
   new Aptos(
     new AptosConfig({
       network: Network.TESTNET,
-    })
-  )
+    }),
+  ),
 ).useABI(ABI);
 
 export const account = Account.fromPrivateKey({

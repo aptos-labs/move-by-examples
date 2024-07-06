@@ -14,7 +14,7 @@
     "@thalalabs/surf": "^1.6.1"
   },
   "devDependencies": {
-    "@repo/eslint-config-adapter": "*",
+    "@repo/eslint-config": "*",
     "@repo/tsconfig": "*",
     "eslint": "^8",
     "eslint-config-next": "15.0.0-rc.0",

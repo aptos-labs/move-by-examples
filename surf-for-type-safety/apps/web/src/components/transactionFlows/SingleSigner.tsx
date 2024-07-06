@@ -1,9 +1,11 @@
-import { isSendableNetwork, aptosClient } from "@/utils/aptos";
+"use client";
+
+import { isSendableNetwork, aptosClient } from "@/lib/aptos";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { Button } from "../ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 import { useToast } from "../ui/use-toast";
-import { TransactionHash } from "../TransactionHash";
+import { TransactionOnExplorer } from "../ExplorerLink";
 
 const APTOS_COIN = "0x1::aptos_coin::AptosCoin";
 
@@ -54,12 +56,12 @@ export function SingleSigner() {
           functionArguments: [account.address, 1], // 1 is in Octas
         },
       });
-      await aptosClient(network).waitForTransaction({
+      await aptosClient().waitForTransaction({
         transactionHash: response.hash,
       });
       toast({
         title: "Success",
-        description: <TransactionHash hash={response.hash} network={network} />,
+        description: <TransactionOnExplorer hash={response.hash} />,
       });
     } catch (error) {
       console.error(error);
@@ -70,9 +72,7 @@ export function SingleSigner() {
     if (!account) return;
 
     try {
-      const transactionToSign = await aptosClient(
-        network
-      ).transaction.build.simple({
+      const transactionToSign = await aptosClient().transaction.build.simple({
         sender: account.address,
         data: {
           function: "0x1::coin::transfer",

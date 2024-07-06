@@ -1,25 +1,22 @@
-import { surfClient } from "@/utils/aptos";
-import { NetworkInfo } from "@aptos-labs/wallet-adapter-react";
+import { surfClient } from "@/lib/aptos";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { useEffect, useState } from "react";
+import { DataTable } from "./message-board/data-table";
+import { columns } from "./message-board/columns";
 
-interface MessageBoardProps {
-  network: NetworkInfo | null;
-}
-
-export function MessageBoard({ network }: MessageBoardProps) {
-  const [messageObjects, setMessageObjects] = useState<{ inner: string }[]>([]);
-
-  useEffect(() => {
-    surfClient(network)
-      .view.get_messages({
-        typeArguments: [],
-        functionArguments: [null, null],
-      })
-      .then((res) => {
-        setMessageObjects(res[0] as { inner: string }[]);
+export const MessageBoard = async () => {
+  const messageObjectAddresses = await surfClient()
+    .view.get_messages({
+      typeArguments: [],
+      functionArguments: [null, null],
+    })
+    .then((res) => {
+      return res[0].map((obj) => {
+        return {
+          // @ts-ignore
+          messageObjectAddress: obj.inner,
+        };
       });
-  }, [network]);
+    });
 
   return (
     <Card>
@@ -27,19 +24,8 @@ export function MessageBoard({ network }: MessageBoardProps) {
         <CardTitle>Message Board</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-wrap gap-4">
-        {/* <Button onClick={onSignAndSubmitTransaction} disabled={!sendable}>
-          Sign and submit transaction
-        </Button>
-        <Button onClick={onSignTransaction} disabled={!sendable}>
-          Sign transaction
-        </Button>
-        <Button onClick={onSignMessage} disabled={!sendable}>
-          Sign message
-        </Button>
-        <Button onClick={onSignMessageAndVerify} disabled={!sendable}>
-          Sign message and verify
-        </Button> */}
+        <DataTable columns={columns} data={messageObjectAddresses} />
       </CardContent>
     </Card>
   );
-}
+};

@@ -1,4 +1,6 @@
-import { aptosClient, isSendableNetwork } from "@/utils/aptos";
+"use client";
+
+import { aptosClient, isSendableNetwork } from "@/lib/aptos";
 import {
   Account,
   AccountAuthenticator,
@@ -7,7 +9,7 @@ import {
 } from "@aptos-labs/ts-sdk";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { useState } from "react";
-import { TransactionHash } from "../TransactionHash";
+import { TransactionOnExplorer } from "../ExplorerLink";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { useToast } from "../ui/use-toast";
@@ -42,15 +44,13 @@ export function MultiAgent() {
 
     const secondarySigner = Account.generate();
     // TODO: support custom network
-    await aptosClient(network).fundAccount({
+    await aptosClient().fundAccount({
       accountAddress: secondarySigner.accountAddress.toString(),
       amount: 100_000_000,
     });
     setSecondarySignerAccount(secondarySigner);
 
-    const transactionToSign = await aptosClient(
-      network
-    ).transaction.build.multiAgent({
+    const transactionToSign = await aptosClient().transaction.build.multiAgent({
       sender: account.address,
       secondarySignerAddresses: [secondarySigner.accountAddress],
       data: {
@@ -103,7 +103,7 @@ export function MultiAgent() {
       });
       toast({
         title: "Success",
-        description: <TransactionHash hash={response.hash} network={network} />,
+        description: <TransactionOnExplorer hash={response.hash} />,
       });
     } catch (error) {
       console.error(error);

@@ -1,4 +1,6 @@
-import { aptosClient, isSendableNetwork } from "@/utils/aptos";
+"use client";
+
+import { aptosClient, isSendableNetwork } from "@/lib/aptos";
 import {
   AccountAddress,
   AccountAuthenticator,
@@ -6,7 +8,7 @@ import {
 } from "@aptos-labs/ts-sdk";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { useState } from "react";
-import { TransactionHash } from "../TransactionHash";
+import { TransactionOnExplorer } from "../ExplorerLink";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { useToast } from "../ui/use-toast";
@@ -33,9 +35,7 @@ export function Sponsor() {
     if (!account) {
       throw new Error("no account");
     }
-    const transactionToSign = await aptosClient(
-      network
-    ).transaction.build.simple({
+    const transactionToSign = await aptosClient().transaction.build.simple({
       sender: account.address,
       withFeePayer: true,
       data: {
@@ -91,7 +91,7 @@ export function Sponsor() {
       });
       toast({
         title: "Success",
-        description: <TransactionHash hash={response.hash} network={network} />,
+        description: <TransactionOnExplorer hash={response.hash} />,
       });
     } catch (error) {
       console.error(error);
@@ -114,7 +114,7 @@ export function Sponsor() {
           Sign as sponsor
         </Button>
         <Button
-          onClick={onSignTransaction}
+          onClick={onSubmitTransaction}
           disabled={!sendable || !senderAuthenticator}
         >
           Submit transaction

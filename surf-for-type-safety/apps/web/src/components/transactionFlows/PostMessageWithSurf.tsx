@@ -1,3 +1,5 @@
+"use client";
+
 import { useWalletClient } from "@thalalabs/surf/hooks";
 import { useWallet } from "@aptos-labs/wallet-adapter-react";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,7 +8,7 @@ import { z } from "zod";
 
 import { ABI } from "@repo/contract-abis/src/message_board_abi";
 
-import { aptosClient, isSendableNetwork } from "@/utils/aptos";
+import { aptosClient, isSendableNetwork } from "@/lib/aptos";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
@@ -21,16 +23,16 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { TransactionHash } from "@/components/TransactionHash";
+import { TransactionOnExplorer } from "@/components/ExplorerLink";
 
 const FormSchema = z.object({
-  boolContent: z.boolean(),
+  booleanContent: z.boolean(),
   stringContent: z.string(),
   numberContent: z.number().int(),
   addressContent: z.string().startsWith("0x"),
   objectContent: z.string().startsWith("0x"),
   vectorContent: z.array(z.string()),
-  optionalBoolContent: z.boolean().optional(),
+  optionalBooleanContent: z.boolean().optional(),
   optionalStringContent: z.string().optional(),
   optionalNumberContent: z.number().int().optional(),
   optionalAddressContent: z.string().startsWith("0x").optional(),
@@ -40,7 +42,7 @@ const FormSchema = z.object({
 
 export function PostMessageWithSurf() {
   const { toast } = useToast();
-  const { connected, account, network, wallet } = useWallet();
+  const { connected, account, network } = useWallet();
   const { client: walletClient } = useWalletClient();
 
   let sendable = isSendableNetwork(connected, network?.name);
@@ -48,14 +50,14 @@ export function PostMessageWithSurf() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      boolContent: true,
+      booleanContent: true,
       stringContent: "hello world",
       numberContent: 1,
       addressContent: "0x1",
       objectContent:
         "0x577f6d824628353ce99463e2b85e76160db72c3445215ccb1ecbbe332dc631e8",
       vectorContent: ["hello", "world"],
-      optionalBoolContent: undefined,
+      optionalBooleanContent: undefined,
       optionalStringContent: undefined,
       optionalNumberContent: undefined,
       optionalAddressContent: undefined,
@@ -65,7 +67,7 @@ export function PostMessageWithSurf() {
   });
 
   const onSignAndSubmitTransaction = async (
-    data: z.infer<typeof FormSchema>
+    data: z.infer<typeof FormSchema>,
   ) => {
     if (!account || !walletClient) {
       console.error("Account or wallet client not available");
@@ -78,15 +80,15 @@ export function PostMessageWithSurf() {
         .post_message({
           type_arguments: [],
           arguments: [
-            data.boolContent,
+            data.booleanContent,
             data.stringContent,
             data.numberContent,
             data.addressContent as `0x${string}`,
             data.objectContent as `0x${string}`,
             data.vectorContent,
-            data.optionalBoolContent === undefined
+            data.optionalBooleanContent === undefined
               ? (undefined as any)
-              : data.optionalBoolContent,
+              : data.optionalBooleanContent,
             data.optionalStringContent === undefined
               ? (undefined as any)
               : data.optionalStringContent,
@@ -104,16 +106,12 @@ export function PostMessageWithSurf() {
               : data.optionalVectorContent,
           ],
         });
-      const executedTransaction = await aptosClient(network).waitForTransaction(
-        {
-          transactionHash: committedTransaction.hash,
-        }
-      );
+      const executedTransaction = await aptosClient().waitForTransaction({
+        transactionHash: committedTransaction.hash,
+      });
       toast({
         title: "Success",
-        description: (
-          <TransactionHash hash={executedTransaction.hash} network={network} />
-        ),
+        description: <TransactionOnExplorer hash={executedTransaction.hash} />,
       });
     } catch (error) {
       console.error(error);
@@ -133,7 +131,7 @@ export function PostMessageWithSurf() {
           >
             <FormField
               control={form.control}
-              name="boolContent"
+              name="booleanContent"
               render={({ field }) => (
                 <RadioGroup
                   value={String(field.value)}
@@ -246,7 +244,7 @@ export function PostMessageWithSurf() {
             />
             <FormField
               control={form.control}
-              name="optionalBoolContent"
+              name="optionalBooleanContent"
               render={({ field }) => (
                 <RadioGroup
                   value={String(field.value)}

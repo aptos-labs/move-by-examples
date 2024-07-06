@@ -3,11 +3,12 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { WalletProvider } from "@/components/providers/WalletProvider";
 import { Toaster } from "@/components/ui/toaster";
-import { cn } from "@/utils/css";
+import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Inter as FontSans } from "next/font/google";
 import { PropsWithChildren } from "react";
 import { AutoConnectProvider } from "@/components/providers/AutoConnectProvider";
+import { RootHeader } from "@/components/RootHeader";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -20,13 +21,13 @@ export const metadata: Metadata = {
     "An example of how to use Aptos Wallet Adapter with React and Next.js.",
 };
 
-export default function RootLayout({ children }: PropsWithChildren) {
+const RootLayout = ({ children }: PropsWithChildren) => {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
           "flex justify-center min-h-screen bg-background font-sans antialiased",
-          fontSans.variable
+          fontSans.variable,
         )}
       >
         <ThemeProvider
@@ -37,12 +38,17 @@ export default function RootLayout({ children }: PropsWithChildren) {
         >
           <AutoConnectProvider>
             <WalletProvider>
-              {children}
-              <Toaster />
+              <main className="flex flex-col w-full max-w-[1000px] p-6 pb-12 md:px-8 gap-6">
+                <RootHeader />
+                {children}
+                <Toaster />
+              </main>
             </WalletProvider>
           </AutoConnectProvider>
         </ThemeProvider>
       </body>
     </html>
   );
-}
+};
+
+export default RootLayout;
