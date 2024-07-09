@@ -3,9 +3,6 @@ import { useWallet } from "@aptos-labs/wallet-adapter-react";
 // Internal Components
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Header } from "@/components/Header";
-import { WalletDetails } from "@/components/WalletDetails";
-import { NetworkInfo } from "@/components/NetworkInfo";
-import { AccountInfo } from "@/components/AcoountInfo";
 import { PostMessageWithSurf } from "@/components/PostMessageWithSurf";
 import { Message } from "@/components/Message";
 import { surfClient } from "@/utils/aptosClient";
@@ -36,9 +33,6 @@ function App() {
         {connected ? (
           <Card>
             <CardContent className="flex flex-col gap-10 pt-6">
-              <WalletDetails />
-              <NetworkInfo />
-              <AccountInfo />
               {messageExist ? <Message /> : <p>Message not exists</p>}
               <PostMessageWithSurf />
             </CardContent>

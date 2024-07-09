@@ -1,32 +1,7 @@
-## Create Aptos Dapp Boilerplate Template
+# Full stack example to demonstrate Surf
 
-The Boilerplate template provides a starter dapp with all necessary dapp infrastructure and a simple wallet info implementation.
+Surf is a type safe tool for Move contracts in TypeScript environment. [Learn more about Surf on the doc](https://aptos.dev/en/build/sdks/ts-sdk/type-safe-contract#what-is-surf).
 
+We built a simple message board contract that allows anyone to read and write message to the board. Note: message can be overwritten by anyone. It demonstrate how the type safety is provided by Surf.
 
-The Boilerplate template provides:
-
-- **Folder structure** - A pre-made dapp folder structure with a `frontend` and `move` folders.
-- **Dapp infrastructure** - All required dependencies a dapp needs to start building on the Aptos network.
-- **Wallet Info implementation** - Pre-made `WalletInfo` components to demonstrate how one can use to read a connected Wallet info.
-
-### What tools the template uses?
-
-- React framework
-- Vite development tool
-- shadcn/ui + tailwind for styling
-- Aptos TS SDK
-- Aptos Wallet Adapter
-- Node based Move commands
-
-### What Move commands are available?
-
-The tool utilizes [aptos-cli npm package](https://github.com/aptos-labs/aptos-cli) that lets us run Aptos CLI in a Node environment.
-
-Some commands are built-in the template and can be ran as a npm script, for example:
-
-- `npm run move:init` - a command to initialize an account to publish the Move contract and to configure the development environment
-- `npm run move:publish` - a command to publish the Move contract
-- `npm run move:test` - a command to run Move unit tests
-- `npm run move:compile` - a command to compile the Move contract
-
-For all other available CLI commands, can run `npx aptos` and see a list of all available commands.
+Demo contract deployed at https://explorer.aptoslabs.com/object/0xd01f58c69ccac6569e13a7cfdf68409d513c1492b3f13399a7ba3415dff36fa4?network=testnet.
