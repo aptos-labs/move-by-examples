@@ -67,7 +67,6 @@
     "tree-kill": "1.2.2",
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
-    "vite-plugin-node-polyfills": "^0.21.0",
     "vite-plugin-notifier": "^0.1.5"
   }
 }
