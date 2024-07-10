@@ -208,12 +208,7 @@ module dutch_auction_address::dutch_auction {
         owner: &signer,
         customer: &signer
     ) acquires Auction, TokenConfig {
-        use std::features;
-
         init_module(owner);
-
-        let feature = features::get_aggregator_v2_api_feature();
-        features::change_feature_flags(aptos_framework, vector[], vector[feature]);
 
         timestamp::set_time_has_started_for_testing(aptos_framework);
         timestamp::update_global_time_for_test_secs(1000);
