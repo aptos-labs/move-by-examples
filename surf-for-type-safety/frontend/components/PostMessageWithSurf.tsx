@@ -69,12 +69,12 @@ export function PostMessageWithSurf() {
           data.addressContent as `0x${string}`,
           data.objectContent as `0x${string}`,
           data.vectorContent,
-          data.optionalBooleanContent === undefined ? (undefined as any) : data.optionalBooleanContent,
-          data.optionalStringContent === undefined ? (undefined as any) : data.optionalStringContent,
-          data.optionalNumberContent === undefined ? (undefined as any) : data.optionalNumberContent,
-          data.optionalAddressContent === undefined ? (undefined as any) : data.optionalAddressContent,
-          data.optionalObjectContent === undefined ? (undefined as any) : data.optionalObjectContent,
-          data.optionalVectorContent === undefined ? (undefined as any) : data.optionalVectorContent,
+          data.optionalBooleanContent,
+          data.optionalStringContent,
+          data.optionalNumberContent,
+          data.optionalAddressContent as `0x${string}`,
+          data.optionalObjectContent as `0x${string}`,
+          data.optionalVectorContent,
         ],
       });
       const executedTransaction = await aptosClient().waitForTransaction({

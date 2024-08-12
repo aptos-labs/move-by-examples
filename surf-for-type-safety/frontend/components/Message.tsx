@@ -8,14 +8,14 @@ export function Message() {
   const [stringContent, setStringContent] = useState<string>();
   const [numberContent, setNumberContent] = useState<number>();
   const [addressContent, setAddressContent] = useState<string>();
-  const [objectContent, setObjectContent] = useState<any>();
-  const [vectorContent, setVectorContent] = useState<any>();
-  const [optionalBooleanContent, setOptionalBooleanContent] = useState<any>();
-  const [optionalStringContent, setOptionalStringContent] = useState<any>();
-  const [optionalNumberContent, setOptionalNumberContent] = useState<any>();
-  const [optionalAddressContent, setOptionalAddressContent] = useState<any>();
-  const [optionalObjectContent, setOptionalObjectContent] = useState<any>();
-  const [optionalVectorContent, setOptionalVectorContent] = useState<any>();
+  const [objectContent, setObjectContent] = useState<{ inner: `0x${string}` }>();
+  const [vectorContent, setVectorContent] = useState<string[]>();
+  const [optionalBooleanContent, setOptionalBooleanContent] = useState<{ vec: [boolean] | [] }>();
+  const [optionalStringContent, setOptionalStringContent] = useState<{ vec: [string] | [] }>();
+  const [optionalNumberContent, setOptionalNumberContent] = useState<{ vec: [string] | [] }>();
+  const [optionalAddressContent, setOptionalAddressContent] = useState<{ vec: [`0x${string}`] | [] }>();
+  const [optionalObjectContent, setOptionalObjectContent] = useState<{ vec: [{ inner: `0x${string}` }] | [] }>();
+  const [optionalVectorContent, setOptionalVectorContent] = useState<{ vec: [string[]] | [] }>();
 
   useEffect(() => {
     surfClient()
@@ -74,33 +74,31 @@ export function Message() {
           },
           {
             label: "Optional Boolean Content",
-            // @ts-ignore
-            value: <p>{String(optionalBooleanContent?.vec)}</p>,
+            value: <p>{String(optionalBooleanContent?.vec.length === 0 ? "none" : optionalBooleanContent?.vec[0])}</p>,
           },
           {
             label: "Optional String Content",
-            // @ts-ignore
-            value: <p>{optionalStringContent?.vec}</p>,
+            value: <p>{optionalStringContent?.vec.length === 0 ? "none" : optionalStringContent?.vec[0]}</p>,
           },
           {
             label: "Optional Number Content",
-            // @ts-ignore
-            value: <p>{optionalNumberContent?.vec}</p>,
+            value: <p>{optionalNumberContent?.vec.length === 0 ? "none" : optionalNumberContent?.vec[0]}</p>,
           },
           {
             label: "Optional Address Content",
-            // @ts-ignore
-            value: <p>{optionalAddressContent?.vec}</p>,
+            value: <p>{optionalAddressContent?.vec.length === 0 ? "none" : optionalAddressContent?.vec[0]}</p>,
           },
           {
             label: "Optional Object Content",
-            // @ts-ignore
-            value: <p>{JSON.stringify(optionalObjectContent?.vec)}</p>,
+            value: (
+              <p>{JSON.stringify(optionalObjectContent?.vec.length === 0 ? "none" : optionalObjectContent?.vec[0])}</p>
+            ),
           },
           {
             label: "Optional Vector Content",
-            // @ts-ignore
-            value: <p>{JSON.stringify(optionalVectorContent?.vec)}</p>,
+            value: (
+              <p>{JSON.stringify(optionalVectorContent?.vec.length === 0 ? "none" : optionalVectorContent?.vec[0])}</p>
+            ),
           },
         ]}
       />
