@@ -15,6 +15,8 @@ In production, we would use off-chain indexer to store the registry so it's more
 
 There's a simple frontend for the app, deployed [here](https://aptos-move-friends.vercel.app/).
 
+The Aptos version of the code in this repo is deprecated, see the [latest version in create-aptos-dapp](https://github.com/aptos-labs/create-aptos-dapp/tree/main/examples/aptos-friend).
+
 ## Solana Specific Things
 
 Issuer data is stored in PDA where seed is issuer's public key.

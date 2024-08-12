@@ -1,5 +1,7 @@
 ## Env setup
 
+This code is deprecated, see the [latest version in create-aptos-dapp](https://github.com/aptos-labs/create-aptos-dapp/tree/main/examples/aptos-friend).
+
 Check out the guide from [Aptos Learn](https://learn.aptoslabs.com/example/aptogotchi-beginner/env-setup).
 
 ## Play with testnet deployments on explorer
