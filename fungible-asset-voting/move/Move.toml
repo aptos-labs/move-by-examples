@@ -1,10 +1,10 @@
 [package]
-name = "VotingTemplate"
+name = "FungibleAssetVoting"
 version = "1.0.0"
 authors = []
 
 [addresses]
-voting_addr = "_"
+voting_app_addr = "_"
 fa_obj_addr = "_"
 
 [dependencies]
