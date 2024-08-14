@@ -8,10 +8,11 @@ module voting_app_addr::voting {
     use aptos_std::string_utils;
 
     // Error Codes
-    const ERR_PROPOSAL_DOES_NOT_EXIST: u64 = 1;
-    const ERR_USER_HAS_NO_GOVERNANCE_TOKENS: u64 = 2;
-    const ERR_USER_ALREADY_VOTED: u64 = 3;
-    const ERR_PROPOSAL_HAS_ENDED: u64 = 4;
+    const ERR_LIVE_PROPOSAL_ALREADY_EXISTS: u64 = 1;
+    const ERR_PROPOSAL_DOES_NOT_EXIST: u64 = 2;
+    const ERR_PROPOSAL_HAS_ENDED: u64 = 3;
+    const ERR_USER_ALREADY_VOTED: u64 = 4;
+    const ERR_USER_HAS_NO_GOVERNANCE_TOKENS: u64 = 5;
 
     // Global for contract
     struct Proposal has key, store, drop, copy {
@@ -44,13 +45,21 @@ module voting_app_addr::voting {
     }
 
     // ======================== Write functions ========================
-    /// function allows sender to create a new voting proposal
+    /// function allows sender to create a new voting proposal, duration is in seconds
     public entry fun create_proposal(sender: &signer, proposal_name: String, duration: u64) acquires ProposalRegistry {
         let proposal_registry = borrow_global_mut<ProposalRegistry>(@voting_app_addr);
-        let proposal_registry_length = vector::length(&proposal_registry.proposals) + 1;
+        let proposal_registry_length = vector::length(&proposal_registry.proposals);
+        let proposal_end_time = if(proposal_registry_length > 0){
+            vector::borrow(&proposal_registry.proposals, proposal_registry_length - 1).end_time
+        } else {
+            0
+        };
+
         let curr = timestamp::now_seconds();
+        assert!(proposal_end_time == 0 || curr >= proposal_end_time, ERR_LIVE_PROPOSAL_ALREADY_EXISTS);
+        let next_proposal_id = proposal_registry_length + 1;
         let new_proposal = Proposal {
-            id: proposal_registry_length,
+            id: next_proposal_id,
             name: proposal_name,
             creator: signer::address_of(sender),
             start_time: curr,
@@ -68,7 +77,7 @@ module voting_app_addr::voting {
         // Check if a proposal exists
         let proposal_registry = borrow_global_mut<ProposalRegistry>(@voting_app_addr);
         let proposal_registry_length = vector::length(&proposal_registry.proposals);
-        assert!(proposal_id <= proposal_registry_length, ERR_PROPOSAL_DOES_NOT_EXIST);
+        assert!(proposal_id > 0 && proposal_id <= proposal_registry_length, ERR_PROPOSAL_DOES_NOT_EXIST);
 
         // Check if the proposal has ended
         let proposal = vector::borrow_mut(&mut proposal_registry.proposals, proposal_id-1);
@@ -86,11 +95,11 @@ module voting_app_addr::voting {
 
         // create and object to store the vote for the sender
         // object seed: voting contract address + sender + proposal_id
-        let user_obj_constructor_ref = &object::create_named_object(
+        let vote_obj_constructor_ref = &object::create_named_object(
             sender,
             construct_object_seed(sender_addr, proposal_id)
         );
-        let user_obj_signer = object::generate_signer(user_obj_constructor_ref);
+        let user_obj_signer = object::generate_signer(vote_obj_constructor_ref);
         move_to(&user_obj_signer, Vote {
             voter: sender_addr,
             vote,
@@ -99,6 +108,7 @@ module voting_app_addr::voting {
     }
 
     // ======================== Read Functions ========================
+    #[view]
     public fun get_proposal(proposal_id: u64): (
         u64,
         String,
@@ -120,27 +130,32 @@ module voting_app_addr::voting {
         )
     }
 
+    #[view]
     public fun has_proposal_ended(proposal_id: u64): bool acquires ProposalRegistry {
         let proposal = get_proposal_from_registry(proposal_id);
         let curr = timestamp::now_seconds();
         curr > proposal.end_time
     }
 
+    #[view]
     public fun get_proposal_result(proposal_id: u64): (bool, u64, u64) acquires ProposalRegistry {
         let proposal = get_proposal_from_registry(proposal_id);
         (proposal.yes_votes > proposal.no_votes, proposal.yes_votes, proposal.no_votes)
     }
 
+    #[view]
     public fun get_vote_obj(sender: address, proposal_id: u64): Object<Vote> {
         let seed = construct_object_seed(sender, proposal_id);
         object::address_to_object(object::create_object_address(&sender, seed))
     }
 
+    #[view]
     public fun get_vote_obj_addr(sender: address, proposal_registry_length: u64): address {
         let seed = construct_object_seed(sender, proposal_registry_length);
         object::create_object_address(&sender, seed)
     }
 
+    #[view]
     public fun get_vote(vote_obj: Object<Vote>): (address, bool, u64) acquires Vote {
         let vote = borrow_global<Vote>(object::object_address(&vote_obj));
         (vote.voter, vote.vote, vote.amount)
@@ -150,7 +165,7 @@ module voting_app_addr::voting {
     /// inline to reduce overhead with a function call, performance optimization, gas etc.
     inline fun get_proposal_from_registry(proposal_id: u64): Proposal acquires ProposalRegistry {
         let proposal_registry = borrow_global<ProposalRegistry>(@voting_app_addr);
-        assert!(proposal_id <= vector::length(&proposal_registry.proposals), ERR_PROPOSAL_DOES_NOT_EXIST);
+        assert!(proposal_id > 0 && proposal_id <= vector::length(&proposal_registry.proposals), ERR_PROPOSAL_DOES_NOT_EXIST);
         *vector::borrow(&proposal_registry.proposals, proposal_id - 1)
     }
 
