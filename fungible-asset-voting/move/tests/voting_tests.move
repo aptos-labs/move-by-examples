@@ -3,6 +3,10 @@ module voting_app_addr::voting_tests {
     use std::signer;
     use aptos_framework::timestamp;
     use std::string;
+    use aptos_framework::fungible_asset;
+    use aptos_framework::object;
+    use aptos_framework::primary_fungible_store;
+    use std::option;
 
     use voting_app_addr::voting;
 
@@ -121,5 +125,41 @@ module voting_app_addr::voting_tests {
 
         // create a second proposal after first one ended
         voting::create_proposal(bob, string::utf8(b"Test Proposal 2"), 100);
+    }
+
+    #[test(
+        aptos_framework = @std,
+        sender = @voting_app_addr,
+        staker1 = @0x101
+    )]
+    fun test_happy_path_stake(
+        aptos_framework: &signer,
+        sender: &signer,
+        staker1: &signer
+    ) {
+        timestamp::set_time_has_started_for_testing(aptos_framework);
+        timestamp::update_global_time_for_test_secs(1000);
+        voting::init_module_for_test(sender);
+
+        let sender_addr = signer::address_of(sender);
+        let staker1_stake_amount = 20000;
+
+        let fa_obj_constructor_ref = &object::create_sticky_object(sender_addr);
+        primary_fungible_store::create_primary_store_enabled_fungible_asset(
+            fa_obj_constructor_ref,
+            option::none(),
+            string::utf8(b"Test FA for staking"),
+            string::utf8(b"TFAS"),
+            8,
+            string::utf8(b"url"),
+            string::utf8(b"url"),
+        );
+        primary_fungible_store::mint(
+            &fungible_asset::generate_mint_ref(fa_obj_constructor_ref),
+            signer::address_of(staker1),
+            staker1_stake_amount
+        );
+
+        voting::stake(staker1, 20000);
     }
 }

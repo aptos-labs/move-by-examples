@@ -3,9 +3,12 @@ module voting_app_addr::voting {
     use std::signer;
     use std::string::String;
     use std::vector;
-    use aptos_framework::object::{Self, Object};
+    use aptos_framework::object::{Self, ExtendRef, Object};
     use aptos_framework::timestamp;
     use aptos_std::string_utils;
+    use aptos_framework::fungible_asset::{Self, Metadata, FungibleStore};
+    use aptos_framework::primary_fungible_store;
+    use aptos_std::fixed_point64::{Self, FixedPoint64};
 
     // Error Codes
     const ERR_LIVE_PROPOSAL_ALREADY_EXISTS: u64 = 1;
@@ -13,6 +16,7 @@ module voting_app_addr::voting {
     const ERR_PROPOSAL_HAS_ENDED: u64 = 3;
     const ERR_USER_ALREADY_VOTED: u64 = 4;
     const ERR_USER_HAS_NO_GOVERNANCE_TOKENS: u64 = 5;
+    const ERR_AMOUNT_ZERO: u64 = 6;
 
     // Global for contract
     struct Proposal has key, store, drop, copy {
@@ -35,6 +39,30 @@ module voting_app_addr::voting {
         voter: address,
         vote: bool, // true for yes, false for no
         amount: u64,
+    }
+
+    /// Unique per user
+    struct UserStake has key, store, drop {
+        // Fungible store to hold user stake
+        stake_store: Object<FungibleStore>,
+        // Last time user claimed reward
+        last_claim_ts: u64,
+        // Amount of stake
+        amount: u64,
+        // Reward index at last claim
+        index: FixedPoint64,
+    }
+
+    /// Global per contract
+    /// Generate signer to send reward from reward store and stake store to user
+    struct FungibleStoreController has key {
+        extend_ref: ExtendRef,
+    }
+
+    /// Global per contract
+    /// Generate signer to create user stake object
+    struct UserStakeController has key {
+        extend_ref: ExtendRef,
     }
 
     // This function is called once the module is published
@@ -87,6 +115,9 @@ module voting_app_addr::voting {
         // Check if users has already voted
         assert!(!exists<Vote>(get_vote_obj_addr(sender_addr, proposal_id)), ERR_USER_ALREADY_VOTED);
 
+        // let user_stake_mut = borrow_global_mut<UserStake>(get_user_stake_object_address(sender_addr));
+        // let amount = user_stake_mut.amount;
+
         if (vote) {
             proposal.yes_votes = proposal.yes_votes + amount;
         } else {
@@ -105,6 +136,34 @@ module voting_app_addr::voting {
             vote,
             amount,
         });
+    }
+
+    /// Stake, will auto claim before staking
+    /// Anyone can call
+    public entry fun stake(
+        sender: &signer,
+        amount: u64
+    ) acquires FungibleStoreController, UserStake, UserStakeController {
+        assert!(amount > 0, ERR_AMOUNT_ZERO);
+        let current_ts = timestamp::now_seconds();
+        let sender_addr = signer::address_of(sender);
+        let (stake_store, is_new_stake_store) = get_or_create_user_stake_store(
+            object::address_to_object<Metadata>(@fa_obj_addr),
+            sender_addr,
+        );
+        fungible_asset::transfer(
+            sender,
+            primary_fungible_store::primary_store(sender_addr, object::address_to_object<Metadata>(@fa_obj_addr)),
+            stake_store,
+            amount
+        );
+
+        if (is_new_stake_store) {
+            create_new_user_stake_object(sender_addr, stake_store, current_ts);
+        };
+
+        let user_stake_mut = borrow_global_mut<UserStake>(get_user_stake_object_address(sender_addr));
+        user_stake_mut.amount = user_stake_mut.amount + amount;
     }
 
     // ======================== Read Functions ========================
@@ -177,6 +236,70 @@ module voting_app_addr::voting {
             )
         )
     }
+
+    /// Get or create user stake store
+    /// If user does not have stake store, create one
+    /// Returns (user_stake.stake_store, is_new_stake_store)
+    fun get_or_create_user_stake_store(
+        fa_metadata_object: Object<Metadata>,
+        user_addr: address,
+    ): (Object<FungibleStore>, bool) acquires FungibleStoreController, UserStake, UserStakeController {
+        let store_signer = &generate_fungible_store_signer();
+        let user_stake_object_addr = get_user_stake_object_address(user_addr);
+        if (object::object_exists<UserStake>(user_stake_object_addr)) {
+            let user_stake = borrow_global<UserStake>(user_stake_object_addr);
+            (user_stake.stake_store, false)
+        } else {
+            let stake_store_object_constructor_ref = &object::create_object(signer::address_of(store_signer));
+            let stake_store = fungible_asset::create_store(
+                stake_store_object_constructor_ref,
+                fa_metadata_object,
+            );
+            (stake_store, true)
+        }
+    }
+
+    /// Create new user stake entry with default values
+    fun create_new_user_stake_object(
+        user_addr: address,
+        stake_store: Object<FungibleStore>,
+        current_ts: u64
+    ) acquires UserStakeController {
+        let user_stake_object_constructor_ref = &object::create_named_object(
+            &generate_user_stake_object_signer(),
+            construct_user_stake_object_seed(user_addr),
+        );
+        move_to(&object::generate_signer(user_stake_object_constructor_ref), UserStake {
+            stake_store,
+            last_claim_ts: current_ts,
+            amount: 0,
+            index: fixed_point64::create_from_u128(0),
+        });
+    }
+
+    /// Generate signer to send reward from reward store and stake store to user
+    fun generate_fungible_store_signer(): signer acquires FungibleStoreController {
+        object::generate_signer_for_extending(&borrow_global<FungibleStoreController>(@voting_app_addr).extend_ref)
+    }
+
+    /// Generate signer to create user stake object
+    fun generate_user_stake_object_signer(): signer acquires UserStakeController {
+        object::generate_signer_for_extending(&borrow_global<UserStakeController>(@voting_app_addr).extend_ref)
+    }
+
+    /// Construct user stake object seed
+    fun construct_user_stake_object_seed(user_addr: address): vector<u8> {
+        bcs::to_bytes(&string_utils::format2(&b"{}_staker_{}", @voting_app_addr, user_addr))
+    }
+
+    fun get_user_stake_object_address(user_addr: address): address acquires UserStakeController {
+        object::create_object_address(
+            &signer::address_of(&generate_user_stake_object_signer()),
+            construct_user_stake_object_seed(user_addr)
+        )
+    }
+
+
 
     // ======================== Unit Tests ========================
     #[test_only]
