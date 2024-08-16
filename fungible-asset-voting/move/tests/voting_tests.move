@@ -180,7 +180,6 @@ module voting_app_addr::voting_tests {
         assert!(voting::get_user_stake_amount(signer::address_of(alice)) == 0, 1);
     }
 
-    #[test_only]
     fun setup_fa(aptos_framework: &signer, owner: &signer, alice: &signer){
         timestamp::set_time_has_started_for_testing(aptos_framework);
         timestamp::update_global_time_for_test_secs(1000);
@@ -208,7 +207,6 @@ module voting_app_addr::voting_tests {
         voting::init_module_for_test_with_fa(aptos_framework,owner, object::object_from_constructor_ref<Metadata>(fa_obj_constructor_ref));
     }
 
-    #[test_only]
     fun setup_fa_2_voters(aptos_framework: &signer, owner: &signer, alice: &signer, bob: &signer){
         timestamp::set_time_has_started_for_testing(aptos_framework);
         timestamp::update_global_time_for_test_secs(1000);

@@ -9,14 +9,22 @@ module voting_app_addr::voting {
     use aptos_framework::fungible_asset::{Self, Metadata, FungibleStore};
     use aptos_framework::primary_fungible_store;
 
-    // Error Codes
+    // ================================= Errors ================================= //
+    /// Error code indicating that a live proposal already exists.
     const ERR_LIVE_PROPOSAL_ALREADY_EXISTS: u64 = 1;
+    /// Error code indicating that the specified proposal does not exist.
     const ERR_PROPOSAL_DOES_NOT_EXIST: u64 = 2;
+    /// Error code indicating that the proposal has already ended.
     const ERR_PROPOSAL_HAS_ENDED: u64 = 3;
+    /// Error code indicating that the user has already voted on the proposal.
     const ERR_USER_ALREADY_VOTED: u64 = 4;
+    /// Error code indicating that the user does not have governance tokens.
     const ERR_USER_HAS_NO_GOVERNANCE_TOKENS: u64 = 5;
+    /// Error code indicating that the amount specified is zero.
     const ERR_AMOUNT_ZERO: u64 = 6;
+    /// Error code indicating that the user does not have any stake.
     const ERR_USER_DOES_NOT_HAVE_STAKE: u64 = 7;
+    /// Error code indicating that the user cannot unstake during a live proposal.
     const ERR_CANNOT_UNSTAKE_DURING_LIVE_PROPOSAL: u64 = 8;
 
     // Global for contract
@@ -32,12 +40,16 @@ module voting_app_addr::voting {
 
     // Global for contract
     struct ProposalRegistry has key, store {
-        proposals: vector<Proposal>,
+        proposals: vector<Proposal>
+    }
+
+    // Global for construct
+    struct FungibleAssetMetadata has key, store {
         // Fungible asset voters are staking to vote on
         fa_metadata_object: Object<Metadata>
     }
 
-    // Unique for user
+    // Unique for user and proposal
     struct Vote has key, store {
         voter: address,
         vote: bool, // true for yes, false for no
@@ -88,8 +100,11 @@ module voting_app_addr::voting {
         });
 
         move_to(sender, ProposalRegistry {
-            proposals: vector::empty(),
-            fa_metadata_object,
+            proposals: vector::empty()
+        });
+
+        move_to(sender, FungibleAssetMetadata {
+            fa_metadata_object
         });
     }
 
@@ -167,17 +182,17 @@ module voting_app_addr::voting {
     public entry fun stake(
         sender: &signer,
         amount: u64
-    ) acquires ProposalRegistry, FungibleStoreController, UserStake, UserStakeController {
+    ) acquires FungibleAssetMetadata, FungibleStoreController, UserStake, UserStakeController {
         assert!(amount > 0, ERR_AMOUNT_ZERO);
-        let proposal_registry = borrow_global<ProposalRegistry>(@voting_app_addr);
+        let fa_metadata = borrow_global<FungibleAssetMetadata>(@voting_app_addr);
         let sender_addr = signer::address_of(sender);
         let (stake_store, is_new_stake_store) = get_or_create_user_stake_store(
-            proposal_registry.fa_metadata_object,
+            fa_metadata.fa_metadata_object,
             sender_addr,
         );
         fungible_asset::transfer(
             sender,
-            primary_fungible_store::primary_store(sender_addr, proposal_registry.fa_metadata_object),
+            primary_fungible_store::primary_store(sender_addr, fa_metadata.fa_metadata_object),
             stake_store,
             amount
         );
@@ -192,7 +207,7 @@ module voting_app_addr::voting {
 
     public entry fun unstake(
         sender: &signer
-    ) acquires ProposalRegistry, FungibleStoreController, UserStake, UserStakeController {
+    ) acquires ProposalRegistry, FungibleAssetMetadata, FungibleStoreController, UserStake, UserStakeController {
         let sender_addr = signer::address_of(sender);
 
         assert!(exists_user_stake(sender_addr), ERR_USER_DOES_NOT_HAVE_STAKE);
@@ -221,10 +236,11 @@ module voting_app_addr::voting {
 
         assert!(user_can_unstake, ERR_CANNOT_UNSTAKE_DURING_LIVE_PROPOSAL);
 
+        let fa_metadata = borrow_global<FungibleAssetMetadata>(@voting_app_addr);
         fungible_asset::transfer(
             &generate_fungible_store_signer(),
             user_stake.stake_store,
-            primary_fungible_store::primary_store(sender_addr, proposal_registry.fa_metadata_object),
+            primary_fungible_store::primary_store(sender_addr, fa_metadata.fa_metadata_object),
             user_stake_amount
         );
 
@@ -270,13 +286,12 @@ module voting_app_addr::voting {
 
     #[view]
     public fun get_vote_obj(sender: address, proposal_id: u64): Object<Vote> {
-        let seed = construct_object_seed(sender, proposal_id);
-        object::address_to_object(object::create_object_address(&sender, seed))
+        object::address_to_object(get_vote_obj_addr(sender, proposal_id))
     }
 
     #[view]
-    public fun get_vote_obj_addr(sender: address, proposal_registry_length: u64): address {
-        let seed = construct_object_seed(sender, proposal_registry_length);
+    public fun get_vote_obj_addr(sender: address, proposal_id: u64): address {
+        let seed = construct_object_seed(sender, proposal_id);
         object::create_object_address(&sender, seed)
     }
 
