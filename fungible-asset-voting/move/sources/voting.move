@@ -31,7 +31,9 @@ module voting_app_addr::voting {
 
     // Global for contract
     struct ProposalRegistry has key, store {
-        proposals: vector<Proposal>
+        proposals: vector<Proposal>,
+        // Fungible asset voters are staking to vote on
+        fa_metadata_object: Object<Metadata>
     }
 
     // Unique for user
@@ -67,8 +69,19 @@ module voting_app_addr::voting {
 
     // This function is called once the module is published
     fun init_module(sender: &signer) {
+        init_module_internal(
+            sender,
+            object::address_to_object<Metadata>(@fa_obj_addr)
+        );
+    }
+
+    fun init_module_internal(
+        sender: &signer,
+        fa_metadata_object: Object<Metadata>,
+    ) {
         move_to(sender, ProposalRegistry {
             proposals: vector::empty(),
+            fa_metadata_object,
         });
     }
 
@@ -143,17 +156,19 @@ module voting_app_addr::voting {
     public entry fun stake(
         sender: &signer,
         amount: u64
-    ) acquires FungibleStoreController, UserStake, UserStakeController {
+    ) acquires ProposalRegistry, FungibleStoreController, UserStake, UserStakeController {
         assert!(amount > 0, ERR_AMOUNT_ZERO);
+        let proposal_registry = borrow_global<ProposalRegistry>(@voting_app_addr);
+
         let current_ts = timestamp::now_seconds();
         let sender_addr = signer::address_of(sender);
         let (stake_store, is_new_stake_store) = get_or_create_user_stake_store(
-            object::address_to_object<Metadata>(@fa_obj_addr),
+            proposal_registry.fa_metadata_object,
             sender_addr,
         );
         fungible_asset::transfer(
             sender,
-            primary_fungible_store::primary_store(sender_addr, object::address_to_object<Metadata>(@fa_obj_addr)),
+            primary_fungible_store::primary_store(sender_addr, proposal_registry.fa_metadata_object),
             stake_store,
             amount
         );
@@ -305,5 +320,19 @@ module voting_app_addr::voting {
     #[test_only]
     public fun init_module_for_test(sender: &signer) {
         init_module(sender);
+    }
+
+    #[test_only]
+    public fun init_module_for_test2(
+        aptos_framework: &signer,
+        sender: &signer,
+        fa_metadata_object: Object<Metadata>,
+    ) {
+        timestamp::set_time_has_started_for_testing(aptos_framework);
+
+        init_module_internal(
+            sender,
+            fa_metadata_object,
+        );
     }
 }

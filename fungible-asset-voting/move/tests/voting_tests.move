@@ -3,7 +3,7 @@ module voting_app_addr::voting_tests {
     use std::signer;
     use aptos_framework::timestamp;
     use std::string;
-    use aptos_framework::fungible_asset;
+    use aptos_framework::fungible_asset::{Self, Metadata};
     use aptos_framework::object;
     use aptos_framework::primary_fungible_store;
     use std::option;
@@ -139,7 +139,7 @@ module voting_app_addr::voting_tests {
     ) {
         timestamp::set_time_has_started_for_testing(aptos_framework);
         timestamp::update_global_time_for_test_secs(1000);
-        voting::init_module_for_test(sender);
+
 
         let sender_addr = signer::address_of(sender);
         let staker1_stake_amount = 20000;
@@ -160,6 +160,7 @@ module voting_app_addr::voting_tests {
             staker1_stake_amount
         );
 
+        voting::init_module_for_test2(aptos_framework,sender, object::object_from_constructor_ref<Metadata>(fa_obj_constructor_ref));
         voting::stake(staker1, 20000);
     }
 }
