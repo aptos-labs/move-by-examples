@@ -12,9 +12,8 @@ module voting_app_addr::voting_tests {
 
     #[test(aptos_framework = @std, owner = @voting_app_addr, alice = @0x1234)]
     fun test_create_proposal(aptos_framework: &signer, owner: &signer, alice: &signer) {
-        timestamp::set_time_has_started_for_testing(aptos_framework);
-        timestamp::update_global_time_for_test_secs(1000);
-        voting::init_module_for_test(owner);
+        setup_fa(aptos_framework, owner, alice);
+        voting::stake(alice, 10);
         voting::create_proposal(alice, string::utf8(b"Test Proposal"), 100);
 
         let (id, name, creator, start_time, end_time, yes_votes, no_votes) = voting::get_proposal(1);
@@ -29,11 +28,11 @@ module voting_app_addr::voting_tests {
 
     #[test(aptos_framework = @std, owner = @voting_app_addr, alice = @0x1234)]
     fun test_vote_on_proposal(aptos_framework: &signer, owner: &signer, alice: &signer) {
-        timestamp::set_time_has_started_for_testing(aptos_framework);
-        timestamp::update_global_time_for_test_secs(1000);
-        voting::init_module_for_test(owner);
+        setup_fa(aptos_framework, owner, alice);
+        voting::stake(alice, 10);
+
         voting::create_proposal(alice, string::utf8(b"Test Proposal"), 100);
-        voting::vote_on_proposal(alice, 1,true, 10);
+        voting::vote_on_proposal(alice, 1,true);
 
         let (id, name, creator, start_time, end_time, yes_votes, no_votes) = voting::get_proposal(1);
         assert!(id == 1, 1);
@@ -54,11 +53,11 @@ module voting_app_addr::voting_tests {
     #[test(aptos_framework = @std, owner = @voting_app_addr, alice = @0x1234)]
     #[expected_failure(abort_code = voting::ERR_USER_ALREADY_VOTED)]
     fun test_vote_on_proposal_twice_error(aptos_framework: &signer, owner: &signer, alice: &signer) {
-        timestamp::set_time_has_started_for_testing(aptos_framework);
-        timestamp::update_global_time_for_test_secs(1000);
-        voting::init_module_for_test(owner);
+        setup_fa(aptos_framework, owner, alice);
+        voting::stake(alice, 10);
+
         voting::create_proposal(alice, string::utf8(b"Test Proposal"), 100);
-        voting::vote_on_proposal(alice, 1,true, 10);
+        voting::vote_on_proposal(alice, 1,true);
 
         let (id, name, creator, start_time, end_time, yes_votes, no_votes) = voting::get_proposal(1);
         assert!(id == 1, 1);
@@ -74,21 +73,23 @@ module voting_app_addr::voting_tests {
         assert!(voter == signer::address_of(alice), 1);
         assert!(vote == true, 1);
         assert!(amount == 10, 1);
-        voting::vote_on_proposal(alice,1, true, 10);
+        voting::vote_on_proposal(alice,1, true);
     }
 
     #[test(aptos_framework = @std, owner = @voting_app_addr, alice = @0x1234, bob = @0x5678)]
-    fun test_happy_path_1_proposal(aptos_framework: &signer, owner: &signer, alice: &signer, bob: &signer) {
-        timestamp::set_time_has_started_for_testing(aptos_framework);
-        timestamp::update_global_time_for_test_secs(1000);
-        voting::init_module_for_test(owner);
+    fun test_happy_path_1_proposal_2_voters(aptos_framework: &signer, owner: &signer, alice: &signer, bob: &signer) {
+        setup_fa_2_voters(aptos_framework, owner, alice, bob);
+
+        // stake tokens for voting
+        voting::stake(alice, 10);
+        voting::stake(bob, 5);
 
         // create a proposal
         voting::create_proposal(alice, string::utf8(b"Test Proposal 1"), 100);
 
         // vote on proposal
-        voting::vote_on_proposal(alice, 1,true, 10);
-        voting::vote_on_proposal(bob, 1,false, 5);
+        voting::vote_on_proposal(alice, 1,true);
+        voting::vote_on_proposal(bob, 1,false);
 
         let (id, name, creator, start_time, end_time, yes_votes, no_votes) = voting::get_proposal(1);
         assert!(id == 1, 1);
@@ -111,7 +112,6 @@ module voting_app_addr::voting_tests {
         assert!(voter == signer::address_of(bob), 1);
         assert!(vote == false, 1);
         assert!(amount == 5, 1);
-
 
         // check if proposals has ended
         assert!(voting::has_proposal_ended(1) == false, 1);
@@ -137,14 +137,20 @@ module voting_app_addr::voting_tests {
         sender: &signer,
         staker1: &signer
     ) {
+        setup_fa(aptos_framework, sender, staker1);
+        voting::stake(staker1, 20000);
+    }
+
+    #[test_only]
+    fun setup_fa(aptos_framework: &signer, owner: &signer, alice: &signer){
         timestamp::set_time_has_started_for_testing(aptos_framework);
         timestamp::update_global_time_for_test_secs(1000);
 
 
-        let sender_addr = signer::address_of(sender);
+        let owner_addr = signer::address_of(owner);
         let staker1_stake_amount = 20000;
 
-        let fa_obj_constructor_ref = &object::create_sticky_object(sender_addr);
+        let fa_obj_constructor_ref = &object::create_sticky_object(owner_addr);
         primary_fungible_store::create_primary_store_enabled_fungible_asset(
             fa_obj_constructor_ref,
             option::none(),
@@ -156,11 +162,45 @@ module voting_app_addr::voting_tests {
         );
         primary_fungible_store::mint(
             &fungible_asset::generate_mint_ref(fa_obj_constructor_ref),
-            signer::address_of(staker1),
+            signer::address_of(alice),
             staker1_stake_amount
         );
 
-        voting::init_module_for_test2(aptos_framework,sender, object::object_from_constructor_ref<Metadata>(fa_obj_constructor_ref));
-        voting::stake(staker1, 20000);
+        voting::init_module_for_test_with_fa(aptos_framework,owner, object::object_from_constructor_ref<Metadata>(fa_obj_constructor_ref));
+    }
+
+    #[test_only]
+    fun setup_fa_2_voters(aptos_framework: &signer, owner: &signer, alice: &signer, bob: &signer){
+        timestamp::set_time_has_started_for_testing(aptos_framework);
+        timestamp::update_global_time_for_test_secs(1000);
+
+
+        let owner_addr = signer::address_of(owner);
+        let staker1_stake_amount = 20000;
+        let staker2_stake_amount = 10000;
+
+
+        let fa_obj_constructor_ref = &object::create_sticky_object(owner_addr);
+        primary_fungible_store::create_primary_store_enabled_fungible_asset(
+            fa_obj_constructor_ref,
+            option::none(),
+            string::utf8(b"Test FA for staking"),
+            string::utf8(b"TFAS"),
+            8,
+            string::utf8(b"url"),
+            string::utf8(b"url"),
+        );
+        primary_fungible_store::mint(
+            &fungible_asset::generate_mint_ref(fa_obj_constructor_ref),
+            signer::address_of(alice),
+            staker1_stake_amount
+        );
+        primary_fungible_store::mint(
+            &fungible_asset::generate_mint_ref(fa_obj_constructor_ref),
+            signer::address_of(bob),
+            staker2_stake_amount
+        );
+
+        voting::init_module_for_test_with_fa(aptos_framework,owner, object::object_from_constructor_ref<Metadata>(fa_obj_constructor_ref));
     }
 }

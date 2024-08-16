@@ -8,7 +8,6 @@ module voting_app_addr::voting {
     use aptos_std::string_utils;
     use aptos_framework::fungible_asset::{Self, Metadata, FungibleStore};
     use aptos_framework::primary_fungible_store;
-    use aptos_std::fixed_point64::{Self, FixedPoint64};
 
     // Error Codes
     const ERR_LIVE_PROPOSAL_ALREADY_EXISTS: u64 = 1;
@@ -47,12 +46,8 @@ module voting_app_addr::voting {
     struct UserStake has key, store, drop {
         // Fungible store to hold user stake
         stake_store: Object<FungibleStore>,
-        // Last time user claimed reward
-        last_claim_ts: u64,
         // Amount of stake
-        amount: u64,
-        // Reward index at last claim
-        index: FixedPoint64,
+        amount: u64
     }
 
     /// Global per contract
@@ -79,6 +74,17 @@ module voting_app_addr::voting {
         sender: &signer,
         fa_metadata_object: Object<Metadata>,
     ) {
+        let sender_addr = signer::address_of(sender);
+        let user_stake_controller_constructor_ref = &object::create_object(sender_addr);
+        move_to(sender, UserStakeController {
+            extend_ref: object::generate_extend_ref(user_stake_controller_constructor_ref),
+        });
+
+        let fungible_store_constructor_ref = &object::create_object(sender_addr);
+        move_to(sender, FungibleStoreController {
+            extend_ref: object::generate_extend_ref(fungible_store_constructor_ref),
+        });
+
         move_to(sender, ProposalRegistry {
             proposals: vector::empty(),
             fa_metadata_object,
@@ -112,7 +118,7 @@ module voting_app_addr::voting {
     }
 
     /// user can vote on a proposal
-    public entry fun vote_on_proposal(sender: &signer, proposal_id: u64, vote: bool, amount: u64) acquires ProposalRegistry {
+    public entry fun vote_on_proposal(sender: &signer, proposal_id: u64, vote: bool) acquires ProposalRegistry, UserStake, UserStakeController {
         let sender_addr = signer::address_of(sender);
 
         // Check if a proposal exists
@@ -128,8 +134,8 @@ module voting_app_addr::voting {
         // Check if users has already voted
         assert!(!exists<Vote>(get_vote_obj_addr(sender_addr, proposal_id)), ERR_USER_ALREADY_VOTED);
 
-        // let user_stake_mut = borrow_global_mut<UserStake>(get_user_stake_object_address(sender_addr));
-        // let amount = user_stake_mut.amount;
+        let user_stake_mut = borrow_global_mut<UserStake>(get_user_stake_object_address(sender_addr));
+        let amount = user_stake_mut.amount;
 
         if (vote) {
             proposal.yes_votes = proposal.yes_votes + amount;
@@ -151,16 +157,12 @@ module voting_app_addr::voting {
         });
     }
 
-    /// Stake, will auto claim before staking
-    /// Anyone can call
     public entry fun stake(
         sender: &signer,
         amount: u64
     ) acquires ProposalRegistry, FungibleStoreController, UserStake, UserStakeController {
         assert!(amount > 0, ERR_AMOUNT_ZERO);
         let proposal_registry = borrow_global<ProposalRegistry>(@voting_app_addr);
-
-        let current_ts = timestamp::now_seconds();
         let sender_addr = signer::address_of(sender);
         let (stake_store, is_new_stake_store) = get_or_create_user_stake_store(
             proposal_registry.fa_metadata_object,
@@ -174,7 +176,7 @@ module voting_app_addr::voting {
         );
 
         if (is_new_stake_store) {
-            create_new_user_stake_object(sender_addr, stake_store, current_ts);
+            create_new_user_stake_object(sender_addr, stake_store);
         };
 
         let user_stake_mut = borrow_global_mut<UserStake>(get_user_stake_object_address(sender_addr));
@@ -278,7 +280,6 @@ module voting_app_addr::voting {
     fun create_new_user_stake_object(
         user_addr: address,
         stake_store: Object<FungibleStore>,
-        current_ts: u64
     ) acquires UserStakeController {
         let user_stake_object_constructor_ref = &object::create_named_object(
             &generate_user_stake_object_signer(),
@@ -286,9 +287,7 @@ module voting_app_addr::voting {
         );
         move_to(&object::generate_signer(user_stake_object_constructor_ref), UserStake {
             stake_store,
-            last_claim_ts: current_ts,
             amount: 0,
-            index: fixed_point64::create_from_u128(0),
         });
     }
 
@@ -314,16 +313,9 @@ module voting_app_addr::voting {
         )
     }
 
-
-
     // ======================== Unit Tests ========================
     #[test_only]
-    public fun init_module_for_test(sender: &signer) {
-        init_module(sender);
-    }
-
-    #[test_only]
-    public fun init_module_for_test2(
+    public fun init_module_for_test_with_fa(
         aptos_framework: &signer,
         sender: &signer,
         fa_metadata_object: Object<Metadata>,
