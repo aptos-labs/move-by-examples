@@ -1,13 +1,10 @@
 [package]
-name = "launchpad"
+name = "fungible_asset_launchpad"
 version = "1.0.0"
 authors = []
 
 [addresses]
-launchpad_addr = "_"
-
-[dev-addresses]
-launchpad_addr = "0x111"
+launchpad_addr = '_'
 
 [dependencies]
 AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", rev = "mainnet", subdir = "aptos-move/framework/aptos-framework"}
