@@ -16,6 +16,7 @@ module voting_app_addr::voting {
     const ERR_USER_ALREADY_VOTED: u64 = 4;
     const ERR_USER_HAS_NO_GOVERNANCE_TOKENS: u64 = 5;
     const ERR_AMOUNT_ZERO: u64 = 6;
+    const ERR_USER_DOES_NOT_HAVE_STAKE: u64 = 7;
 
     // Global for contract
     struct Proposal has key, store, drop, copy {
@@ -134,13 +135,18 @@ module voting_app_addr::voting {
         // Check if users has already voted
         assert!(!exists<Vote>(get_vote_obj_addr(sender_addr, proposal_id)), ERR_USER_ALREADY_VOTED);
 
+        // Check if users has staked tokens to vote
+        assert!(exists_user_stake(sender_addr), ERR_USER_DOES_NOT_HAVE_STAKE);
         let user_stake_mut = borrow_global_mut<UserStake>(get_user_stake_object_address(sender_addr));
-        let amount = user_stake_mut.amount;
+        let user_stake_amount = user_stake_mut.amount;
+
+        // Check they have >0 tokens to vote
+        assert!(user_stake_amount > 0, ERR_AMOUNT_ZERO);
 
         if (vote) {
-            proposal.yes_votes = proposal.yes_votes + amount;
+            proposal.yes_votes = proposal.yes_votes + user_stake_amount;
         } else {
-            proposal.no_votes = proposal.no_votes + amount;
+            proposal.no_votes = proposal.no_votes + user_stake_amount;
         };
 
         // create and object to store the vote for the sender
@@ -153,7 +159,7 @@ module voting_app_addr::voting {
         move_to(&user_obj_signer, Vote {
             voter: sender_addr,
             vote,
-            amount,
+            amount: user_stake_amount
         });
     }
 
@@ -181,6 +187,29 @@ module voting_app_addr::voting {
 
         let user_stake_mut = borrow_global_mut<UserStake>(get_user_stake_object_address(sender_addr));
         user_stake_mut.amount = user_stake_mut.amount + amount;
+    }
+
+    public entry fun unstake(
+        sender: &signer
+    ) acquires ProposalRegistry, FungibleStoreController, UserStake, UserStakeController {
+        let sender_addr = signer::address_of(sender);
+
+        assert!(exists_user_stake(sender_addr), ERR_USER_DOES_NOT_HAVE_STAKE);
+        let user_stake = borrow_global<UserStake>(get_user_stake_object_address(sender_addr));
+        let user_stake_amount = user_stake.amount;
+        assert!(user_stake_amount > 0, ERR_AMOUNT_ZERO);
+
+        let proposal_registry = borrow_global<ProposalRegistry>(@voting_app_addr);
+
+        fungible_asset::transfer(
+            &generate_fungible_store_signer(),
+            user_stake.stake_store,
+            primary_fungible_store::primary_store(sender_addr, proposal_registry.fa_metadata_object),
+            user_stake_amount
+        );
+
+        let user_stake_mut = borrow_global_mut<UserStake>(get_user_stake_object_address(sender_addr));
+        user_stake_mut.amount = 0;
     }
 
     // ======================== Read Functions ========================
@@ -235,6 +264,19 @@ module voting_app_addr::voting {
     public fun get_vote(vote_obj: Object<Vote>): (address, bool, u64) acquires Vote {
         let vote = borrow_global<Vote>(object::object_address(&vote_obj));
         (vote.voter, vote.vote, vote.amount)
+    }
+
+    #[view]
+    /// Whether user has stake
+    public fun exists_user_stake(user_addr: address): bool acquires UserStakeController {
+        object::object_exists<UserStake>(get_user_stake_object_address(user_addr))
+    }
+
+    #[view]
+    /// Get user stake amount
+    public fun get_user_stake_amount(user_addr: address): u64 acquires UserStake, UserStakeController {
+        let user_stake = borrow_global<UserStake>(get_user_stake_object_address(user_addr));
+        user_stake.amount
     }
 
     // ======================== Helper Functions ========================

@@ -141,6 +141,24 @@ module voting_app_addr::voting_tests {
         voting::stake(staker1, 20000);
     }
 
+    #[test(
+        aptos_framework = @std,
+        sender = @voting_app_addr,
+        staker1 = @0x101
+    )]
+    fun test_happy_path_unstake(
+        aptos_framework: &signer,
+        sender: &signer,
+        staker1: &signer
+    ) {
+        let sender_addr = signer::address_of(staker1);
+        setup_fa(aptos_framework, sender, staker1);
+        voting::stake(staker1, 20000);
+        assert!(voting::get_user_stake_amount(sender_addr) == 20000, 1);
+        voting::unstake(staker1);
+        assert!(voting::get_user_stake_amount(sender_addr) == 0, 1);
+    }
+
     #[test_only]
     fun setup_fa(aptos_framework: &signer, owner: &signer, alice: &signer){
         timestamp::set_time_has_started_for_testing(aptos_framework);
