@@ -159,6 +159,27 @@ module voting_app_addr::voting_tests {
         assert!(voting::get_user_stake_amount(sender_addr) == 0, 1);
     }
 
+    #[test(aptos_framework = @std, owner = @voting_app_addr, alice = @0x1234)]
+    #[expected_failure(abort_code = voting::ERR_CANNOT_UNSTAKE_DURING_LIVE_PROPOSAL)]
+    fun test_user_cannot_unstake(aptos_framework: &signer, owner: &signer, alice: &signer) {
+        setup_fa(aptos_framework, owner, alice);
+        voting::stake(alice, 10);
+        voting::create_proposal(alice, string::utf8(b"Test Proposal"), 100);
+        voting::vote_on_proposal(alice, 1,true);
+        voting::unstake(alice);
+    }
+
+    #[test(aptos_framework = @std, owner = @voting_app_addr, alice = @0x1234)]
+    fun test_user_can_unstake_after_proposal_end(aptos_framework: &signer, owner: &signer, alice: &signer) {
+        setup_fa(aptos_framework, owner, alice);
+        voting::stake(alice, 10);
+        voting::create_proposal(alice, string::utf8(b"Test Proposal"), 100);
+        voting::vote_on_proposal(alice, 1,true);
+        timestamp::update_global_time_for_test_secs(1101);
+        voting::unstake(alice);
+        assert!(voting::get_user_stake_amount(signer::address_of(alice)) == 0, 1);
+    }
+
     #[test_only]
     fun setup_fa(aptos_framework: &signer, owner: &signer, alice: &signer){
         timestamp::set_time_has_started_for_testing(aptos_framework);

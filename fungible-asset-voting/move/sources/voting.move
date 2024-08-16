@@ -17,6 +17,7 @@ module voting_app_addr::voting {
     const ERR_USER_HAS_NO_GOVERNANCE_TOKENS: u64 = 5;
     const ERR_AMOUNT_ZERO: u64 = 6;
     const ERR_USER_DOES_NOT_HAVE_STAKE: u64 = 7;
+    const ERR_CANNOT_UNSTAKE_DURING_LIVE_PROPOSAL: u64 = 8;
 
     // Global for contract
     struct Proposal has key, store, drop, copy {
@@ -200,6 +201,25 @@ module voting_app_addr::voting {
         assert!(user_stake_amount > 0, ERR_AMOUNT_ZERO);
 
         let proposal_registry = borrow_global<ProposalRegistry>(@voting_app_addr);
+        let proposal_registry_length = vector::length(&proposal_registry.proposals);
+
+        // a user cannot unstake if they voted on the current live proposal
+        let user_can_unstake = if (proposal_registry_length == 0) {
+            true
+        } else {
+            // Check if the proposal has ended
+            let proposal = vector::borrow(&proposal_registry.proposals, proposal_registry_length - 1);
+            let curr = timestamp::now_seconds();
+            if (exists<Vote>(get_vote_obj_addr(sender_addr, proposal_registry_length))) {
+                // If the user has already voted, check if the proposal has ended
+                curr > proposal.end_time
+            } else {
+                // If the user has not voted, they can unstake
+                true
+            }
+        };
+
+        assert!(user_can_unstake, ERR_CANNOT_UNSTAKE_DURING_LIVE_PROPOSAL);
 
         fungible_asset::transfer(
             &generate_fungible_store_signer(),
