@@ -15,7 +15,7 @@ In production, we would use off-chain indexer to store the registry so it's more
 
 We deployed an instance of it on Aptos testnet, you can access the frontend at https://aptos-move-friends.vercel.app/
 
-And check the contract on explorer https://explorer.aptoslabs.com/object/0x34b00c95aab63fbb3683e27b022d668b4d87c887438bd90ebbdb71356f7acb91?network=testnet
+And check the contract on explorer https://explorer.aptoslabs.com/object/0x5a8755c03d8bfeda18dffce91495d6edbf01bae888e8f329f461ace2e901a7c0?network=testnet
 
 ## Solana Specific Things
 
