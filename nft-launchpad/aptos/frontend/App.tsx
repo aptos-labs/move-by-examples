@@ -1,8 +1,8 @@
-import { RouterProvider, createBrowserRouter, Outlet } from "react-router-dom";
-// Internal pages
+import { Outlet, RouterProvider, createBrowserRouter } from "react-router-dom";
+
 import { Mint } from "@/pages/Mint";
-import { CreateFungibleAsset } from "@/pages/CreateFungibleAsset";
-import { AllFungibleAssets } from "@/pages/AllFungibleAssets";
+import { CreateCollection } from "@/pages/CreateCollection";
+import { AllCollections } from "@/pages/AllCollections";
 
 function Layout() {
   return (
@@ -17,16 +17,16 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       {
-        path: "/mint/:faAddress",
+        path: "/mint/:collectionAddress",
         element: <Mint />,
       },
       {
-        path: "create-asset",
-        element: <CreateFungibleAsset />,
+        path: "/create-collection",
+        element: <CreateCollection />,
       },
       {
         path: "/",
-        element: <AllFungibleAssets />,
+        element: <AllCollections />,
       },
     ],
   },

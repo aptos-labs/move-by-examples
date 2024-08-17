@@ -6,7 +6,7 @@ import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, Tabl
 import { useGetAssetMetadata } from "@/hooks/useGetAssetMetadata";
 import { convertAmountFromOnChainToHumanReadable } from "@/utils/helpers";
 
-export function MyFungibleAssets() {
+export function AllFungibleAssets() {
   const fas = useGetAssetMetadata();
 
   return (
@@ -17,7 +17,7 @@ export function MyFungibleAssets() {
         <TableHeader>
           <TableRow>
             <TableHead className="w-[100px]">Symbol</TableHead>
-            <TableHead>Asset Name (click to see detail)</TableHead>
+            <TableHead>Asset Name (click to mint)</TableHead>
             <TableHead>FA address</TableHead>
             <TableHead>Max Supply</TableHead>
             <TableHead>Minted</TableHead>

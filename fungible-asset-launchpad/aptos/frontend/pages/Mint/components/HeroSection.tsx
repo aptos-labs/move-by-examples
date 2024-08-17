@@ -21,7 +21,7 @@ import ExternalLink from "@/assets/icons/external-link.svg";
 import Copy from "@/assets/icons/copy.svg";
 // Internal config
 import { config } from "@/config";
-// Internal enrty functions
+// Internal entry functions
 import { mintAsset } from "@/entry-functions/mint_asset";
 
 interface HeroSectionProps {

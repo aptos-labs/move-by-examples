@@ -20,12 +20,10 @@ module launchpad_addr::launchpad {
     const ENOT_PENDING_ADMIN: u64 = 3;
     /// Only admin can update mint fee collector
     const EONLY_ADMIN_CAN_UPDATE_MINT_FEE_COLLECTOR: u64 = 4;
-    /// Only admin or creator can create fungible asset
-    const EONLY_ADMIN_OR_CREATOR_CAN_CREATE_FA: u64 = 5;
     /// No mint limit
-    const ENO_MINT_LIMIT: u64 = 6;
+    const ENO_MINT_LIMIT: u64 = 5;
     /// Mint limit reached
-    const EMINT_LIMIT_REACHED: u64 = 7;
+    const EMINT_LIMIT_REACHED: u64 = 6;
 
     /// Default to mint 0 amount to creator when creating FA
     const DEFAULT_PRE_MINT_AMOUNT: u64 = 0;

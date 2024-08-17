@@ -77,12 +77,12 @@ export function CreateFungibleAsset() {
         }),
       );
 
-      // Wait for the transaction to be commited to chain
+      // Wait for the transaction to be committed to chain
       const committedTransactionResponse = await aptosClient().waitForTransaction({
         transactionHash: response.hash,
       });
 
-      // Once the transaction has been successfully commited to chain, navigate to the all assets page
+      // Once the transaction has been successfully committed to chain, navigate to the all assets page
       if (committedTransactionResponse.success) {
         navigate(`/`, { replace: true });
       }
