@@ -2,7 +2,7 @@
 
 ## Overview
 
-Anyone can issue its own key, buy and sell keys issued by him/herself or others.
+Exactly like Friend.Tech, anyone can issue its own key, buy and sell keys issued by him/herself or others.
 
 ## Aptos Specific Things
 
