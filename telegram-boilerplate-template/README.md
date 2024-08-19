@@ -1,7 +1,14 @@
+## Telegram boilerplate template
+
+This template is a minimal Telegram mini app that use mizu wallet to interact with a simple Aptos contract on testnet.
+
+You can access the mini app by starting a chat with the example bot at https://t.me/Djdhdfh_bot.
+
+To deploy your own mini app, you need to create a bot, deploy the mini app to say vercel just like deploying a normal web app, link the web app to the bot. You can follow a complete guide on the [mini app doc](https://docs.telegram-mini-apps.com/platform/creating-new-app).
+
 ## Create Aptos Dapp Boilerplate Template
 
 The Boilerplate template provides a starter dapp with all necessary dapp infrastructure and a simple wallet info implementation.
-
 
 ## The Boilerplate template provides:
 
