@@ -1,6 +1,6 @@
 ## Telegram boilerplate template
 
-This template is a minimal Telegram mini app that use mizu wallet to interact with a simple Aptos contract on testnet.
+This template is a minimal Telegram mini app that uses [Mizu wallet](https://mizu.io/) to interact with a simple Aptos contract on testnet.
 
 You can access the mini app by starting a chat with the example bot at https://t.me/Djdhdfh_bot.
 
