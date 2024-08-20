@@ -126,7 +126,7 @@ export function CreateCollection() {
 
   return (
     <>
-      <Header title="Create New Collection" />
+      <Header />
 
       <div className="flex flex-col md:flex-row items-start justify-between px-4 py-2 gap-4 max-w-screen-xl mx-auto">
         <div className="w-full md:w-2/3 flex flex-col gap-y-4 order-2 md:order-1">

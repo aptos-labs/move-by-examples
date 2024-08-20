@@ -30,7 +30,7 @@ export function Mint() {
 
   return (
     <>
-      <Header title="Mint" />
+      <Header />
       <div style={{ overflow: "hidden" }} className="overflow-hidden">
         <main className="flex flex-col gap-10 md:gap-16 mt-6">
           <HeroSection faAddress={faAddress} />

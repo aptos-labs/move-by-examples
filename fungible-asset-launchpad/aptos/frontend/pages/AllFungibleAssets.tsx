@@ -11,7 +11,7 @@ export function AllFungibleAssets() {
 
   return (
     <>
-      <Header title="Fungible Assets Launchpad" />
+      <Header />
       <Table className="max-w-screen-xl mx-auto">
         {!fas.length && <TableCaption>A list of the fungible assets created under the current launchpad.</TableCaption>}
         <TableHeader>
