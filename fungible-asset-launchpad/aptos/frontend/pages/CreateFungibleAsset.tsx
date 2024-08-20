@@ -24,7 +24,6 @@ export function CreateFungibleAsset() {
 
   // If we are on Production mode, redierct to the public mint page
   const navigate = useNavigate();
-  if (import.meta.env.PROD) navigate("/", { replace: true });
 
   // Collection data entered by the user on UI
   const [name, setName] = useState<string>("");
