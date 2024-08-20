@@ -1,14 +1,6 @@
-## Create Aptos Dapp Fungible Asset Template
+## Overview
 
-The Fungible Asset template provides an end-to-end Fungible Asset minting dapp with a beautiful pre-made UI users can quickly adjust and deploy into a live server.
-
-Read more about how to use the template [here](https://aptos.dev/create-aptos-dapp/templates/fungible-asset)
-
-## The Fungible Asset template provides 3 pages:
-
-- **Public Mint Fungible Asset Page** - A page for the public to mint Fungible Assets.
-- **Create Fungible Asset page** - A page for creating new asset. This page is not accessible on production.
-- **My Fungible Assets page** - A page to view all the assets created under the current Move module (smart contract). This page is not accessible on production.
+This example is built using the [Fungible Asset minting template in create-aptos-dapp](https://aptos.dev/en/build/create-aptos-dapp/templates/token-minting-dapp). Comparing to the original template, collection creation is permissionless.
 
 ### What tools the template uses?
 

@@ -17,11 +17,11 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       {
-        path: "/mint/:collectionAddress",
+        path: "mint/:collectionAddress",
         element: <Mint />,
       },
       {
-        path: "/create-collection",
+        path: "create-collection",
         element: <CreateCollection />,
       },
       {

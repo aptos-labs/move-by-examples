@@ -1,14 +1,6 @@
-## Create Aptos Dapp Digital Asset Template
+## Overview
 
-Digital Assets are the NFT standard for Aptos. The Digital Asset template provides an end-to-end NFT minting dapp with a beautiful pre-made UI users can quickly adjust and deploy into a live server.
-
-Read more about how to use the template [here](https://aptos.dev/create-aptos-dapp/templates/digital-asset)
-
-## The Digital Asset template provides 3 pages:
-
-- **Public Mint NFT Page** - A page for the public to mint NFTs.
-- **Create Collection Page** - A page for creating new NFT collections. This page is not accessible on production.
-- **My Collections Page** - A page to view all the collections created under the current Move module (smart contract). This page is not accessible on production.
+This example is built using the [NFT minting template in create-aptos-dapp](https://aptos.dev/en/build/create-aptos-dapp/templates/nft-minting-dapp). Comparing to the original template, collection creation is permissionless.
 
 ### What tools the template uses?
 

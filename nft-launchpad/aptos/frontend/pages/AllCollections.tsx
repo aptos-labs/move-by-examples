@@ -18,7 +18,7 @@ export function AllCollections() {
 
   return (
     <>
-      <Header title="My Collections" />
+      <Header title="NFT Launchpad" />
       <Table className="max-w-screen-xl mx-auto">
         {!collections.length && (
           <TableCaption>A list of the collections created under the current contract.</TableCaption>

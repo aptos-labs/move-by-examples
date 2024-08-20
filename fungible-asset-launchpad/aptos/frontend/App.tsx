@@ -17,7 +17,7 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       {
-        path: "/mint/:faAddress",
+        path: "mint/:faAddress",
         element: <Mint />,
       },
       {
