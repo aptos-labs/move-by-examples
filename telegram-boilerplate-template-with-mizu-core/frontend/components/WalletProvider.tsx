@@ -1,35 +1,32 @@
-import { PropsWithChildren } from "react";
-import { AptosWalletAdapterProvider } from "@aptos-labs/wallet-adapter-react";
-// Internal components
-import { useToast } from "@/components/ui/use-toast";
-// Internal constants
-import { NETWORK } from "@/constants";
+import React, { createContext, useContext, useState } from "react";
+import { Mizu } from "@mizuwallet-sdk/core";
 
-export function WalletProvider({ children }: PropsWithChildren) {
-  const { toast } = useToast();
+interface MizuWalletContextType {
+  mizuClient?: Mizu;
+  userAddress?: string;
+  setMizuClient: (account?: Mizu) => void;
+  setUserAddress: (address?: string) => void;
+}
+
+const MizuWalletContext = createContext<MizuWalletContextType | undefined>(undefined);
+
+export const WalletProvider: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
+  const [mizuClient, setMizuClient] = useState<Mizu>();
+  const [userAddress, setUserAddress] = useState<string>();
 
   return (
-    <AptosWalletAdapterProvider
-      autoConnect={true}
-      dappConfig={{
-        network: NETWORK,
-        mizuwallet: {
-          // Learn more https://docs.mizu.io/docs/preparation/mizu-app-id
-          appId: undefined,
-          // Learn more https://docs.mizu.io/docs/preparation/manifest-json
-          manifestURL: "https://assets.mz.xyz/static/config/mizuwallet-connect-manifest.json",
-        },
-      }}
-      optInWallets={["Mizu Wallet"]}
-      onError={(error) => {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: error || "Unknown wallet error",
-        });
-      }}
-    >
+    <MizuWalletContext.Provider value={{ mizuClient, setMizuClient, userAddress, setUserAddress }}>
       {children}
-    </AptosWalletAdapterProvider>
+    </MizuWalletContext.Provider>
   );
-}
+};
+
+export const useMizuWallet = () => {
+  const context = useContext(MizuWalletContext);
+  if (!context) {
+    throw new Error("useMizuWallet must be used within a MizuWalletProvider");
+  }
+  return context;
+};
