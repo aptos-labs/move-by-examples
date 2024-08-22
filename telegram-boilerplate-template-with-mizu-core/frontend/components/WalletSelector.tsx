@@ -58,14 +58,8 @@ export function WalletSelector() {
   ) : (
     <Button
       onClick={() => {
-        console.log(
-          "Connecting Mizu Wallet, env var from import.meta.env",
-          import.meta.env.VITE_APP_NETWORK,
-          import.meta.env.VITE_MODULE_ADDRESS,
-          import.meta.env.MIZU_WALLET_APP_ID,
-        );
         const mizu = new Mizu({
-          appId: import.meta.env.MIZU_WALLET_APP_ID,
+          appId: import.meta.env.VITE_MIZU_WALLET_APP_ID,
           network: Network.TESTNET,
         });
         // @ts-ignore
