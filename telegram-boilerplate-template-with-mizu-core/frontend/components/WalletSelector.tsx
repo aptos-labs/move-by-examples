@@ -58,6 +58,7 @@ export function WalletSelector() {
   ) : (
     <Button
       onClick={() => {
+        console.log("mizu app id", import.meta.env.MIZU_WALLET_APP_ID);
         const mizu = new Mizu({
           appId: import.meta.env.MIZU_WALLET_APP_ID,
           network: Network.TESTNET,
