@@ -57,15 +57,13 @@ export function WalletSelector() {
     </DropdownMenu>
   ) : (
     <Button
-      onClick={() => {
+      onClick={async () => {
         const mizu = new Mizu({
           appId: import.meta.env.VITE_MIZU_WALLET_APP_ID,
           network: Network.TESTNET,
         });
-        // @ts-ignore
-        mizu.loginInTG(window.Telegram.WebApp.initData).then(() => {
-          setMizuClient(mizu);
-        });
+        await mizu.loginInTG((window as any).Telegram.WebApp.initData);
+        setMizuClient(mizu);
       }}
     >
       Connect Mizu Wallet
