@@ -1,3 +1,7 @@
 .nx
 .idea
 .vscode
+.aptos
+node_modules
+move-by-examples.iml
+**/build/
