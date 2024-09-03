@@ -21,6 +21,7 @@ module aptos_escrow_addr::AptosEscrow {
     }
 
     const E_NOT_OWNER: u64 = 0;
+    const EINSUFFICIENT_BALANCE: u64 = 1;
 
     fun init_module(creator: &signer){
         move_to(creator, Offers {
@@ -38,6 +39,8 @@ module aptos_escrow_addr::AptosEscrow {
         let user_address = signer::address_of(user);
         let constructor_ref = object::create_object(user_address);
         let object_signer = object::generate_signer(&constructor_ref);
+        let balance = primary_fungible_store::balance(user_address, fa_a);
+        assert!(balance >= deposit, EINSUFFICIENT_BALANCE);
         let fa = primary_fungible_store::withdraw(user, fa_a, deposit);
         let store = fungible_asset::create_store<Metadata>(&constructor_ref, fa_a);
         fungible_asset::deposit(store, fa);
@@ -99,12 +102,14 @@ module aptos_escrow_addr::AptosEscrow {
             extend_ref,
             delete_ref
         } = move_from<Escrow>(escrow_address);
+        let balance = primary_fungible_store::balance(user_address, metadata_b);
+        assert!(balance >= receive, EINSUFFICIENT_BALANCE);
         let obj_signer = object::generate_signer_for_extending(&extend_ref);
         let taker_primary_fungible_store = primary_fungible_store::ensure_primary_store_exists<Metadata>(user_address, metadata_a);
         let maker_primary_fungible_store = primary_fungible_store::ensure_primary_store_exists<Metadata>(maker, metadata_b);
         let balance = fungible_asset::balance<FungibleStore>(store);
         let fa_a = fungible_asset::withdraw<FungibleStore>(&obj_signer, store, balance); 
-        let fa_b = fungible_asset::withdraw(user, metadata_b, receive);
+        let fa_b = primary_fungible_store::withdraw(user, metadata_b, receive);
         fungible_asset::deposit(taker_primary_fungible_store, fa_a);
         fungible_asset::deposit(maker_primary_fungible_store, fa_b);
         object::delete(delete_ref);
@@ -155,35 +160,38 @@ module aptos_escrow_addr::AptosEscrow {
         fungible_asset::deposit_with_ref(transfer_ref, to_wallet, fa);
     }   
 
-    #[test_only]
-    use std::debug::print;
-
     #[test(maker=@0xCAFE, taker=@0x123, aptos_framework=@aptos_escrow_addr)]
-    fun testing(maker: &signer, taker: &signer, aptos_framework: &signer) acquires Offers, Escrow {
+    fun test_make_refund_take(maker: &signer, taker: &signer, aptos_framework: &signer) acquires Offers, Escrow {
         init_module(aptos_framework);
         let (metadata_a, mint_ref_a, transfer_ref_a) = create_fa(aptos_framework, b"ASSET A");
         let (metadata_b, mint_ref_b, transfer_ref_b) = create_fa(aptos_framework, b"ASSET B");
-        // 10 coins maker
+
         mint_fa(metadata_a, &mint_ref_a, &transfer_ref_a, signer::address_of(maker), 1_000_000_000); 
-        // 100 coins to taker
+
         mint_fa(metadata_b, &mint_ref_b, &transfer_ref_b, signer::address_of(taker), 10_000_000_000);
         make(maker, metadata_a, metadata_b, 1_000_000_000, 10_000_000_000);
 
-        let maker_balance = primary_fungible_store::balance(signer::address_of(maker), metadata_a);
-        let taker_balance = primary_fungible_store::balance(signer::address_of(taker), metadata_b);
-        print(&maker_balance);
-        print(&taker_balance);
-        // Take refund first
         let object = get_an_object_for_testing(0);
         refund(maker, object);
-        // Take offer
+
         make(maker, metadata_a, metadata_b, 1_000_000_000, 10_000_000_000);
         let object = get_an_object_for_testing(0);
 
-        take(taker, object)
-
+        take(taker, object);
     }
 
-    // TODO: write multiple tests
+    #[test(maker=@0xCAFE, hacker=@0xBACE, aptos_framework=@aptos_escrow_addr)]
+    #[expected_failure]
+    fun test_not_object_owner(maker: &signer, hacker: &signer, aptos_framework: &signer) acquires Offers, Escrow {
+        init_module(aptos_framework);
+        let (metadata_a, mint_ref_a, transfer_ref_a) = create_fa(aptos_framework, b"ASSET A");
+        let (metadata_b, _, _) = create_fa(aptos_framework, b"ASSET B");
+
+        mint_fa(metadata_a, &mint_ref_a, &transfer_ref_a, signer::address_of(maker), 100); 
+        make(maker, metadata_a, metadata_b, 100, 1000);
+
+        let object = get_an_object_for_testing(0);
+        refund(hacker, object);
+    }
 
 }
