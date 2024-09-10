@@ -14,6 +14,8 @@ module deployer::taxed_fa {
     /* Errors */
     /// The caller is unauthorized.
     const EUNAUTHORIZED: u64 = 1;
+    /// The amount is too low, tax cannot be imposed.
+    const ELOW_AMOUNT: u64 = 2;
 
     /* Constants */
     const ASSET_NAME: vector<u8> = b"Taxed Fungible Asset";
@@ -108,7 +110,9 @@ module deployer::taxed_fa {
         amount: u64,
         transfer_ref: &TransferRef,
     ): FungibleAsset {
-        // Calculate a 10% tax on the amount.
+        assert!(amount > 10, ELOW_AMOUNT);
+        // Calculate a 10% tax on the amount. 
+        // Amount has to be greater than 10 to impose tax.
         let tax = math64::mul_div(amount, TAX_RATE, SCALE_FACTOR);
         let remaining_amount = amount - tax;
 
@@ -123,6 +127,7 @@ module deployer::taxed_fa {
     /* Minting and Burning */
     /// Mint new assets to the specified account. 
     public entry fun mint(deployer: &signer, to: address, amount: u64) acquires Management {
+        assert_admin(deployer);
         let management = borrow_global<Management>(metadata_address());
         let assets = fungible_asset::mint(&management.mint_ref, amount);
         fungible_asset::deposit_with_ref(&management.transfer_ref, primary_fungible_store::ensure_primary_store_exists(to, metadata()), assets);
@@ -136,6 +141,7 @@ module deployer::taxed_fa {
 
     /// Burn assets from the specified account. 
     public entry fun burn(deployer: &signer, from: address, amount: u64) acquires Management {
+        assert_admin(deployer);
         // Withdraw the assets from the account and burn them.
         let management = borrow_global<Management>(metadata_address());
         let assets = withdraw(primary_fungible_store::ensure_primary_store_exists(from, metadata()), amount, &management.transfer_ref);
@@ -157,6 +163,10 @@ module deployer::taxed_fa {
         let to_store = primary_fungible_store::ensure_primary_store_exists(to, metadata());
         let assets = withdraw(from_store, amount, &management.transfer_ref);
         fungible_asset::deposit_with_ref(&management.transfer_ref, to_store, assets);
+    }
+
+    inline fun assert_admin(deployer: &signer) {
+        assert!(signer::address_of(deployer) == @deployer, EUNAUTHORIZED);
     }
 
     #[test_only]
