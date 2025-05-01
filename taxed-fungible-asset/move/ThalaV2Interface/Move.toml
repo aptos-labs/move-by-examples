@@ -1,0 +1,10 @@
+[package]
+name = "ThalaSwapV2Interface"
+version = "1.0.0"
+authors = []
+
+[addresses]
+thala_swap_v2_interface_addr = "_"
+
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-framework.git", subdir = "aptos-framework", rev = "mainnet" }

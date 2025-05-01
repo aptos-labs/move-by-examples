@@ -1,0 +1,17 @@
+[package]
+name = "taxed_fa"
+version = "0.0.0"
+
+[addresses]
+taxed_fa_addr = "_"
+tfa_recipient_addr = "_"
+thala_swap_v2_interface_addr = "_"
+
+[dev-addresses]
+taxed_fa_addr = "0x10"
+tfa_recipient_addr = "0x20"
+thala_swap_v2_interface_addr = "0x30"
+
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-framework.git", subdir = "aptos-framework", rev = "mainnet" }
+ThalaSwapV2Interface = { local = "../ThalaV2Interface" }
