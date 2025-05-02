@@ -26,7 +26,7 @@ module taxed_fa_addr::taxed_fa {
     struct Config has key {
         extend_ref: ExtendRef,
         transfer_ref: TransferRef,
-        registered_lps: SimpleMap<Object<Metadata>, bool>
+        registered_pools: SimpleMap<Object<Metadata>, bool>
     }
 
     #[event]
@@ -70,7 +70,7 @@ module taxed_fa_addr::taxed_fa {
             Config {
                 extend_ref: object::generate_extend_ref(constructor_ref),
                 transfer_ref: fungible_asset::generate_transfer_ref(constructor_ref),
-                registered_lps: simple_map::new()
+                registered_pools: simple_map::new()
             }
         );
 
@@ -100,11 +100,11 @@ module taxed_fa_addr::taxed_fa {
 
     /// Register the lp pool object, this object iself is also an FA
     /// can only be called by the creator
-    public entry fun register_lp(sender: &signer, lp_fa: Object<Metadata>) acquires Config {
+    public entry fun register_pool(sender: &signer, lp_fa: Object<Metadata>) acquires Config {
         assert_admin(signer::address_of(sender));
 
         let config = borrow_global_mut<Config>(metadata_address());
-        simple_map::add(&mut config.registered_lps, lp_fa, true);
+        simple_map::add(&mut config.registered_pools, lp_fa, true);
     }
 
     /// Custom withdraw function that applies tax for buy transactions
@@ -118,7 +118,7 @@ module taxed_fa_addr::taxed_fa {
         // because all thala lp stores are owned by the lp fa object
         if (!object::object_exists<Metadata>(object::owner(store))
             || !simple_map::contains_key(
-                &config.registered_lps,
+                &config.registered_pools,
                 &object::address_to_object(object::owner(store))
             )) {
             return fungible_asset::withdraw_with_ref(transfer_ref, store, amount)
@@ -170,7 +170,7 @@ module taxed_fa_addr::taxed_fa {
         // because all thala lp stores are owned by the lp fa object
         if (!object::object_exists<Metadata>(object::owner(store))
             || !simple_map::contains_key(
-                &config.registered_lps,
+                &config.registered_pools,
                 &object::address_to_object(object::owner(store))
             )) {
             return fungible_asset::deposit_with_ref(transfer_ref, store, fa)
@@ -221,9 +221,9 @@ module taxed_fa_addr::taxed_fa {
     }
 
     #[view]
-    public fun get_registered_lps(): vector<Object<Metadata>> acquires Config {
+    public fun get_registered_pools(): vector<Object<Metadata>> acquires Config {
         let config = borrow_global<Config>(metadata_address());
-        simple_map::keys(&config.registered_lps)
+        simple_map::keys(&config.registered_pools)
     }
 
     // ======================== Helper Functions ========================

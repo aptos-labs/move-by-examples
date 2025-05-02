@@ -41,8 +41,8 @@ module taxed_fa_addr::taxed_fa_tests {
             0
         );
 
-        let registered_lps = taxed_fa::get_registered_lps();
-        assert!(vector::length(&registered_lps) == 0, 1);
+        let registered_pools = taxed_fa::get_registered_pools();
+        assert!(vector::length(&registered_pools) == 0, 1);
 
         // create a dummy object and a fungible store to simulate a lp pool
         let dummy_pool_obj_constructor_ref =
@@ -81,7 +81,7 @@ module taxed_fa_addr::taxed_fa_tests {
         );
         assert!(fungible_asset::balance(pool_tfa_store) == MAX_SUPPLY, 3);
 
-        taxed_fa::register_lp(deployer, object::address_to_object(dummy_pool_addr));
+        taxed_fa::register_pool(deployer, object::address_to_object(dummy_pool_addr));
 
         // simulate user 1 buy tfa from the pool, pool will send tfa to user1
 
