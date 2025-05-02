@@ -100,7 +100,9 @@ module taxed_fa_addr::taxed_fa {
 
     /// Register the lp pool object, this object iself is also an FA
     /// can only be called by the creator
-    public entry fun register_pool(sender: &signer, lp_fa: Object<Metadata>) acquires Config {
+    public entry fun register_pool(
+        sender: &signer, lp_fa: Object<Metadata>
+    ) acquires Config {
         assert_admin(signer::address_of(sender));
 
         let config = borrow_global_mut<Config>(metadata_address());
