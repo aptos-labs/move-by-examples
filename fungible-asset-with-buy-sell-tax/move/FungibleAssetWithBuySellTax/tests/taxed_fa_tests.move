@@ -86,7 +86,7 @@ module taxed_fa_addr::taxed_fa_tests {
         // simulate user 1 buy tfa from the pool, pool will send tfa to user1
 
         // why this doesn't work? then all dex code need to change to dispatchable transfer?
-        // i.e. if we create a dispatchable fa, it won't work with existing dev code?
+        // i.e. if we create a dispatchable fa, it won't work with existing dex contract?
         // primary_fungible_store::transfer(
         //     dummy_pool_obj_signer,
         //     tfa_metadata,
