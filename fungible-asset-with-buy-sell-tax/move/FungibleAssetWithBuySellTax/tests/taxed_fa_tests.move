@@ -1,6 +1,8 @@
 #[test_only]
 module taxed_fa_addr::taxed_fa_tests {
+    use std::option;
     use std::signer;
+    use std::string;
     use std::vector;
 
     use aptos_framework::dispatchable_fungible_asset;
@@ -43,7 +45,18 @@ module taxed_fa_addr::taxed_fa_tests {
         assert!(vector::length(&registered_lps) == 0, 1);
 
         // create a dummy object and a fungible store to simulate a lp pool
-        let dummy_pool_obj_constructor_ref = &object::create_object(@tfa_recipient_addr);
+        let dummy_pool_obj_constructor_ref =
+            &object::create_named_object(tfa_recipient, b"lp_obj");
+        // create a dummy lp fa from the dummy lp pool object
+        primary_fungible_store::create_primary_store_enabled_fungible_asset(
+            dummy_pool_obj_constructor_ref,
+            option::none(),
+            string::utf8(b"TFA-APT-LP"),
+            string::utf8(b"LP"),
+            6,
+            string::utf8(b"http://example.com/favicon.ico"),
+            string::utf8(b"http://example.com")
+        );
         let dummy_pool_obj_signer =
             &object::generate_signer(dummy_pool_obj_constructor_ref);
         let dummy_pool_addr =

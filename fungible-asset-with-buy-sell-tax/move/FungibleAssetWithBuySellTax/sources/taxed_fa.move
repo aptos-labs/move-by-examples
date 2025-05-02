@@ -1,20 +1,15 @@
 module taxed_fa_addr::taxed_fa {
     use aptos_framework::object::{Self, Object, ExtendRef, ObjectCore};
-    use aptos_framework::fungible_asset::{
-        Self,
-        TransferRef,
-        Metadata,
-        FungibleAsset
-    };
+    use aptos_framework::fungible_asset::{Self, TransferRef, Metadata, FungibleAsset};
     use aptos_framework::primary_fungible_store;
     use aptos_framework::dispatchable_fungible_asset;
     use aptos_framework::function_info;
     use aptos_framework::simple_map::{Self, SimpleMap};
+    use aptos_framework::event;
 
     use std::signer;
     use std::option;
-    use std::string::{Self, utf8};
-    use aptos_framework::event;
+    use std::string;
 
     /// The caller is unauthorized.
     const ERR_UNAUTHORIZED: u64 = 1;
@@ -56,11 +51,11 @@ module taxed_fa_addr::taxed_fa {
         primary_fungible_store::create_primary_store_enabled_fungible_asset(
             constructor_ref,
             option::some((MAX_SUPPLY as u128)),
-            utf8(ASSET_NAME),
-            utf8(ASSET_SYMBOL),
+            string::utf8(ASSET_NAME),
+            string::utf8(ASSET_SYMBOL),
             6,
-            utf8(b"http://example.com/favicon.ico"),
-            utf8(b"http://example.com")
+            string::utf8(b"http://example.com/favicon.ico"),
+            string::utf8(b"http://example.com")
         );
 
         let mint_ref = &fungible_asset::generate_mint_ref(constructor_ref);
@@ -105,9 +100,7 @@ module taxed_fa_addr::taxed_fa {
 
     /// Register the lp pool object, this object iself is also an FA
     /// can only be called by the creator
-    public entry fun register_lp(
-        sender: &signer, lp_fa: Object<Metadata>
-    ) acquires Config {
+    public entry fun register_lp(sender: &signer, lp_fa: Object<Metadata>) acquires Config {
         assert_admin(signer::address_of(sender));
 
         let config = borrow_global_mut<Config>(metadata_address());
@@ -123,9 +116,11 @@ module taxed_fa_addr::taxed_fa {
 
         // check if store is owned by the lp fa object
         // because all thala lp stores are owned by the lp fa object
-        if (!simple_map::contains_key(
-            &config.registered_lps, &object::address_to_object(object::owner(store))
-        )) {
+        if (!object::object_exists<Metadata>(object::owner(store))
+            || !simple_map::contains_key(
+                &config.registered_lps,
+                &object::address_to_object(object::owner(store))
+            )) {
             return fungible_asset::withdraw_with_ref(transfer_ref, store, amount)
         };
 
@@ -173,9 +168,11 @@ module taxed_fa_addr::taxed_fa {
 
         // check if store is owned by the lp fa object
         // because all thala lp stores are owned by the lp fa object
-        if (!simple_map::contains_key(
-            &config.registered_lps, &object::address_to_object(object::owner(store))
-        )) {
+        if (!object::object_exists<Metadata>(object::owner(store))
+            || !simple_map::contains_key(
+                &config.registered_lps,
+                &object::address_to_object(object::owner(store))
+            )) {
             return fungible_asset::deposit_with_ref(transfer_ref, store, fa)
         };
 
