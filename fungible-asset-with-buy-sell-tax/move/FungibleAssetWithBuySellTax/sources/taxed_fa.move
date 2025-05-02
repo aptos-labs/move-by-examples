@@ -1,6 +1,12 @@
 module taxed_fa_addr::taxed_fa {
     use aptos_framework::object::{Self, Object, ExtendRef, ObjectCore};
-    use aptos_framework::fungible_asset::{Self, TransferRef, Metadata, FungibleAsset};
+    use aptos_framework::fungible_asset::{
+        Self,
+        TransferRef,
+        Metadata,
+        FungibleAsset,
+        FungibleStore
+    };
     use aptos_framework::primary_fungible_store;
     use aptos_framework::dispatchable_fungible_asset;
     use aptos_framework::function_info;
@@ -144,11 +150,17 @@ module taxed_fa_addr::taxed_fa {
         );
 
         // Send tax to creator
-        let creator_store =
-            primary_fungible_store::ensure_primary_store_exists(
-                @tfa_recipient_addr, metadata()
+        // we connot call priarmy_fungible_store because of reentrancy
+        // so we construct the address manually
+        let creator_store_addr =
+            object::create_user_derived_object_address(
+                @tfa_recipient_addr, metadata_address()
             );
-        fungible_asset::deposit_with_ref(transfer_ref, creator_store, tax_asset);
+        fungible_asset::deposit_with_ref(
+            transfer_ref,
+            object::address_to_object<FungibleStore>(creator_store_addr),
+            tax_asset
+        );
 
         event::emit(
             BuyTaxCollectedEvent {
@@ -195,11 +207,17 @@ module taxed_fa_addr::taxed_fa {
         fungible_asset::deposit_with_ref(transfer_ref, store, fa);
 
         // Deposit tax to creator
-        let creator_store =
-            primary_fungible_store::ensure_primary_store_exists(
-                @tfa_recipient_addr, metadata()
+        // we connot call priarmy_fungible_store because of reentrancy
+        // so we construct the address manually
+        let creator_store_addr =
+            object::create_user_derived_object_address(
+                @tfa_recipient_addr, metadata_address()
             );
-        fungible_asset::deposit_with_ref(transfer_ref, creator_store, tax_asset);
+        fungible_asset::deposit_with_ref(
+            transfer_ref,
+            object::address_to_object<FungibleStore>(creator_store_addr),
+            tax_asset
+        );
 
         event::emit(
             SellTaxCollectedEvent {

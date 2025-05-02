@@ -5,8 +5,6 @@ module taxed_fa_addr::taxed_fa_tests {
     use std::string;
     use std::vector;
 
-    use aptos_framework::dispatchable_fungible_asset;
-    use aptos_framework::fungible_asset;
     use aptos_framework::object;
     use aptos_framework::primary_fungible_store;
 
@@ -62,12 +60,6 @@ module taxed_fa_addr::taxed_fa_tests {
         let dummy_pool_addr =
             object::address_from_constructor_ref(dummy_pool_obj_constructor_ref);
 
-        // since this is a dummy pool, we won't create a apt store, we just create a tfa store
-        let pool_tfa_store =
-            primary_fungible_store::ensure_primary_store_exists(
-                dummy_pool_addr, tfa_metadata
-            );
-
         // deposit the whole supply to the pool
         primary_fungible_store::transfer(
             tfa_recipient,
@@ -79,32 +71,27 @@ module taxed_fa_addr::taxed_fa_tests {
         assert!(
             primary_fungible_store::balance(@tfa_recipient_addr, tfa_metadata) == 0, 2
         );
-        assert!(fungible_asset::balance(pool_tfa_store) == MAX_SUPPLY, 3);
+        assert!(
+            primary_fungible_store::balance(dummy_pool_addr, tfa_metadata) == MAX_SUPPLY,
+            3
+        );
 
         taxed_fa::register_pool(deployer, object::address_to_object(dummy_pool_addr));
 
         // simulate user 1 buy tfa from the pool, pool will send tfa to user1
-
-        // why this doesn't work? then all dex code need to change to dispatchable transfer?
-        // i.e. if we create a dispatchable fa, it won't work with existing dex contract?
-        // primary_fungible_store::transfer(
-        //     dummy_pool_obj_signer,
-        //     tfa_metadata,
-        //     user1_addr,
-        //     1_000_000
-        // );
-
-        dispatchable_fungible_asset::transfer(
+        primary_fungible_store::transfer(
             dummy_pool_obj_signer,
-            pool_tfa_store,
-            primary_fungible_store::ensure_primary_store_exists(
-                user1_addr, tfa_metadata
-            ),
+            tfa_metadata,
+            user1_addr,
             1_000_000
         );
 
         // pool should have 999_000_000 tfa after tax
-        assert!(fungible_asset::balance(pool_tfa_store) == 999_000_000, 4);
+        assert!(
+            primary_fungible_store::balance(dummy_pool_addr, tfa_metadata)
+                == 999_000_000,
+            4
+        );
         // user1 should have 900_000 tfa after tax
         assert!(primary_fungible_store::balance(user1_addr, tfa_metadata) == 900_000, 5);
         // deployer should have 100_000 tfa as tax income
@@ -115,17 +102,14 @@ module taxed_fa_addr::taxed_fa_tests {
         );
 
         // simulate user 1 sell tfa to the pool, user1 will send tfa to pool
-        dispatchable_fungible_asset::transfer(
-            user1,
-            primary_fungible_store::ensure_primary_store_exists(
-                user1_addr, tfa_metadata
-            ),
-            pool_tfa_store,
-            100_000
-        );
+        primary_fungible_store::transfer(user1, tfa_metadata, dummy_pool_addr, 100_000);
 
         // pool should have 999_100_000 tfa after tax
-        assert!(fungible_asset::balance(pool_tfa_store) == 999_090_000, 7);
+        assert!(
+            primary_fungible_store::balance(dummy_pool_addr, tfa_metadata)
+                == 999_090_000,
+            7
+        );
         // user1 should have 800_000 tfa after tax
         assert!(primary_fungible_store::balance(user1_addr, tfa_metadata) == 800_000, 8);
         // deployer should have 110_000 tfa as tax income
