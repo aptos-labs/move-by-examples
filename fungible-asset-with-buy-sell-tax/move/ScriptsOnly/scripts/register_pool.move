@@ -11,7 +11,7 @@ script {
         taxed_fa::register_pool(
             sender,
             object::address_to_object(
-                @0xad0d4b5935d16de9e312930fbd7be9cb39ec7ac602faea000dd928f6e72bd464
+                @0x894d69ead4d27ffed3800c2c1e78737078fb0ac6e6970a9439993d34bf2c890a
             )
         );
     }

@@ -87,7 +87,6 @@ module taxed_fa_addr::taxed_fa_tests {
 
         // why this doesn't work? then all dex code need to change to dispatchable transfer?
         // i.e. if we create a dispatchable fa, it won't work with existing dev code?
-
         // primary_fungible_store::transfer(
         //     dummy_pool_obj_signer,
         //     tfa_metadata,

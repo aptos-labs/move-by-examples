@@ -10,6 +10,8 @@ SENDER_PROFILE=mainnet-profile-1
 
 CONTRACT_ADDRESS=$(cat ../FungibleAssetWithBuySellTax/contract_address.txt)
 
+echo $CONTRACT_ADDRESS
+
 # Need to compile the package first
 # note this script only relies on tfa contract address, we can use dummy value for other addresses
 aptos move compile \
