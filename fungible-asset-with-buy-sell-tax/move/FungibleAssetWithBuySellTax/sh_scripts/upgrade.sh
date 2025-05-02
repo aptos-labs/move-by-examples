@@ -8,10 +8,12 @@ echo "##### Upgrade module #####"
 # Run "aptos init" to create the profile, then get the profile name from .aptos/config.yaml
 PUBLISHER_PROFILE=testnet-profile-1
 
+PUBLISHER_ADDR=0x$(aptos config show-profiles --profile=$PUBLISHER_PROFILE | grep 'account' | sed -n 's/.*"account": \"\(.*\)\".*/\1/p')
+
 CONTRACT_ADDRESS=$(cat contract_address.txt)
 
 aptos move upgrade-object-package \
   --object-address $CONTRACT_ADDRESS \
-  --named-addresses taxed_fa_addr=$CONTRACT_ADDRESS \
+  --named-addresses taxed_fa_addr=$CONTRACT_ADDRESS,tfa_recipient_addr=$PUBLISHER_ADDR \
   --profile $PUBLISHER_PROFILE \
   --assume-yes

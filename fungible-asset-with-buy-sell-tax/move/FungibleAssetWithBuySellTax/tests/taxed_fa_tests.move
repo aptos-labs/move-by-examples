@@ -39,22 +39,23 @@ module taxed_fa_addr::taxed_fa_tests {
             0
         );
 
-        let registered_pools = taxed_fa::get_registered_pools();
-        assert!(vector::length(&registered_pools) == 0, 1);
+        let registered_lps = taxed_fa::get_registered_lps();
+        assert!(vector::length(&registered_lps) == 0, 1);
 
-        // create a dummy object and a fungible store to simulate a dex pool
+        // create a dummy object and a fungible store to simulate a lp pool
         let dummy_pool_obj_constructor_ref = &object::create_object(@tfa_recipient_addr);
         let dummy_pool_obj_signer =
             &object::generate_signer(dummy_pool_obj_constructor_ref);
         let dummy_pool_addr =
             object::address_from_constructor_ref(dummy_pool_obj_constructor_ref);
 
-        let pool_store =
+        // since this is a dummy pool, we won't create a apt store, we just create a tfa store
+        let pool_tfa_store =
             primary_fungible_store::ensure_primary_store_exists(
-                signer::address_of(dummy_pool_obj_signer), tfa_metadata
+                dummy_pool_addr, tfa_metadata
             );
 
-        // deposit the whole supply to the pool liquidity
+        // deposit the whole supply to the pool
         primary_fungible_store::transfer(
             tfa_recipient,
             tfa_metadata,
@@ -65,9 +66,9 @@ module taxed_fa_addr::taxed_fa_tests {
         assert!(
             primary_fungible_store::balance(@tfa_recipient_addr, tfa_metadata) == 0, 2
         );
-        assert!(fungible_asset::balance(pool_store) == MAX_SUPPLY, 3);
+        assert!(fungible_asset::balance(pool_tfa_store) == MAX_SUPPLY, 3);
 
-        taxed_fa::register_pool(deployer, pool_store);
+        taxed_fa::register_lp(deployer, object::address_to_object(dummy_pool_addr));
 
         // simulate user 1 buy tfa from the pool, pool will send tfa to user1
 
@@ -83,7 +84,7 @@ module taxed_fa_addr::taxed_fa_tests {
 
         dispatchable_fungible_asset::transfer(
             dummy_pool_obj_signer,
-            pool_store,
+            pool_tfa_store,
             primary_fungible_store::ensure_primary_store_exists(
                 user1_addr, tfa_metadata
             ),
@@ -91,7 +92,7 @@ module taxed_fa_addr::taxed_fa_tests {
         );
 
         // pool should have 999_000_000 tfa after tax
-        assert!(fungible_asset::balance(pool_store) == 999_000_000, 4);
+        assert!(fungible_asset::balance(pool_tfa_store) == 999_000_000, 4);
         // user1 should have 900_000 tfa after tax
         assert!(primary_fungible_store::balance(user1_addr, tfa_metadata) == 900_000, 5);
         // deployer should have 100_000 tfa as tax income
@@ -107,12 +108,12 @@ module taxed_fa_addr::taxed_fa_tests {
             primary_fungible_store::ensure_primary_store_exists(
                 user1_addr, tfa_metadata
             ),
-            pool_store,
+            pool_tfa_store,
             100_000
         );
 
         // pool should have 999_100_000 tfa after tax
-        assert!(fungible_asset::balance(pool_store) == 999_090_000, 7);
+        assert!(fungible_asset::balance(pool_tfa_store) == 999_090_000, 7);
         // user1 should have 800_000 tfa after tax
         assert!(primary_fungible_store::balance(user1_addr, tfa_metadata) == 800_000, 8);
         // deployer should have 110_000 tfa as tax income

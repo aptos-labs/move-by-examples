@@ -1,0 +1,14 @@
+[package]
+name = "FungibleAssetWithBuySellTax"
+version = "0.0.0"
+
+[addresses]
+taxed_fa_addr = "_"
+tfa_recipient_addr = "_"
+
+[dev-addresses]
+taxed_fa_addr = "0x10"
+tfa_recipient_addr = "0x20"
+
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-framework.git", subdir = "aptos-framework", rev = "mainnet" }

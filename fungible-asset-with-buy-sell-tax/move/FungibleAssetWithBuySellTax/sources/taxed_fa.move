@@ -4,8 +4,7 @@ module taxed_fa_addr::taxed_fa {
         Self,
         TransferRef,
         Metadata,
-        FungibleAsset,
-        FungibleStore
+        FungibleAsset
     };
     use aptos_framework::primary_fungible_store;
     use aptos_framework::dispatchable_fungible_asset;
@@ -15,6 +14,7 @@ module taxed_fa_addr::taxed_fa {
     use std::signer;
     use std::option;
     use std::string::{Self, utf8};
+    use aptos_framework::event;
 
     /// The caller is unauthorized.
     const ERR_UNAUTHORIZED: u64 = 1;
@@ -22,7 +22,7 @@ module taxed_fa_addr::taxed_fa {
     const ERR_LOW_AMOUNT: u64 = 2;
 
     const ASSET_NAME: vector<u8> = b"Taxed Fungible Asset";
-    const ASSET_SYMBOL: vector<u8> = b"TFA";
+    const ASSET_SYMBOL: vector<u8> = b"TFA1";
     const TAX_RATE: u64 = 10;
     const SCALE_FACTOR: u64 = 100;
     // 6 decimal places, total is 1m tokens
@@ -31,7 +31,21 @@ module taxed_fa_addr::taxed_fa {
     struct Config has key {
         extend_ref: ExtendRef,
         transfer_ref: TransferRef,
-        registered_pools: SimpleMap<Object<FungibleStore>, bool>
+        registered_lps: SimpleMap<Object<Metadata>, bool>
+    }
+
+    #[event]
+    struct BuyTaxCollectedEvent has drop, store {
+        tax_recipient: address,
+        tax_amount: u64,
+        buyer_received_amount: u64
+    }
+
+    #[event]
+    struct SellTaxCollectedEvent has drop, store {
+        tax_recipient: address,
+        tax_amount: u64,
+        pool_received_amount: u64
     }
 
     // This function is only called once when the module is published for the first time.
@@ -61,7 +75,7 @@ module taxed_fa_addr::taxed_fa {
             Config {
                 extend_ref: object::generate_extend_ref(constructor_ref),
                 transfer_ref: fungible_asset::generate_transfer_ref(constructor_ref),
-                registered_pools: simple_map::new()
+                registered_lps: simple_map::new()
             }
         );
 
@@ -89,24 +103,28 @@ module taxed_fa_addr::taxed_fa {
 
     // ======================== Write functions ========================
 
-    /// Register the pool address (can only be called by the creator)
-    public entry fun register_pool(
-        sender: &signer, pool_store: Object<FungibleStore>
+    /// Register the lp pool object, this object iself is also an FA
+    /// can only be called by the creator
+    public entry fun register_lp(
+        sender: &signer, lp_fa: Object<Metadata>
     ) acquires Config {
         assert_admin(signer::address_of(sender));
 
         let config = borrow_global_mut<Config>(metadata_address());
-        simple_map::add(&mut config.registered_pools, pool_store, true);
+        simple_map::add(&mut config.registered_lps, lp_fa, true);
     }
 
-    /// Custom withdraw function that applies tax for sell transactions
+    /// Custom withdraw function that applies tax for buy transactions
+    /// When user buys TFA from the pool, TFA will be withdrawn from the pool
     public fun custom_withdraw<T: key>(
         store: Object<T>, amount: u64, transfer_ref: &TransferRef
     ): FungibleAsset acquires Config {
         let config = borrow_global<Config>(metadata_address());
 
+        // check if store is owned by the lp fa object
+        // because all thala lp stores are owned by the lp fa object
         if (!simple_map::contains_key(
-            &config.registered_pools, &object::convert(store)
+            &config.registered_lps, &object::address_to_object(object::owner(store))
         )) {
             return fungible_asset::withdraw_with_ref(transfer_ref, store, amount)
         };
@@ -135,17 +153,28 @@ module taxed_fa_addr::taxed_fa {
             );
         fungible_asset::deposit_with_ref(transfer_ref, creator_store, tax_asset);
 
+        event::emit(
+            BuyTaxCollectedEvent {
+                tax_recipient: @tfa_recipient_addr,
+                tax_amount,
+                buyer_received_amount: user_amount
+            }
+        );
+
         user_asset
     }
 
-    /// Custom deposit function that applies tax for buy transactions
+    /// Custom deposit function that applies tax for sell transactions
+    /// When user sells TFA to the pool, TFA will be deposited to the pool
     public fun custom_deposit<T: key>(
         store: Object<T>, fa: FungibleAsset, transfer_ref: &TransferRef
     ) acquires Config {
         let config = borrow_global<Config>(metadata_address());
 
+        // check if store is owned by the lp fa object
+        // because all thala lp stores are owned by the lp fa object
         if (!simple_map::contains_key(
-            &config.registered_pools, &object::convert(store)
+            &config.registered_lps, &object::address_to_object(object::owner(store))
         )) {
             return fungible_asset::deposit_with_ref(transfer_ref, store, fa)
         };
@@ -161,6 +190,8 @@ module taxed_fa_addr::taxed_fa {
         // Extract tax tokens from the incoming amount
         let tax_asset = fungible_asset::extract(&mut fa, tax_amount);
 
+        let pool_received_amount = fungible_asset::amount(&fa);
+
         // Deposit user's portion to their store
         fungible_asset::deposit_with_ref(transfer_ref, store, fa);
 
@@ -170,23 +201,15 @@ module taxed_fa_addr::taxed_fa {
                 @tfa_recipient_addr, metadata()
             );
         fungible_asset::deposit_with_ref(transfer_ref, creator_store, tax_asset);
-    }
 
-    // /// Transfer assets from one account to another.
-    // public entry fun transfer(from: &signer, to: address, amount: u64) acquires Config {
-    //     // Withdraw the assets from the sender's store and deposit them to the recipient's store.
-    //     let config = borrow_global<Config>(metadata_address());
-    //     let from_store =
-    //         primary_fungible_store::ensure_primary_store_exists(
-    //             signer::address_of(from), metadata()
-    //         );
-    //     let to_store = primary_fungible_store::ensure_primary_store_exists(
-    //         to, metadata()
-    //     );
-    //     let assets = custom_withdraw(from_store, amount, &config.transfer_ref);
-    //     // fungible_asset::deposit_with_ref(&config.transfer_ref, to_store, assets);
-    //     custom_deposit(to_store, assets, &config.transfer_ref);
-    // }
+        event::emit(
+            SellTaxCollectedEvent {
+                tax_recipient: @tfa_recipient_addr,
+                tax_amount,
+                pool_received_amount
+            }
+        );
+    }
 
     // ======================== Read Functions ========================
 
@@ -201,14 +224,9 @@ module taxed_fa_addr::taxed_fa {
     }
 
     #[view]
-    public fun deployer_store(): Object<FungibleStore> {
-        primary_fungible_store::ensure_primary_store_exists(@taxed_fa_addr, metadata())
-    }
-
-    #[view]
-    public fun get_registered_pools(): vector<Object<FungibleStore>> acquires Config {
+    public fun get_registered_lps(): vector<Object<Metadata>> acquires Config {
         let config = borrow_global<Config>(metadata_address());
-        simple_map::keys(&config.registered_pools)
+        simple_map::keys(&config.registered_lps)
     }
 
     // ======================== Helper Functions ========================
