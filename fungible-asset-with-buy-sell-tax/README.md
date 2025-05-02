@@ -10,7 +10,7 @@ Now if anyone swaps APT to TFA using the Thala pool, TFA creator gets a 5% tax, 
 
 TFA Transfer between users is not taxed.
 
-If anyone swaps TFA to APT using the Thala pool, TFA creator gets a 5% tax, i.e. if 100 TFA can swap to 1 APT, user ends up getting TFA and creator gets 5TFA.
+If anyone swaps TFA to APT using the Thala pool, TFA creator gets a 5% tax, i.e. if 100 TFA can swap to 1 APT, user ends up getting less than 1 APT and creator gets 5TFA.
 
 ## Aptos Specific Things
 
