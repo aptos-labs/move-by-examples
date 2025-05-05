@@ -13,7 +13,7 @@ script {
             vector[
                 object::address_to_object(@0xa),
                 object::address_to_object(
-                    @0x86e1c544e66c6efee4b300440d08aaf38b1e31fd1f6493757c2b8629ec1ffbd1
+                    @0x654109e8d80ee16b6d6bb67657cbb053a826251a828e4644f1ba5f22f7d7a19b
                 )
             ],
             vector[100_000, 10_000_000],

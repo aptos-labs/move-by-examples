@@ -11,13 +11,13 @@ script {
             sender,
             vector[
                 object::address_to_object(
-                    @0x894d69ead4d27ffed3800c2c1e78737078fb0ac6e6970a9439993d34bf2c890a
+                    @0xda2702d16f9c3b62fe0d07f63af49f05b6237c9abec956f9cbb8a11296f2450a
                 )
             ],
             vector[object::address_to_object(@0xa)],
             1_000_000,
             object::address_to_object(
-                @0x86e1c544e66c6efee4b300440d08aaf38b1e31fd1f6493757c2b8629ec1ffbd1
+                @0x654109e8d80ee16b6d6bb67657cbb053a826251a828e4644f1ba5f22f7d7a19b
             ),
             1
         );

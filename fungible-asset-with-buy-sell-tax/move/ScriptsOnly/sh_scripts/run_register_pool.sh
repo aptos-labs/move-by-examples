@@ -15,7 +15,7 @@ echo $CONTRACT_ADDRESS
 # Need to compile the package first
 # note this script only relies on tfa contract address, we can use dummy value for other addresses
 aptos move compile \
-  --named-addresses taxed_fa_addr=$CONTRACT_ADDRESS,tfa_recipient_addr=0x20,thala_swap_v2_interface_addr=0x30
+  --named-addresses taxed_fa_addr=$CONTRACT_ADDRESS,tfa_recipient_addr=0x20,thala_swap_v2_interface_addr=0x30,thala_swap_v2_router_interface_addr=0x40
 
 # Run the script
 aptos move run-script \

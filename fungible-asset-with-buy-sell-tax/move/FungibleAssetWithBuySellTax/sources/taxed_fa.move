@@ -22,8 +22,8 @@ module taxed_fa_addr::taxed_fa {
     /// The amount is too low, tax cannot be imposed, please swap more than 10 tokens.
     const ERR_LOW_AMOUNT: u64 = 2;
 
-    const ASSET_NAME: vector<u8> = b"Taxed Fungible Asset";
-    const ASSET_SYMBOL: vector<u8> = b"TFA1";
+    const ASSET_NAME: vector<u8> = b"Taxed Fungible Asset 2";
+    const ASSET_SYMBOL: vector<u8> = b"TFA2";
     const TAX_RATE: u64 = 10;
     const SCALE_FACTOR: u64 = 100;
     // 6 decimal places, total is 1m tokens
