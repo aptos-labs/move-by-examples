@@ -7,4 +7,4 @@ echo "##### Lint and format #####"
 aptos move fmt
 
 aptos move lint \
-  --named-addresses taxed_fa_addr=0x10,tfa_recipient_addr=0x20,thala_swap_v2_interface_addr=0x30
+  --named-addresses taxed_fa_addr=0x10,tfa_recipient_addr=0x20,thala_swap_v2_interface_addr=0x30,thala_swap_v2_router_interface_addr=0x40
