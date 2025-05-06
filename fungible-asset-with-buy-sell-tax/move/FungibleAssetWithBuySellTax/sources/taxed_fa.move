@@ -26,7 +26,7 @@ module taxed_fa_addr::taxed_fa {
     const ASSET_SYMBOL: vector<u8> = b"TFA2";
     const TAX_RATE: u64 = 10;
     const SCALE_FACTOR: u64 = 100;
-    // 6 decimal places, total is 1m tokens
+    // 6 decimal places, total is 1k tokens
     const MAX_SUPPLY: u64 = 1_000_000_000;
 
     struct Config has key {
