@@ -150,7 +150,7 @@ module taxed_fa_addr::taxed_fa {
         );
 
         // Send tax to creator
-        // we connot call priarmy_fungible_store because of reentrancy
+        // we cannot call primary_fungible_store because of reentrancy
         // so we construct the address manually
         let creator_store_addr =
             object::create_user_derived_object_address(
@@ -207,7 +207,7 @@ module taxed_fa_addr::taxed_fa {
         fungible_asset::deposit_with_ref(transfer_ref, store, fa);
 
         // Deposit tax to creator
-        // we connot call priarmy_fungible_store because of reentrancy
+        // we cannot call primary_fungible_store because of reentrancy
         // so we construct the address manually
         let creator_store_addr =
             object::create_user_derived_object_address(
