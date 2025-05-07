@@ -11,7 +11,10 @@ script {
         coin_wrapper::create_pool_weighted<AptosCoin, Notacoin, Notacoin, Notacoin>(
             sender,
             vector[
+                // APT in FA format
                 object::address_to_object(@0xa),
+                // replace the FA address with your the FA you created
+                // You can look it up in the explorer
                 object::address_to_object(
                     @0x654109e8d80ee16b6d6bb67657cbb053a826251a828e4644f1ba5f22f7d7a19b
                 )

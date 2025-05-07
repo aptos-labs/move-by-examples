@@ -1,18 +1,46 @@
-# Taxed Fungible Asset
+# Fungible Asset with buy / sell tax
 
 ## Overview
 
-When the contract is deployed, it will create a new fungible asset and mint the whole supply to the deployer. Let's name the fungible asset TFA aka taxed fungible asset.
+This example demonstrates a few things
 
-Then deployer can use the script to create a TFA-APT 50:50 weighted pool on Thala. This pool now has all the TFA supply in it.
+- How to implement a fungible asset with buy/sell tax using dispatchable fungible asset standard
+- How to do cross contract calls (we call thala contract to create pool for the TFA and to swap)
 
-Now if anyone swaps APT to TFA using the Thala pool, TFA creator gets a 5% tax, i.e. if 1 APT can swap to 100 TFA, user ends up getting 95 TFA and creator gets 5TFA.
+We have 4 subdirectories
 
-TFA Transfer between users is not taxed.
+- `FungibleAssetWithBuySellTax`: The main contract that implements the fungible asset with buy/sell tax, when it's deployed, it will create a new fungible asset with transfer hook.
+- `ThalaV2Interface`: The contract to mock thala v2 interface, because we need to know what the interface looks like to call it.
+- `ThalaV2RouterInterface`: The contract to mock thala v2 router interface, because we need to know what the interface looks like to call it.
+- `ScriptsOnly`: Some Move scripts to
+  - Create the TFA-APT pool on thala with initial liquidity.
+  - Register the thala pool in the fungible asset contract.
+  - Swap TFA to APT from the thala pool.
 
-If anyone swaps TFA to APT using the Thala pool, TFA creator gets a 5% tax, i.e. if 100 TFA can swap to 1 APT, user ends up getting less than 1 APT and creator gets 5TFA.
+## Deploy your own version
 
-## Aptos Specific Things
+This whole example is built on Thala mainnet contract so you need some mainnet APT to test it out.
 
-We make use of the Dispatchable Fungible Assets, which is built on top of the Fungible Asset standard. 
-Refer to the section in the [Fungible Asset docs](https://preview.aptos.dev/en/build/smart-contracts/fungible-asset#dispatchable-fungible-asset-advanced) for more information. 
+1. Deploy the `FungibleAssetWithBuySellTax` contract.
+   - In `FungibleAssetWithBuySellTax`, run `./sh_scripts/init.sh` to create a new Aptos account, run `./sh_scripts/deploy.sh` to deploy the contract. This will create the TFA token and mint the whole supply to the deployer account.
+2. Create the TFA-APT pool on Thala with initial liquidity.
+   - In `ScriptsOnly`, replace the FA address in `scripts/create_thala_pool.move` with your FA address, you can look it up on explorer.
+   - Run `./sh_scripts/create_thala_pool.sh` to create the pool and add initial liquidity.
+3. Register the thala pool in the fungible asset contract.
+   - In `ScriptsOnly`, replace the pool address in `scripts/register_pool.move` with your pool address, you can look it up on explorer.
+   - Run `./sh_scripts/run_register_pool.sh` to register the pool in the fungible asset contract.
+4. Swap TFA to APT from the thala pool.
+   - In `ScriptsOnly`, replace the pool address and FA address in `scripts/swap_from_router.move` with your own.
+   - Run `./sh_scripts/run_swap_from_router.sh` to swap TFA to APT from the thala pool.
+   - In the explorer, you should see there's `SellTaxCollectedEvent` emitted from the fungible asset contract, and some TFA should be sent to the deployer account as tax.
+
+## Integrating with other Dex on Aptos
+
+You can create pools on other DEXes like Hyperion and register the pool in the fungible asset contract. The contract tracks a list of pools, when there's transfer in and out from the pool, it knows it's a buy/sell tx and will collect the tax.
+
+## Compare to other chains
+
+We make use of the Dispatchable Fungible Assets, which is built on top of the Fungible Asset standard.
+Refer to the section in the [Fungible Asset docs](https://preview.aptos.dev/en/build/smart-contracts/fungible-asset#dispatchable-fungible-asset-advanced) for more information.
+
+If you come from EVM, you usually implement the buy sell tax in your own ERC-20 contract. If you come from Solana, Aptos might feel a bit similar because we also use static dispatch, our dispatchable fungible asset essentially lets you register a transfer hook to be invoked when a transfer is made, similar to the token extension in Solana.
