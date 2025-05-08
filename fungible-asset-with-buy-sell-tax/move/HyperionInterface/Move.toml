@@ -1,0 +1,16 @@
+[package]
+name = "HyperionInterface"
+version = "1.0.0"
+upgrade_policy = "compatible"
+authors = []
+
+[addresses]
+hyperion_interface_addr = "_"
+
+[dev-addresses]
+hyperion_interface_addr = "0xAA"
+
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-framework.git", subdir = "aptos-framework", rev = "mainnet" }
+
+[dev-dependencies]
