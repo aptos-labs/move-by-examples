@@ -21,7 +21,7 @@ contract Billboard is Ownable {
 
     event MessageAdded(address sender, string message, uint256 addedAt);
 
-    constructor(address owner_) {
+    constructor(address owner_) Ownable(owner_) {
         transferOwnership(owner_);
     }
 
