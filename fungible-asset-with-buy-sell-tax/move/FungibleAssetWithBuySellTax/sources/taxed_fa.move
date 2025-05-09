@@ -1,5 +1,5 @@
 module taxed_fa_addr::taxed_fa {
-    use aptos_framework::object::{Self, Object, ExtendRef, ObjectCore};
+    use aptos_framework::object::{Self, Object, ObjectCore};
     use aptos_framework::fungible_asset::{
         Self,
         TransferRef,
@@ -30,8 +30,7 @@ module taxed_fa_addr::taxed_fa {
     const MAX_SUPPLY: u64 = 1_000_000_000;
 
     struct Config has key {
-        extend_ref: ExtendRef,
-        transfer_ref: TransferRef,
+        // we use a simple map to simulate a set
         registered_pools: SimpleMap<Object<Metadata>, bool>
     }
 
@@ -73,11 +72,7 @@ module taxed_fa_addr::taxed_fa {
 
         move_to(
             metadata_object_signer,
-            Config {
-                extend_ref: object::generate_extend_ref(constructor_ref),
-                transfer_ref: fungible_asset::generate_transfer_ref(constructor_ref),
-                registered_pools: simple_map::new()
-            }
+            Config { registered_pools: simple_map::new() }
         );
 
         // Override the deposit and withdraw function
