@@ -22,8 +22,8 @@ module taxed_fa_addr::taxed_fa {
     /// The amount is too low, tax cannot be imposed, please swap more than 10 tokens.
     const ERR_LOW_AMOUNT: u64 = 2;
 
-    const ASSET_NAME: vector<u8> = b"Taxed Fungible Asset 2";
-    const ASSET_SYMBOL: vector<u8> = b"TFA2";
+    const ASSET_NAME: vector<u8> = b"Taxed Fungible Asset 3";
+    const ASSET_SYMBOL: vector<u8> = b"TFA3";
     const TAX_RATE: u64 = 10;
     const SCALE_FACTOR: u64 = 100;
     // 6 decimal places, total is 1k tokens
@@ -117,8 +117,8 @@ module taxed_fa_addr::taxed_fa {
     ): FungibleAsset acquires Config {
         let config = borrow_global<Config>(metadata_address());
 
-        // check if store is owned by the lp fa object
-        // because all thala lp stores are owned by the lp fa object
+        // check if store is owned by the lp object
+        // because all lp stores are owned by the lp object
         if (!object::object_exists<Metadata>(object::owner(store))
             || !simple_map::contains_key(
                 &config.registered_pools,

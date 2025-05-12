@@ -21,4 +21,4 @@ aptos move compile \
 aptos move run-script \
 	--assume-yes \
   --profile $SENDER_PROFILE \
-  --compiled-script-path build/ScriptsOnly/bytecode_scripts/swap_from_router_3.mv
+  --compiled-script-path build/ScriptsOnly/bytecode_scripts/swap_from_thala_router_4.mv
