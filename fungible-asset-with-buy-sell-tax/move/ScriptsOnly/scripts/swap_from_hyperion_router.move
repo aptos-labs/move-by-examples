@@ -17,6 +17,7 @@ script {
             // for this demo, we just set it to arbitrary big
             10_000_000_000_000_000_000_000_000,
             object::address_to_object(
+                // replace with your own FA address
                 @0xdb1c59ba6f4aef11bc6dfc15f5eb9a168b04656986a7aeb7976abcee8b1d62dc
             ),
             object::address_to_object(@0xa),

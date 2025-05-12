@@ -15,6 +15,7 @@ script {
         let initial_tfa_liquidity = 5_000_000;
         let initial_apt_liquidity = 1_000;
 
+        // convert coin APT to FA APT for simplicity
         let coin_apt = coin::withdraw<AptosCoin>(sender, initial_apt_liquidity);
         let fa_apt = coin::coin_to_fungible_asset<AptosCoin>(coin_apt);
         primary_fungible_store::deposit(signer::address_of(sender), fa_apt);
@@ -23,6 +24,7 @@ script {
             sender,
             object::address_to_object(@0xa),
             object::address_to_object(
+                // replace with your own FA address
                 @0xdb1c59ba6f4aef11bc6dfc15f5eb9a168b04656986a7aeb7976abcee8b1d62dc
             ),
             /*
