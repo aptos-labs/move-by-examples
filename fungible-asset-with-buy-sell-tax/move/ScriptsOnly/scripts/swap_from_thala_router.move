@@ -6,7 +6,7 @@ script {
     // This Move script runs atomically
     // Move script is how we batch multiple function calls in 1 tx
     // Similar to Solana allows multiple instructions in 1 tx
-    fun swap_from_router(sender: &signer) {
+    fun swap_from_thala_router(sender: &signer) {
         router::swap_exact_in_router_entry<Notacoin>(
             sender,
             vector[
