@@ -7,6 +7,7 @@ module taxed_fa_addr::taxed_fa_tests {
 
     use aptos_framework::object;
     use aptos_framework::primary_fungible_store;
+    use aptos_framework::fungible_asset::Metadata;
 
     use taxed_fa_addr::taxed_fa;
 
@@ -30,7 +31,7 @@ module taxed_fa_addr::taxed_fa_tests {
         let _user2_addr = signer::address_of(user2);
 
         taxed_fa::init_for_test(deployer);
-        let tfa_metadata = taxed_fa::metadata();
+        let tfa_metadata = object::address_to_object<Metadata>(taxed_fa::metadata_address());
 
         // at the bginning, the deployer should have the whole supply
         assert!(

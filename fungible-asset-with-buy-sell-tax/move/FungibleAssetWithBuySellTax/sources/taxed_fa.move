@@ -99,7 +99,7 @@ module taxed_fa_addr::taxed_fa {
 
     // ======================== Write functions ========================
 
-    /// Register the lp pool object, this object iself is also an FA
+    /// Register the lp pool object, this object itself is also an FA
     /// can only be called by the creator
     public entry fun register_pool(
         sender: &signer, lp_fa: Object<Metadata>
@@ -228,11 +228,6 @@ module taxed_fa_addr::taxed_fa {
     #[view]
     public fun metadata_address(): address {
         object::create_object_address(&@taxed_fa_addr, ASSET_SYMBOL)
-    }
-
-    #[view]
-    public fun metadata(): Object<Metadata> {
-        object::address_to_object(metadata_address())
     }
 
     #[view]
