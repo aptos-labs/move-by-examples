@@ -1,5 +1,11 @@
 # Fungible Asset with buy / sell tax
 
+Detailed guide on Aptos Learn: https://learn.aptoslabs.com/en/code-examples/dispatchable-fa
+
+Video guide in English: https://www.youtube.com/watch?v=sIS7AnL9DL4
+
+Video guide in Chinese: https://www.youtube.com/watch?v=NKOVDmKXuVM
+
 ## Overview
 
 This example demonstrates a few things
