@@ -3,7 +3,6 @@ module dutch_auction_address::dutch_auction {
     use std::string::{Self, String};
     use std::option;
     use std::signer;
-    use std::vector;
     use aptos_framework::event;
     use aptos_framework::object::{Self, Object, TransferRef};
     use aptos_framework::fungible_asset::{Metadata};
@@ -124,8 +123,8 @@ module dutch_auction_address::dutch_auction {
         let token_seed = get_token_seed(token_name);
 
         let seed = DUTCH_AUCTION_SEED_PREFIX;
-        vector::append(&mut seed, b"::");
-        vector::append(&mut seed, token_seed);
+        seed.append(b"::");
+        seed.append(token_seed);
 
         seed
     }
@@ -136,7 +135,7 @@ module dutch_auction_address::dutch_auction {
 
     entry public fun bid(customer: &signer, auction: Object<Auction>) acquires Auction, TokenConfig {
         let auction_address = object::object_address(&auction);
-        let auction = borrow_global_mut<Auction>(auction_address);
+        let auction = &mut Auction[auction_address];
 
         assert!(exists<TokenConfig>(auction_address), error::unavailable(ETOKEN_SOLD));
 
@@ -144,7 +143,7 @@ module dutch_auction_address::dutch_auction {
 
         primary_fungible_store::transfer(customer, auction.buy_token, @dutch_auction_address, current_price);
 
-        let transfer_ref = &borrow_global_mut<TokenConfig>(auction_address).transfer_ref;
+        let transfer_ref = &mut TokenConfig[auction_address].transfer_ref;
         let linear_transfer_ref = object::generate_linear_transfer_ref(transfer_ref);
 
         object::transfer_with_ref(linear_transfer_ref, signer::address_of(customer));
@@ -190,7 +189,7 @@ module dutch_auction_address::dutch_auction {
     #[view]
     public fun get_auction(auction_object: Object<Auction>): Auction acquires Auction {
         let auction_address = object::object_address(&auction_object);
-        let auction = borrow_global<Auction>(auction_address);
+        let auction = &Auction[auction_address];
 
         Auction {
             sell_token: auction.sell_token,
@@ -238,7 +237,7 @@ module dutch_auction_address::dutch_auction {
         assert!(object::is_owner(token, @dutch_auction_address), 1);
 
         let auction_created_events = event::emitted_events<AuctionCreated>();
-        let auction = vector::borrow(&auction_created_events, 0).auction;
+        let auction = auction_created_events.borrow(0).auction;
 
         assert!(auction == get_auction_object(token_name), 1);
         assert!(primary_fungible_store::balance(signer::address_of(customer), buy_token) == 50, 1);

@@ -2,7 +2,6 @@ module billboard_address::billboard {
     use std::error;
     use std::signer;
     use std::string::{String};
-    use std::vector;
     use aptos_framework::event;
     use aptos_framework::timestamp;
 
@@ -45,21 +44,21 @@ module billboard_address::billboard {
             added_at: message.added_at
         });
 
-        let billboard = borrow_global_mut<Billboard>(@billboard_address);
+        let billboard = &mut Billboard[@billboard_address];
 
-        if (vector::length(&billboard.messages) < MAX_MESSAGES) {
-            vector::push_back(&mut billboard.messages, message);
+        if (billboard.messages.length() < MAX_MESSAGES) {
+            billboard.messages.push_back(message);
             return
         };
 
-        *vector::borrow_mut(&mut billboard.messages, billboard.oldest_index) = message;
+        *billboard.messages.borrow_mut(billboard.oldest_index) = message;
         billboard.oldest_index = (billboard.oldest_index + 1) % MAX_MESSAGES;
     }
 
     public entry fun clear(owner: &signer) acquires Billboard {
         only_owner(owner);
 
-        let billboard = borrow_global_mut<Billboard>(@billboard_address);
+        let billboard = &mut Billboard[@billboard_address];
 
         billboard.messages = vector[];
         billboard.oldest_index = 0;
@@ -71,12 +70,12 @@ module billboard_address::billboard {
 
     #[view]
     public fun get_messages(): vector<Message> acquires Billboard {
-        let billboard = borrow_global<Billboard>(@billboard_address);
+        let billboard = &Billboard[@billboard_address];
 
         let messages = vector[];
-        vector::for_each(billboard.messages, |m| vector::push_back(&mut messages, m));
+        billboard.messages.for_each(|m| messages.push_back(m));
 
-        vector::rotate(&mut messages, billboard.oldest_index);
+        messages.rotate(billboard.oldest_index);
 
         messages
     }
@@ -97,7 +96,7 @@ module billboard_address::billboard {
 
         let msgs = get_messages();
 
-        assert!(vector::length(&msgs) == 0, 1);
+        assert!(msgs.length() == 0, 1);
 
         let alice_message = string::utf8(b"alice's message");
         let bob_message = string::utf8(b"bob's message");
@@ -107,13 +106,13 @@ module billboard_address::billboard {
 
         msgs = get_messages();
 
-        assert!(vector::length(&msgs) == 2, 1);
+        assert!(msgs.length() == 2, 1);
 
-        assert!(vector::borrow(&msgs, 0).message == alice_message, 1);
-        assert!(vector::borrow(&msgs, 0).sender == signer::address_of(alice), 1);
+        assert!(msgs.borrow(0).message == alice_message, 1);
+        assert!(msgs.borrow(0).sender == signer::address_of(alice), 1);
 
-        assert!(vector::borrow(&msgs, 1).message == bob_message, 1);
-        assert!(vector::borrow(&msgs, 1).sender == signer::address_of(bob), 1);
+        assert!(msgs.borrow(1).message == bob_message, 1);
+        assert!(msgs.borrow(1).sender == signer::address_of(bob), 1);
 
         add_message(alice, alice_message);
         add_message(alice, alice_message);
@@ -122,22 +121,22 @@ module billboard_address::billboard {
 
         msgs = get_messages();
 
-        assert!(vector::length(&msgs) == 5, 1);
+        assert!(msgs.length() == 5, 1);
 
-        assert!(vector::borrow(&msgs, 0).message == bob_message, 1);
-        assert!(vector::borrow(&msgs, 0).sender == signer::address_of(bob), 1);
+        assert!(msgs.borrow(0).message == bob_message, 1);
+        assert!(msgs.borrow(0).sender == signer::address_of(bob), 1);
 
         msgs = get_messages();
 
-        assert!(vector::length(&msgs) == 5, 1);
+        assert!(msgs.length() == 5, 1);
 
-        assert!(vector::borrow(&msgs, 0).message == bob_message, 1);
-        assert!(vector::borrow(&msgs, 0).sender == signer::address_of(bob), 1);
+        assert!(msgs.borrow(0).message == bob_message, 1);
+        assert!(msgs.borrow(0).sender == signer::address_of(bob), 1);
 
         clear(owner);
 
         msgs = get_messages();
 
-        assert!(vector::length(&msgs) == 0, 1);
+        assert!(msgs.length() == 0, 1);
     }
 }

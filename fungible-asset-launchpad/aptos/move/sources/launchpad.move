@@ -1,8 +1,11 @@
 module launchpad_addr::launchpad {
     use std::option::{Self, Option};
     use std::signer;
-    use std::string::{Self, String};
+    use std::string::String;
     use std::vector;
+
+    #[test_only]
+    use std::string;
 
     use aptos_std::table::{Self, Table};
 
@@ -160,7 +163,7 @@ module launchpad_addr::launchpad {
 
         let fa_obj_constructor_ref = &object::create_named_object(
             fa_owner_obj_signer,
-            *string::bytes(&name),
+            *name.bytes(),
         );
         let fa_obj_signer = &object::generate_signer(fa_obj_constructor_ref);
 
@@ -187,10 +190,12 @@ module launchpad_addr::launchpad {
             transfer_ref,
         });
         move_to(fa_obj_signer, FAConfig {
-            mint_fee_per_smallest_unit_of_fa: *option::borrow_with_default(&mint_fee_per_smallest_unit_of_fa, &DEFAULT_mint_fee_per_smallest_unit_of_fa),
-            mint_limit: if (option::is_some(&mint_limit_per_addr)) {
+            mint_fee_per_smallest_unit_of_fa: *mint_fee_per_smallest_unit_of_fa.borrow_with_default(
+                &DEFAULT_mint_fee_per_smallest_unit_of_fa
+            ),
+            mint_limit: if (mint_limit_per_addr.is_some()) {
                 option::some(MintLimit {
-                    limit: *option::borrow(&mint_limit_per_addr),
+                    limit: *mint_limit_per_addr.borrow(),
                     mint_tracker: table::new()
                 })
             } else {
@@ -200,7 +205,7 @@ module launchpad_addr::launchpad {
         });
 
         let registry = borrow_global_mut<Registry>(@launchpad_addr);
-        vector::push_back(&mut registry.fa_objects, fa_obj);
+        registry.fa_objects.push_back(fa_obj);
 
         event::emit(CreateFAEvent {
             creator_addr: sender_addr,
@@ -212,13 +217,15 @@ module launchpad_addr::launchpad {
             decimals,
             icon_uri,
             project_uri,
-            mint_fee_per_smallest_unit_of_fa: *option::borrow_with_default(&mint_fee_per_smallest_unit_of_fa, &DEFAULT_mint_fee_per_smallest_unit_of_fa),
-            pre_mint_amount: *option::borrow_with_default(&pre_mint_amount, &DEFAULT_PRE_MINT_AMOUNT),
+            mint_fee_per_smallest_unit_of_fa: *mint_fee_per_smallest_unit_of_fa.borrow_with_default(
+                &DEFAULT_mint_fee_per_smallest_unit_of_fa
+            ),
+            pre_mint_amount: *pre_mint_amount.borrow_with_default(&DEFAULT_PRE_MINT_AMOUNT),
             mint_limit_per_addr,
         });
 
-        if (*option::borrow_with_default(&pre_mint_amount, &DEFAULT_PRE_MINT_AMOUNT) > 0) {
-            let amount = *option::borrow(&pre_mint_amount);
+        if (*pre_mint_amount.borrow_with_default(&DEFAULT_PRE_MINT_AMOUNT) > 0) {
+            let amount = *pre_mint_amount.borrow();
             mint_fa_internal(sender, fa_obj, amount, 0);
         }
     }
@@ -283,8 +290,8 @@ module launchpad_addr::launchpad {
         fa_obj: Object<Metadata>,
     ): Option<u64> acquires FAConfig {
         let fa_config = borrow_global<FAConfig>(object::object_address(&fa_obj));
-        if (option::is_some(&fa_config.mint_limit)) {
-            option::some(option::borrow(&fa_config.mint_limit).limit)
+        if (fa_config.mint_limit.is_some()) {
+            option::some(fa_config.mint_limit.borrow().limit)
         } else {
             option::none()
         }
@@ -297,10 +304,10 @@ module launchpad_addr::launchpad {
         addr: address
     ): u64 acquires FAConfig {
         let fa_config = borrow_global<FAConfig>(object::object_address(&fa_obj));
-        assert!(option::is_some(&fa_config.mint_limit), ENO_MINT_LIMIT);
-        let mint_limit = option::borrow(&fa_config.mint_limit);
+        assert!(fa_config.mint_limit.is_some(), ENO_MINT_LIMIT);
+        let mint_limit = fa_config.mint_limit.borrow();
         let mint_tracker = &mint_limit.mint_tracker;
-        *table::borrow_with_default(mint_tracker, addr, &0)
+        *mint_tracker.borrow_with_default(addr, &0)
     }
 
     #[view]
@@ -337,15 +344,15 @@ module launchpad_addr::launchpad {
         amount: u64,
     ) acquires FAConfig {
         let mint_limit = get_mint_limit(fa_obj);
-        if (option::is_some(&mint_limit)) {
+        if (mint_limit.is_some()) {
             let old_amount = get_current_minted_amount(fa_obj, sender);
             assert!(
-                old_amount + amount <= *option::borrow(&mint_limit),
+                old_amount + amount <= *mint_limit.borrow(),
                 EMINT_LIMIT_REACHED,
             );
             let fa_config = borrow_global_mut<FAConfig>(object::object_address(&fa_obj));
-            let mint_limit = option::borrow_mut(&mut fa_config.mint_limit);
-            table::upsert(&mut mint_limit.mint_tracker, sender, old_amount + amount)
+            let mint_limit = fa_config.mint_limit.borrow_mut();
+            mint_limit.mint_tracker.upsert(sender, old_amount + amount)
         }
     }
 
@@ -416,7 +423,7 @@ module launchpad_addr::launchpad {
             option::some(500)
         );
         let registry = get_registry();
-        let fa_1 = *vector::borrow(&registry, vector::length(&registry) - 1);
+        let fa_1 = *registry.borrow(registry.length() - 1);
         assert!(fungible_asset::supply(fa_1) == option::some(0), 1);
 
         mint_fa(sender, fa_1, 20);
@@ -438,7 +445,7 @@ module launchpad_addr::launchpad {
             option::some(500)
         );
         let registry = get_registry();
-        let fa_2 = *vector::borrow(&registry, vector::length(&registry) - 1);
+        let fa_2 = *registry.borrow(registry.length() - 1);
         assert!(fungible_asset::supply(fa_2) == option::some(0), 4);
 
         account::create_account_for_test(sender_addr);

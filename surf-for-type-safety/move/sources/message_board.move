@@ -94,7 +94,7 @@ module message_board_addr::message_board {
         Option<Object<ObjectCore>>,
         Option<vector<String>>,
     ) acquires Message {
-        let message = borrow_global<Message>(get_board_obj_address());
+        let message = &Message[get_board_obj_address()];
         (
             message.boolean_content,
             message.string_content,
@@ -118,7 +118,7 @@ module message_board_addr::message_board {
     }
 
     fun get_board_obj_signer(): signer acquires BoardObjectController {
-        object::generate_signer_for_extending(&borrow_global<BoardObjectController>(get_board_obj_address()).extend_ref)
+        object::generate_signer_for_extending(&BoardObjectController[get_board_obj_address()].extend_ref)
     }
 
     // ======================== Unit Tests ========================

@@ -60,7 +60,7 @@ module advanced_todo_list_addr::advanced_todo_list {
         move_to(&obj_signer, todo_list);
         // increment the counter
         let counter = borrow_global_mut<UserTodoListCounter>(sender_address);
-        counter.counter = counter.counter + 1;
+        counter.counter += 1;
     }
 
     public entry fun create_todo(sender: &signer, todo_list_idx: u64, content: String) acquires TodoList {
@@ -75,7 +75,7 @@ module advanced_todo_list_addr::advanced_todo_list {
             content,
             completed: false
         };
-        vector::push_back(&mut todo_list.todos, new_todo);
+        todo_list.todos.push_back(new_todo);
     }
 
     public entry fun complete_todo(sender: &signer, todo_list_idx: u64, todo_idx: u64) acquires TodoList {
@@ -87,7 +87,7 @@ module advanced_todo_list_addr::advanced_todo_list {
         assert_user_has_todo_list(todo_list_obj_addr);
         let todo_list = borrow_global_mut<TodoList>(todo_list_obj_addr);
         assert_user_has_given_todo(todo_list, todo_idx);
-        let todo_record = vector::borrow_mut(&mut todo_list.todos, todo_idx);
+        let todo_record = todo_list.todos.borrow_mut(todo_idx);
         assert!(todo_record.completed == false, E_TODO_ALREADY_COMPLETED);
         todo_record.completed = true;
     }
@@ -121,13 +121,13 @@ module advanced_todo_list_addr::advanced_todo_list {
         let todo_list_obj_addr = get_todo_list_obj_addr(sender, todo_list_idx);
         assert_user_has_todo_list(todo_list_obj_addr);
         let todo_list = borrow_global<TodoList>(todo_list_obj_addr);
-        (todo_list.owner, vector::length(&todo_list.todos))
+        (todo_list.owner, todo_list.todos.length())
     }
 
     #[view]
     public fun get_todo_list_by_todo_list_obj_addr(todo_list_obj_addr: address): (address, u64) acquires TodoList {
         let todo_list = borrow_global<TodoList>(todo_list_obj_addr);
-        (todo_list.owner, vector::length(&todo_list.todos))
+        (todo_list.owner, todo_list.todos.length())
     }
 
     #[view]
@@ -135,8 +135,8 @@ module advanced_todo_list_addr::advanced_todo_list {
         let todo_list_obj_addr = get_todo_list_obj_addr(sender, todo_list_idx);
         assert_user_has_todo_list(todo_list_obj_addr);
         let todo_list = borrow_global<TodoList>(todo_list_obj_addr);
-        assert!(todo_idx < vector::length(&todo_list.todos), E_TODO_DOSE_NOT_EXIST);
-        let todo_record = vector::borrow(&todo_list.todos, todo_idx);
+        assert!(todo_idx < todo_list.todos.length(), E_TODO_DOSE_NOT_EXIST);
+        let todo_record = todo_list.todos.borrow(todo_idx);
         (todo_record.content, todo_record.completed)
     }
 
@@ -151,7 +151,7 @@ module advanced_todo_list_addr::advanced_todo_list {
 
     fun assert_user_has_given_todo(todo_list: &TodoList, todo_id: u64) {
         assert!(
-            todo_id < vector::length(&todo_list.todos),
+            todo_id < todo_list.todos.length(),
             E_TODO_DOSE_NOT_EXIST
         );
     }

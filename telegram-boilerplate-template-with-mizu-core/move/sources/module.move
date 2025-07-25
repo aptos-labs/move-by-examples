@@ -17,7 +17,7 @@ module counter_app_addr::counter_app {
             })
         };
         let counter = borrow_global_mut<Counter>(sender_addr);
-        counter.count = counter.count + 1
+        counter.count += 1
     }
 
     #[view]

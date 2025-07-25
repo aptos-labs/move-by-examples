@@ -150,7 +150,7 @@ module pancake::swap {
         assert!(!is_pair_created<X, Y>(), ERROR_ALREADY_INITIALIZED);
 
         let sender_addr = signer::address_of(sender);
-        let swap_info = borrow_global_mut<SwapInfo>(RESOURCE_ACCOUNT);
+        let swap_info = &mut SwapInfo[RESOURCE_ACCOUNT];
         let resource_signer = account::create_signer_with_capability(&swap_info.signer_cap);
 
         let lp_name: string::String = string::utf8(b"Pancake-");
@@ -272,12 +272,12 @@ module pancake::swap {
     }
 
     public fun admin(): address acquires SwapInfo {
-        let swap_info = borrow_global_mut<SwapInfo>(RESOURCE_ACCOUNT);
+        let swap_info = &mut SwapInfo[RESOURCE_ACCOUNT];
         swap_info.admin
     }
 
     public fun fee_to(): address acquires SwapInfo {
-        let swap_info = borrow_global_mut<SwapInfo>(RESOURCE_ACCOUNT);
+        let swap_info = &mut SwapInfo[RESOURCE_ACCOUNT];
         swap_info.fee_to
     }
 
@@ -298,7 +298,7 @@ module pancake::swap {
         coin::deposit(sender_addr, coin_left_x);
         coin::deposit(sender_addr, coin_left_y);
 
-        let pair_event_holder = borrow_global_mut<PairEventHolder<X, Y>>(RESOURCE_ACCOUNT);
+        let pair_event_holder = &mut PairEventHolder<X, Y>[RESOURCE_ACCOUNT];
         event::emit_event<AddLiquidityEvent<X, Y>>(
             &mut pair_event_holder.add_liquidity,
             AddLiquidityEvent<X, Y> {
@@ -321,7 +321,7 @@ module pancake::swap {
         amount_y_out: u64
     ) acquires PairEventHolder {
         let sender_addr = signer::address_of(sender);
-        let pair_event_holder = borrow_global_mut<PairEventHolder<X, Y>>(RESOURCE_ACCOUNT);
+        let pair_event_holder = &mut PairEventHolder<X, Y>[RESOURCE_ACCOUNT];
         event::emit_event<SwapEvent<X, Y>>(
             &mut pair_event_holder.swap,
             SwapEvent<X, Y> {
@@ -341,7 +341,7 @@ module pancake::swap {
         amount_x_out: u64,
         amount_y_out: u64
     ) acquires PairEventHolder {
-        let pair_event_holder = borrow_global_mut<PairEventHolder<X, Y>>(RESOURCE_ACCOUNT);
+        let pair_event_holder = &mut PairEventHolder<X, Y>[RESOURCE_ACCOUNT];
         event::emit_event<SwapEvent<X, Y>>(
             &mut pair_event_holder.swap,
             SwapEvent<X, Y> {
@@ -402,7 +402,7 @@ module pancake::swap {
         coin::deposit<X>(sender_addr, coins_x);
         coin::deposit<Y>(sender_addr, coins_y);
         // event
-        let pair_event_holder = borrow_global_mut<PairEventHolder<X, Y>>(RESOURCE_ACCOUNT);
+        let pair_event_holder = &mut PairEventHolder<X, Y>[RESOURCE_ACCOUNT];
         event::emit_event<RemoveLiquidityEvent<X, Y>>(
             &mut pair_event_holder.remove_liquidity,
             RemoveLiquidityEvent<X, Y> {
@@ -531,10 +531,10 @@ module pancake::swap {
     ): (coin::Coin<X>, coin::Coin<Y>) acquires TokenPairReserve, TokenPairMetadata {
         assert!(amount_x_out > 0 || amount_y_out > 0, ERROR_INSUFFICIENT_OUTPUT_AMOUNT);
 
-        let reserves = borrow_global_mut<TokenPairReserve<X, Y>>(RESOURCE_ACCOUNT);
+        let reserves = &mut TokenPairReserve<X, Y>[RESOURCE_ACCOUNT];
         assert!(amount_x_out < reserves.reserve_x && amount_y_out < reserves.reserve_y, ERROR_INSUFFICIENT_LIQUIDITY);
 
-        let metadata = borrow_global_mut<TokenPairMetadata<X, Y>>(RESOURCE_ACCOUNT);
+        let metadata = &mut TokenPairMetadata<X, Y>[RESOURCE_ACCOUNT];
 
         let coins_x_out = coin::zero<X>();
         let coins_y_out = coin::zero<Y>();
@@ -575,9 +575,9 @@ module pancake::swap {
     /// Mint LP Token.
     /// This low-level function should be called from a contract which performs important safety checks
     fun mint<X, Y>(): (coin::Coin<LPToken<X, Y>>, u64) acquires TokenPairReserve, TokenPairMetadata {
-        let metadata = borrow_global_mut<TokenPairMetadata<X, Y>>(RESOURCE_ACCOUNT);
+        let metadata = &mut TokenPairMetadata<X, Y>[RESOURCE_ACCOUNT];
         let (balance_x, balance_y) = (coin::value(&metadata.balance_x), coin::value(&metadata.balance_y));
-        let reserves = borrow_global_mut<TokenPairReserve<X, Y>>(RESOURCE_ACCOUNT);
+        let reserves = &mut TokenPairReserve<X, Y>[RESOURCE_ACCOUNT];
         let amount_x = (balance_x as u128) - (reserves.reserve_x as u128);
         let amount_y = (balance_y as u128) - (reserves.reserve_y as u128);
 
@@ -609,9 +609,9 @@ module pancake::swap {
     }
 
     fun burn<X, Y>(lp_tokens: coin::Coin<LPToken<X, Y>>): (coin::Coin<X>, coin::Coin<Y>, u64) acquires TokenPairMetadata, TokenPairReserve {
-        let metadata = borrow_global_mut<TokenPairMetadata<X, Y>>(RESOURCE_ACCOUNT);
+        let metadata = &mut TokenPairMetadata<X, Y>[RESOURCE_ACCOUNT];
         let (balance_x, balance_y) = (coin::value(&metadata.balance_x), coin::value(&metadata.balance_y));
-        let reserves = borrow_global_mut<TokenPairReserve<X, Y>>(RESOURCE_ACCOUNT);
+        let reserves = &mut TokenPairReserve<X, Y>[RESOURCE_ACCOUNT];
         let liquidity = coin::value(&lp_tokens);
 
         let fee_amount = mint_fee<X, Y>(reserves.reserve_x, reserves.reserve_y, metadata);
@@ -659,13 +659,13 @@ module pancake::swap {
 
     fun deposit_x<X, Y>(amount: coin::Coin<X>) acquires TokenPairMetadata {
         let metadata =
-            borrow_global_mut<TokenPairMetadata<X, Y>>(RESOURCE_ACCOUNT);
+            &mut TokenPairMetadata<X, Y>[RESOURCE_ACCOUNT];
         coin::merge(&mut metadata.balance_x, amount);
     }
 
     fun deposit_y<X, Y>(amount: coin::Coin<Y>) acquires TokenPairMetadata {
         let metadata =
-            borrow_global_mut<TokenPairMetadata<X, Y>>(RESOURCE_ACCOUNT);
+            &mut TokenPairMetadata<X, Y>[RESOURCE_ACCOUNT];
         coin::merge(&mut metadata.balance_y, amount);
     }
 
@@ -704,14 +704,14 @@ module pancake::swap {
 
     public entry fun set_admin(sender: &signer, new_admin: address) acquires SwapInfo {
         let sender_addr = signer::address_of(sender);
-        let swap_info = borrow_global_mut<SwapInfo>(RESOURCE_ACCOUNT);
+        let swap_info = &mut SwapInfo[RESOURCE_ACCOUNT];
         assert!(sender_addr == swap_info.admin, ERROR_NOT_ADMIN);
         swap_info.admin = new_admin;
     }
 
     public entry fun set_fee_to(sender: &signer, new_fee_to: address) acquires SwapInfo {
         let sender_addr = signer::address_of(sender);
-        let swap_info = borrow_global_mut<SwapInfo>(RESOURCE_ACCOUNT);
+        let swap_info = &mut SwapInfo[RESOURCE_ACCOUNT];
         assert!(sender_addr == swap_info.admin, ERROR_NOT_ADMIN);
         swap_info.fee_to = new_fee_to;
     }
@@ -721,13 +721,13 @@ module pancake::swap {
         let swap_info = borrow_global<SwapInfo>(RESOURCE_ACCOUNT);
         assert!(sender_addr == swap_info.fee_to, ERROR_NOT_FEE_TO);
         if (swap_utils::sort_token_type<X, Y>()) {
-            let metadata = borrow_global_mut<TokenPairMetadata<X, Y>>(RESOURCE_ACCOUNT);
+            let metadata = &mut TokenPairMetadata<X, Y>[RESOURCE_ACCOUNT];
             assert!(coin::value(&metadata.fee_amount) > 0, ERROR_NO_FEE_WITHDRAW);
             let coin = coin::extract_all(&mut metadata.fee_amount);
             check_or_register_coin_store<LPToken<X, Y>>(sender);
             coin::deposit(sender_addr, coin);
         } else {
-            let metadata = borrow_global_mut<TokenPairMetadata<Y, X>>(RESOURCE_ACCOUNT);
+            let metadata = &mut TokenPairMetadata<Y, X>[RESOURCE_ACCOUNT];
             assert!(coin::value(&metadata.fee_amount) > 0, ERROR_NO_FEE_WITHDRAW);
             let coin = coin::extract_all(&mut metadata.fee_amount);
             check_or_register_coin_store<LPToken<Y, X>>(sender);
@@ -757,12 +757,12 @@ module pancake::swap {
         let swap_info = borrow_global<SwapInfo>(RESOURCE_ACCOUNT);
 
         if (swap_utils::sort_token_type<X, Y>()) {
-            let metadata = borrow_global_mut<TokenPairMetadata<X, Y>>(RESOURCE_ACCOUNT);
+            let metadata = &mut TokenPairMetadata<X, Y>[RESOURCE_ACCOUNT];
             assert!(coin::value(&metadata.fee_amount) > 0, ERROR_NO_FEE_WITHDRAW);
             let coin = coin::extract_all(&mut metadata.fee_amount);
             coin::deposit(swap_info.fee_to, coin);
         } else {
-            let metadata = borrow_global_mut<TokenPairMetadata<Y, X>>(RESOURCE_ACCOUNT);
+            let metadata = &mut TokenPairMetadata<Y, X>[RESOURCE_ACCOUNT];
             assert!(coin::value(&metadata.fee_amount) > 0, ERROR_NO_FEE_WITHDRAW);
             let coin = coin::extract_all(&mut metadata.fee_amount);
             coin::deposit(swap_info.fee_to, coin);

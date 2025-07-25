@@ -113,7 +113,7 @@ module permissioned_fa_addr::permissioned_fa {
     ) acquires Management {
         let management = borrow_global<Management>(metadata_address());
         assert!(
-            !smart_table::contains(&management.blocklist, object::owner(store)),
+            !management.blocklist.contains(object::owner(store)),
             ERR_BLOCKED
         );
 
@@ -129,9 +129,9 @@ module permissioned_fa_addr::permissioned_fa {
         assert_admin(deployer);
         let management = borrow_global_mut<Management>(metadata_address());
         if (is_blocked) {
-            smart_table::add(&mut management.blocklist, address, true);
+            management.blocklist.add(address, true);
         } else {
-            smart_table::remove(&mut management.blocklist, address);
+            management.blocklist.remove(address);
         }
     }
 

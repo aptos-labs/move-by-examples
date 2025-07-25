@@ -107,7 +107,7 @@ module taxed_fa_addr::taxed_fa {
         assert_admin(signer::address_of(sender));
 
         let config = borrow_global_mut<Config>(metadata_address());
-        simple_map::add(&mut config.registered_pools, lp_fa, true);
+        config.registered_pools.add(lp_fa, true);
     }
 
     /// Custom withdraw function that applies tax for buy transactions
@@ -120,10 +120,7 @@ module taxed_fa_addr::taxed_fa {
         // check if store is owned by the lp object
         // because all lp stores are owned by the lp object
         if (!object::object_exists<Metadata>(object::owner(store))
-            || !simple_map::contains_key(
-                &config.registered_pools,
-                &object::address_to_object(object::owner(store))
-            )) {
+            || !config.registered_pools.contains_key(&object::address_to_object(object::owner(store)))) {
             return fungible_asset::withdraw_with_ref(transfer_ref, store, amount)
         };
 
@@ -178,10 +175,7 @@ module taxed_fa_addr::taxed_fa {
         // check if store is owned by the lp fa object
         // because all thala lp stores are owned by the lp fa object
         if (!object::object_exists<Metadata>(object::owner(store))
-            || !simple_map::contains_key(
-                &config.registered_pools,
-                &object::address_to_object(object::owner(store))
-            )) {
+            || !config.registered_pools.contains_key(&object::address_to_object(object::owner(store)))) {
             return fungible_asset::deposit_with_ref(transfer_ref, store, fa)
         };
 
@@ -233,7 +227,7 @@ module taxed_fa_addr::taxed_fa {
     #[view]
     public fun get_registered_pools(): vector<Object<Metadata>> acquires Config {
         let config = borrow_global<Config>(metadata_address());
-        simple_map::keys(&config.registered_pools)
+        config.registered_pools.keys()
     }
 
     // ======================== Helper Functions ========================

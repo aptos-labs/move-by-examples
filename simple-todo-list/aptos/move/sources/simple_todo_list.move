@@ -52,7 +52,7 @@ module simple_todo_list_addr::simple_todo_list {
             content,
             completed: false
         };
-        vector::push_back(&mut todo_list.todos, new_todo);
+        todo_list.todos.push_back(new_todo);
     }
 
     public entry fun complete_todo(sender: &signer, todo_idx: u64) acquires TodoList {
@@ -60,7 +60,7 @@ module simple_todo_list_addr::simple_todo_list {
         assert_user_has_todo_list(sender_address);
         let todo_list = borrow_global_mut<TodoList>(sender_address);
         assert_user_has_given_todo(todo_list, todo_idx);
-        let todo_record = vector::borrow_mut(&mut todo_list.todos, todo_idx);
+        let todo_record = todo_list.todos.borrow_mut(todo_idx);
         assert!(todo_record.completed == false, E_TODO_ALREADY_COMPLETED);
         todo_record.completed = true;
     }
@@ -76,15 +76,15 @@ module simple_todo_list_addr::simple_todo_list {
     public fun get_todo_list(sender: address): (address, u64) acquires TodoList {
         assert_user_has_todo_list(sender);
         let todo_list = borrow_global<TodoList>(sender);
-        (todo_list.owner, vector::length(&todo_list.todos))
+        (todo_list.owner, todo_list.todos.length())
     }
 
     #[view]
     public fun get_todo(sender: address, todo_idx: u64): (String, bool) acquires TodoList {
         assert_user_has_todo_list(sender);
         let todo_list = borrow_global<TodoList>(sender);
-        assert!(todo_idx < vector::length(&todo_list.todos), E_TODO_DOSE_NOT_EXIST);
-        let todo_record = vector::borrow(&todo_list.todos, todo_idx);
+        assert!(todo_idx < todo_list.todos.length(), E_TODO_DOSE_NOT_EXIST);
+        let todo_record = todo_list.todos.borrow(todo_idx);
         (todo_record.content, todo_record.completed)
     }
 
@@ -99,7 +99,7 @@ module simple_todo_list_addr::simple_todo_list {
 
     fun assert_user_has_given_todo(todo_list: &TodoList, todo_idx: u64) {
         assert!(
-            todo_idx < vector::length(&todo_list.todos),
+            todo_idx < todo_list.todos.length(),
             E_TODO_DOSE_NOT_EXIST
         );
     }

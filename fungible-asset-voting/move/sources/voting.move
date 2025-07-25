@@ -112,9 +112,9 @@ module voting_app_addr::voting {
     /// function allows sender to create a new voting proposal, duration is in seconds
     public entry fun create_proposal(sender: &signer, proposal_name: String, duration: u64) acquires ProposalRegistry {
         let proposal_registry = borrow_global_mut<ProposalRegistry>(@voting_app_addr);
-        let proposal_registry_length = vector::length(&proposal_registry.proposals);
+        let proposal_registry_length = proposal_registry.proposals.length();
         let proposal_end_time = if(proposal_registry_length > 0){
-            vector::borrow(&proposal_registry.proposals, proposal_registry_length - 1).end_time
+            proposal_registry.proposals.borrow(proposal_registry_length - 1).end_time
         } else {
             0
         };
@@ -131,7 +131,7 @@ module voting_app_addr::voting {
             yes_votes: 0,
             no_votes: 0,
         };
-        vector::push_back(&mut proposal_registry.proposals,new_proposal);
+        proposal_registry.proposals.push_back(new_proposal);
     }
 
     /// user can vote on a proposal
@@ -140,11 +140,11 @@ module voting_app_addr::voting {
 
         // Check if a proposal exists
         let proposal_registry = borrow_global_mut<ProposalRegistry>(@voting_app_addr);
-        let proposal_registry_length = vector::length(&proposal_registry.proposals);
+        let proposal_registry_length = proposal_registry.proposals.length();
         assert!(proposal_id > 0 && proposal_id <= proposal_registry_length, ERR_PROPOSAL_DOES_NOT_EXIST);
 
         // Check if the proposal has ended
-        let proposal = vector::borrow_mut(&mut proposal_registry.proposals, proposal_id-1);
+        let proposal = proposal_registry.proposals.borrow_mut(proposal_id-1);
         let curr = timestamp::now_seconds();
         assert!(curr < proposal.end_time, ERR_PROPOSAL_HAS_ENDED);
 
@@ -160,9 +160,9 @@ module voting_app_addr::voting {
         assert!(user_stake_amount > 0, ERR_AMOUNT_ZERO);
 
         if (vote) {
-            proposal.yes_votes = proposal.yes_votes + user_stake_amount;
+            proposal.yes_votes += user_stake_amount;
         } else {
-            proposal.no_votes = proposal.no_votes + user_stake_amount;
+            proposal.no_votes += user_stake_amount;
         };
 
         // create and object to store the vote for the sender
@@ -202,7 +202,7 @@ module voting_app_addr::voting {
         };
 
         let user_stake_mut = borrow_global_mut<UserStake>(get_user_stake_object_address(sender_addr));
-        user_stake_mut.amount = user_stake_mut.amount + amount;
+        user_stake_mut.amount += amount;
     }
 
     public entry fun unstake(
@@ -216,14 +216,14 @@ module voting_app_addr::voting {
         assert!(user_stake_amount > 0, ERR_AMOUNT_ZERO);
 
         let proposal_registry = borrow_global<ProposalRegistry>(@voting_app_addr);
-        let proposal_registry_length = vector::length(&proposal_registry.proposals);
+        let proposal_registry_length = proposal_registry.proposals.length();
 
         // a user cannot unstake if they voted on the current live proposal
         let user_can_unstake = if (proposal_registry_length == 0) {
             true
         } else {
             // Check if the proposal has ended
-            let proposal = vector::borrow(&proposal_registry.proposals, proposal_registry_length - 1);
+            let proposal = proposal_registry.proposals.borrow(proposal_registry_length - 1);
             let curr = timestamp::now_seconds();
             if (exists<Vote>(get_vote_obj_addr(sender_addr, proposal_registry_length))) {
                 // If the user has already voted, check if the proposal has ended
@@ -318,8 +318,8 @@ module voting_app_addr::voting {
     /// inline to reduce overhead with a function call, performance optimization, gas etc.
     inline fun get_proposal_from_registry(proposal_id: u64): Proposal acquires ProposalRegistry {
         let proposal_registry = borrow_global<ProposalRegistry>(@voting_app_addr);
-        assert!(proposal_id > 0 && proposal_id <= vector::length(&proposal_registry.proposals), ERR_PROPOSAL_DOES_NOT_EXIST);
-        *vector::borrow(&proposal_registry.proposals, proposal_id - 1)
+        assert!(proposal_id > 0 && proposal_id <= proposal_registry.proposals.length(), ERR_PROPOSAL_DOES_NOT_EXIST);
+        *proposal_registry.proposals.borrow(proposal_id - 1)
     }
 
     fun construct_object_seed(sender: address, proposal_registry_length: u64 ): vector<u8> {
