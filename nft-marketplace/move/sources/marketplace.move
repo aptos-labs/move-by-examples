@@ -115,16 +115,16 @@ module marketplace_addr::marketplace {
         // Note this step of removing the listing from the seller's listings will be costly since it's O(N).
         // Ideally you don't store the listings in a vector but in an off-chain indexer
         let seller_listings = borrow_global_mut<SellerListings>(seller);
-        let (exist, idx) = smart_vector::index_of(&seller_listings.listings, &listing_addr);
+        let (exist, idx) = seller_listings.listings.index_of(&listing_addr);
         assert!(exist, error::not_found(ENO_LISTING));
-        smart_vector::remove(&mut seller_listings.listings, idx);
+        seller_listings.listings.remove(idx);
 
-        if (smart_vector::length(&seller_listings.listings) == 0) {
+        if (seller_listings.listings.length() == 0) {
             // If the seller has no more listings, remove the seller from the marketplace.
             let sellers = borrow_global_mut<Sellers>(get_marketplace_signer_addr());
-            let (exist, idx) = smart_vector::index_of(&sellers.addresses, &seller);
+            let (exist, idx) = sellers.addresses.index_of(&seller);
             assert!(exist, error::not_found(ENO_SELLER));
-            smart_vector::remove(&mut sellers.addresses, idx);
+            sellers.addresses.remove(idx);
         };
 
         aptos_account::deposit_coins(seller, coins);
@@ -162,24 +162,24 @@ module marketplace_addr::marketplace {
 
         if (exists<SellerListings>(signer::address_of(seller))) {
             let seller_listings = borrow_global_mut<SellerListings>(signer::address_of(seller));
-            smart_vector::push_back(&mut seller_listings.listings, object::object_address(&listing));
+            seller_listings.listings.push_back(object::object_address(&listing));
         } else {
             let seller_listings = SellerListings {
                 listings: smart_vector::new(),
             };
-            smart_vector::push_back(&mut seller_listings.listings, object::object_address(&listing));
+            seller_listings.listings.push_back(object::object_address(&listing));
             move_to(seller, seller_listings);
         };
         if (exists<Sellers>(get_marketplace_signer_addr())) {
             let sellers = borrow_global_mut<Sellers>(get_marketplace_signer_addr());
-            if (!smart_vector::contains(&sellers.addresses, &signer::address_of(seller))) {
-                smart_vector::push_back(&mut sellers.addresses, signer::address_of(seller));
+            if (!sellers.addresses.contains(&signer::address_of(seller))) {
+                sellers.addresses.push_back(signer::address_of(seller));
             }
         } else {
             let sellers = Sellers {
                 addresses: smart_vector::new(),
             };
-            smart_vector::push_back(&mut sellers.addresses, signer::address_of(seller));
+            sellers.addresses.push_back(signer::address_of(seller));
             move_to(&get_marketplace_signer(get_marketplace_signer_addr()), sellers);
         };
 
@@ -212,7 +212,7 @@ module marketplace_addr::marketplace {
     #[view]
     public fun get_seller_listings(seller: address): vector<address> acquires SellerListings {
         if (exists<SellerListings>(seller)) {
-            smart_vector::to_vector(&borrow_global<SellerListings>(seller).listings)
+            borrow_global<SellerListings>(seller).listings.to_vector()
         } else {
             vector[]
         }
@@ -221,7 +221,7 @@ module marketplace_addr::marketplace {
     #[view]
     public fun get_sellers(): vector<address> acquires Sellers {
         if (exists<Sellers>(get_marketplace_signer_addr())) {
-            smart_vector::to_vector(&borrow_global<Sellers>(get_marketplace_signer_addr()).addresses)
+            borrow_global<Sellers>(get_marketplace_signer_addr()).addresses.to_vector()
         } else {
             vector[]
         }

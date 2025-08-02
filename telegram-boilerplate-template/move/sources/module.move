@@ -17,12 +17,12 @@ module counter_app_addr::counter_app {
             })
         };
         let counter = borrow_global_mut<Counter>(sender_addr);
-        counter.count = counter.count + 1
+        counter.count += 1
     }
 
     #[view]
     public fun count(user_addr: address): u64 acquires Counter {
-        let counter = borrow_global<Counter>(user_addr);
+        let counter = &Counter[user_addr];
         counter.count
     }
 }

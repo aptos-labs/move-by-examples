@@ -146,8 +146,8 @@ module aptos_friend_addr::aptos_friend {
         });
 
         if (exists<User>(get_user_obj_addr(sender_addr))) {
-            let user_obj = borrow_global_mut<User>(get_user_obj_addr(sender_addr));
-            vector::push_back(&mut user_obj.holdings, get_holding_obj(sender_addr, sender_addr));
+            let user_obj = &mut User[get_user_obj_addr(sender_addr)];
+            user_obj.holdings.push_back(get_holding_obj(sender_addr, sender_addr));
         } else {
             let user_obj_constructor_ref = &object::create_named_object(
                 sender,
@@ -159,8 +159,8 @@ module aptos_friend_addr::aptos_friend {
             });
         };
 
-        let registry = borrow_global_mut<IssuerRegistry>(@aptos_friend_addr);
-        vector::push_back(&mut registry.issuers, get_issuer_obj(sender_addr));
+        let registry = &mut IssuerRegistry[@aptos_friend_addr];
+        registry.issuers.push_back(get_issuer_obj(sender_addr));
 
         event::emit(IssueShareEvent {
             issuer_addr: sender_addr,
@@ -179,15 +179,15 @@ module aptos_friend_addr::aptos_friend {
         let (share_cost, issuer_fee, protocol_fee, total_cost) = calculate_buy_share_cost(issuer_obj, amount);
         assert!(coin::balance<AptosCoin>(sender_addr) >= total_cost, ERR_INSUFFICIENT_BALANCE);
 
-        let issuer = borrow_global_mut<Issuer>(object::object_address(&issuer_obj));
+        let issuer = &mut Issuer[object::object_address(&issuer_obj)];
         let issuer_addr = issuer.addr;
-        issuer.total_issued_shares = issuer.total_issued_shares + amount;
+        issuer.total_issued_shares += amount;
 
         let holding_obj_addr = get_holding_obj_addr(issuer_addr, sender_addr);
         if (exists<Holding>(holding_obj_addr)) {
             // existing holder buys more shares
-            let holding = borrow_global_mut<Holding>(holding_obj_addr);
-            holding.shares = holding.shares + amount;
+            let holding = &mut Holding[holding_obj_addr];
+            holding.shares += amount;
         } else {
             // new holder buys shares
             let holding_obj_constructor_ref = &object::create_named_object(
@@ -201,12 +201,12 @@ module aptos_friend_addr::aptos_friend {
                 shares: amount,
             });
 
-            vector::push_back(&mut issuer.holder_holdings, get_holding_obj(issuer_addr, sender_addr));
+            issuer.holder_holdings.push_back(get_holding_obj(issuer_addr, sender_addr));
 
             let buyer_obj_addr = get_user_obj_addr(sender_addr);
             if (exists<User>(buyer_obj_addr)) {
-                let buyer_obj = borrow_global_mut<User>(buyer_obj_addr);
-                vector::push_back(&mut buyer_obj.holdings, get_holding_obj(issuer_addr, sender_addr));
+                let buyer_obj = &mut User[buyer_obj_addr];
+                buyer_obj.holdings.push_back(get_holding_obj(issuer_addr, sender_addr));
             } else {
                 let buyer_obj_constructor_ref = &object::create_named_object(
                     sender,
@@ -248,7 +248,7 @@ module aptos_friend_addr::aptos_friend {
         let (share_cost, issuer_fee, protocol_fee, total_cost) = calculate_sell_share_cost(issuer_obj, amount);
         assert!(coin::balance<AptosCoin>(sender_addr) >= total_cost, ERR_INSUFFICIENT_BALANCE);
 
-        let issuer = borrow_global_mut<Issuer>(object::object_address(&issuer_obj));
+        let issuer = &mut Issuer[object::object_address(&issuer_obj)];
         let issuer_addr = issuer.addr;
 
         let holding_obj_addr = get_holding_obj_addr(issuer_addr, sender_addr);
@@ -257,26 +257,26 @@ module aptos_friend_addr::aptos_friend {
         let user_obj_addr = get_user_obj_addr(sender_addr);
         assert!(exists<User>(user_obj_addr), ERR_USER_NOT_EXIST);
 
-        issuer.total_issued_shares = issuer.total_issued_shares - amount;
+        issuer.total_issued_shares -= amount;
 
-        let seller = borrow_global_mut<User>(user_obj_addr);
+        let seller = &mut User[user_obj_addr];
 
-        let holding = borrow_global_mut<Holding>(holding_obj_addr);
+        let holding = &mut Holding[holding_obj_addr];
         assert!(holding.shares >= amount, ERR_NOT_ENOUGH_SHARES_TO_SELL);
         assert!(sender_addr != issuer_addr || holding.shares > amount, ERR_ISSUER_CANNOT_SELL_LAST_SHARE);
 
-        holding.shares = holding.shares - amount;
+        holding.shares -= amount;
 
         let holding_obj = get_holding_obj(issuer_addr, sender_addr);
 
         if (holding.shares == 0) {
-            let (found, idx) = vector::index_of(&mut issuer.holder_holdings, &holding_obj);
+            let (found, idx) = issuer.holder_holdings.index_of(&holding_obj);
             assert!(found, ERR_HOLDER_NOT_EXIST);
-            vector::remove(&mut issuer.holder_holdings, idx);
+            issuer.holder_holdings.remove(idx);
 
-            let (found, idx) = vector::index_of(&mut seller.holdings, &holding_obj);
+            let (found, idx) = seller.holdings.index_of(&holding_obj);
             assert!(found, ERR_HOLDING_NOT_EXIST);
-            vector::remove(&mut seller.holdings, idx);
+            seller.holdings.remove(idx);
         };
 
         aptos_account::transfer(&get_vault_signer(), sender_addr, share_cost);
@@ -309,7 +309,7 @@ module aptos_friend_addr::aptos_friend {
     #[view]
     /// Get issuer registry
     public fun get_issuer_registry(): vector<Object<Issuer>> acquires IssuerRegistry {
-        let registry = borrow_global<IssuerRegistry>(@aptos_friend_addr);
+        let registry = &IssuerRegistry[@aptos_friend_addr];
         registry.issuers
     }
 
@@ -363,28 +363,28 @@ module aptos_friend_addr::aptos_friend {
     public fun get_issuer(
         issuer_obj: Object<Issuer>
     ): (address, String, u64) acquires Issuer {
-        let issuer = borrow_global<Issuer>(object::object_address(&issuer_obj));
+        let issuer = &Issuer[object::object_address(&issuer_obj)];
         (issuer.addr, issuer.username, issuer.total_issued_shares)
     }
 
     #[view]
     /// Get issuer's holder holdings
     public fun get_issuer_holder_holdings(issuer_obj: Object<Issuer>): vector<Object<Holding>> acquires Issuer {
-        let issuer = borrow_global<Issuer>(object::object_address(&issuer_obj));
+        let issuer = &Issuer[object::object_address(&issuer_obj)];
         issuer.holder_holdings
     }
 
     #[view]
     /// Get user's holdings
     public fun get_user_holdings(user_obj: Object<User>): vector<Object<Holding>> acquires User {
-        let user = borrow_global<User>(object::object_address(&user_obj));
+        let user = &User[object::object_address(&user_obj)];
         user.holdings
     }
 
     #[view]
     /// Get holding
     public fun get_holding(holding_obj: Object<Holding>): (address, address, u64) acquires Holding {
-        let holding = borrow_global<Holding>(object::object_address(&holding_obj));
+        let holding = &Holding[object::object_address(&holding_obj)];
         (holding.issuer, holding.holder, holding.shares)
     }
 
@@ -392,7 +392,7 @@ module aptos_friend_addr::aptos_friend {
     /// Calculate buy share cost
     public fun calculate_buy_share_cost(issuer_obj: Object<Issuer>, amount: u64): (u64, u64, u64, u64) acquires Issuer {
         let issuer_obj_addr = object::object_address(&issuer_obj);
-        let issuer = borrow_global<Issuer>(issuer_obj_addr);
+        let issuer = &Issuer[issuer_obj_addr];
         let old_supply = issuer.total_issued_shares;
 
         let share_cost = calculate_share_cost(old_supply, amount);
@@ -410,7 +410,7 @@ module aptos_friend_addr::aptos_friend {
         amount: u64
     ): (u64, u64, u64, u64) acquires Issuer {
         let issuer_obj_addr = object::object_address(&issuer_obj);
-        let issuer = borrow_global<Issuer>(issuer_obj_addr);
+        let issuer = &Issuer[issuer_obj_addr];
         let old_supply = issuer.total_issued_shares;
 
         let share_cost = calculate_share_cost(old_supply - amount, amount);
@@ -425,7 +425,7 @@ module aptos_friend_addr::aptos_friend {
 
     /// Generate vault signer to send APT to sellers
     fun get_vault_signer(): signer acquires Vault {
-        let vault = borrow_global<Vault>(get_vault_addr());
+        let vault = &Vault[get_vault_addr()];
         object::generate_signer_for_extending(&vault.extend_ref)
     }
 

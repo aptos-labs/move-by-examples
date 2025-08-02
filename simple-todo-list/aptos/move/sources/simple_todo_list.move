@@ -4,11 +4,11 @@ module simple_todo_list_addr::simple_todo_list {
     use std::string::String;
 
     /// Todo list does not exist
-    const E_TODO_LIST_DOSE_NOT_EXIST: u64 = 1;
+    const E_TODO_LIST_DOES_NOT_EXIST: u64 = 1;
     /// Try to create another todo list, but each user can only have one todo list
     const E_EACH_USER_CAN_ONLY_HAVE_ONE_TODO_LIST: u64 = 2;
     /// Todo does not exist
-    const E_TODO_DOSE_NOT_EXIST: u64 = 3;
+    const E_TODO_DOES_NOT_EXIST: u64 = 3;
     /// Todo is already completed
     const E_TODO_ALREADY_COMPLETED: u64 = 4;
 
@@ -52,7 +52,7 @@ module simple_todo_list_addr::simple_todo_list {
             content,
             completed: false
         };
-        vector::push_back(&mut todo_list.todos, new_todo);
+        todo_list.todos.push_back(new_todo);
     }
 
     public entry fun complete_todo(sender: &signer, todo_idx: u64) acquires TodoList {
@@ -60,7 +60,7 @@ module simple_todo_list_addr::simple_todo_list {
         assert_user_has_todo_list(sender_address);
         let todo_list = borrow_global_mut<TodoList>(sender_address);
         assert_user_has_given_todo(todo_list, todo_idx);
-        let todo_record = vector::borrow_mut(&mut todo_list.todos, todo_idx);
+        let todo_record = todo_list.todos.borrow_mut(todo_idx);
         assert!(todo_record.completed == false, E_TODO_ALREADY_COMPLETED);
         todo_record.completed = true;
     }
@@ -76,15 +76,15 @@ module simple_todo_list_addr::simple_todo_list {
     public fun get_todo_list(sender: address): (address, u64) acquires TodoList {
         assert_user_has_todo_list(sender);
         let todo_list = borrow_global<TodoList>(sender);
-        (todo_list.owner, vector::length(&todo_list.todos))
+        (todo_list.owner, todo_list.todos.length())
     }
 
     #[view]
     public fun get_todo(sender: address, todo_idx: u64): (String, bool) acquires TodoList {
         assert_user_has_todo_list(sender);
         let todo_list = borrow_global<TodoList>(sender);
-        assert!(todo_idx < vector::length(&todo_list.todos), E_TODO_DOSE_NOT_EXIST);
-        let todo_record = vector::borrow(&todo_list.todos, todo_idx);
+        assert!(todo_idx < todo_list.todos.length(), E_TODO_DOES_NOT_EXIST);
+        let todo_record = todo_list.todos.borrow(todo_idx);
         (todo_record.content, todo_record.completed)
     }
 
@@ -93,14 +93,14 @@ module simple_todo_list_addr::simple_todo_list {
     fun assert_user_has_todo_list(user_addr: address) {
         assert!(
             exists<TodoList>(user_addr),
-            E_TODO_LIST_DOSE_NOT_EXIST
+            E_TODO_LIST_DOES_NOT_EXIST
         );
     }
 
     fun assert_user_has_given_todo(todo_list: &TodoList, todo_idx: u64) {
         assert!(
-            todo_idx < vector::length(&todo_list.todos),
-            E_TODO_DOSE_NOT_EXIST
+            todo_idx < todo_list.todos.length(),
+            E_TODO_DOES_NOT_EXIST
         );
     }
 
@@ -143,7 +143,7 @@ module simple_todo_list_addr::simple_todo_list {
     }
 
     #[test(admin = @0x100)]
-    #[expected_failure(abort_code = E_TODO_LIST_DOSE_NOT_EXIST, location = Self)]
+    #[expected_failure(abort_code = E_TODO_LIST_DOES_NOT_EXIST, location = Self)]
     public entry fun test_todo_list_does_not_exist(admin: signer) acquires TodoList {
         let admin_addr = signer::address_of(&admin);
         account::create_account_for_test(admin_addr);
@@ -164,7 +164,7 @@ module simple_todo_list_addr::simple_todo_list {
     }
 
     #[test(admin = @0x100)]
-    #[expected_failure(abort_code = E_TODO_DOSE_NOT_EXIST, location = Self)]
+    #[expected_failure(abort_code = E_TODO_DOES_NOT_EXIST, location = Self)]
     public entry fun test_todo_does_not_exist(admin: signer) acquires TodoList {
         let admin_addr = signer::address_of(&admin);
         account::create_account_for_test(admin_addr);
