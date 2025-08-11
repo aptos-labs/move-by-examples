@@ -18,7 +18,7 @@
     "fmt": "npm run _fmt -- --write"
   },
   "dependencies": {
-    "@aptos-labs/ts-sdk": "^1.22.1",
+    "@aptos-labs/ts-sdk": "^4.0.0",
     "@aptos-labs/wallet-adapter-react": "^3.5.0",
     "@irys/sdk": "^0.2.1",
     "@radix-ui/react-accordion": "^1.1.2",
