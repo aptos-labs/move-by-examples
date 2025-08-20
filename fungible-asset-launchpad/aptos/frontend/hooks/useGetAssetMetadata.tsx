@@ -15,13 +15,12 @@ export function useGetAssetMetadata() {
 
   useEffect(() => {
     // fetch the contract registry address
-    getRegistry().then((registry) => {
+    getRegistry().then((faObjects) => {
       // fetch fungible assets objects created under that contract registry address
-      getObjects(registry).then((objects) => {
-        // get each fungible asset object metadata
-        getMetadata(objects).then((metadatas) => {
-          setFAs(metadatas);
-        });
+      // get each fungible asset object metadata
+      getMetadata(faObjects).then((metadatas) => {
+        console.log("Fungible asset metadata:", metadatas);
+        setFAs(metadatas);
       });
     });
   }, []);
@@ -38,28 +37,18 @@ const getRegistry = async () => {
   return registry[0];
 };
 
-const getObjects = async (registry: [{ inner: string }]) => {
-  const objects = await Promise.all(
-    registry.map(async (register: { inner: string }) => {
-      const formattedRegistry = AccountAddress.from(register.inner).toString();
-      const object = await aptosClient().getObjectDataByObjectAddress({
-        objectAddress: formattedRegistry,
-      });
-
-      return object.owner_address;
-    }),
-  );
-  return objects;
-};
-
-const getMetadata = async (objects: Array<string>) => {
+const getMetadata = async (
+  objects: Array<{
+    inner: string;
+  }>,
+) => {
   const metadatas = await Promise.all(
-    objects.map(async (object: string) => {
-      const formattedObjectAddress = AccountAddress.from(object).toString();
+    objects.map(async (object: { inner: string }) => {
+      const formattedObjectAddress = AccountAddress.from(object.inner).toString();
 
       const metadata = await aptosClient().getFungibleAssetMetadata({
         options: {
-          where: { creator_address: { _eq: `${formattedObjectAddress}` } },
+          where: { asset_type: { _eq: `${formattedObjectAddress}` } },
         },
       });
       return metadata[0];
