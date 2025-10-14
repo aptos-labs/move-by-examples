@@ -1,0 +1,12 @@
+[package]
+name = "vesting"
+version = "0.0.0"
+
+[addresses]
+vesting = "_"
+
+[dev-addresses]
+vesting = "0x123"
+
+[dependencies]
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-framework.git", subdir = "aptos-framework", rev = "mainnet" }
