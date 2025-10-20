@@ -397,4 +397,3 @@ module vesting::vesting {
         init_module(vesting_signer);
     }
 }
-

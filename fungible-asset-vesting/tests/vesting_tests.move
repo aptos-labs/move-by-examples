@@ -508,4 +508,3 @@ module vesting::vesting_tests {
         vesting::cancel_vesting(attacker, vesting_obj);
     }
 }
-
