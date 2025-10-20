@@ -23,6 +23,8 @@ module vesting::vesting {
     const EONLY_CANCELLABLE_BY_CAN_CANCEL: u64 = 7;
     /// Cliff percentage must be between 0 and 10000 (0-100%)
     const ECLIFF_PERCENTAGE_INVALID: u64 = 8;
+    /// Vesting has already been cancelled
+    const EVESTING_ALREADY_CANCELLED: u64 = 9;
 
     /// Basis points precision (10000 = 100%)
     const BIPS_PRECISION: u64 = 10000;
@@ -321,6 +323,12 @@ module vesting::vesting {
             EONLY_CANCELLABLE_BY_CAN_CANCEL
         );
 
+        // Prevent double cancellation to avoid underflow
+        assert!(
+            vesting.already_claimed < vesting.total_amount,
+            EVESTING_ALREADY_CANCELLED
+        );
+
         let current_time = timestamp::now_seconds();
 
         let total_vested =
@@ -379,16 +387,30 @@ module vesting::vesting {
     #[view]
     public fun get_vesting_detail(
         vesting_obj: Object<Vesting>
-    ): (u64, u64, u64, address, address, u64) acquires Vesting {
+    ): (u64, u64, u64, address, address, u64, u64) acquires Vesting {
         let vesting_obj_addr = object::object_address(&vesting_obj);
         let vesting = borrow_global<Vesting>(vesting_obj_addr);
+
+        let current_time = timestamp::now_seconds();
+        let total_vested =
+            calculate_unlocked(
+                vesting.start_timestamp,
+                current_time,
+                vesting.total_amount,
+                vesting.duration,
+                vesting.cliff_duration,
+                vesting.cliff_percentage_bips
+            );
+        let claimable_amount = total_vested - vesting.already_claimed;
+
         (
             vesting.start_timestamp,
             vesting.duration,
             vesting.total_amount,
             object::object_address(&vesting.vesting_token),
             vesting.recipient,
-            vesting.already_claimed
+            vesting.already_claimed,
+            claimable_amount
         )
     }
 
@@ -397,3 +419,4 @@ module vesting::vesting {
         init_module(vesting_signer);
     }
 }
+
