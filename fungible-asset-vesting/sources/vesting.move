@@ -7,10 +7,10 @@ module vesting::vesting {
 
     use std::signer;
 
-    /// Start timestamp must be in the future
-    const ESTART_TIMESTAMP_MUST_BE_IN_FUTURE: u64 = 1;
     /// Duration must be greater than zero
-    const EDURATION_MUST_BE_GREATER_THAN_ZERO: u64 = 2;
+    const EDURATION_MUST_BE_GREATER_THAN_ZERO: u64 = 1;
+    /// Cliff duration must be less than or equal to duration
+    const ECLIFF_GREATER_THAN_DURATION: u64 = 2;
     /// Total amount must be greater than zero
     const ETOTAL_AMOUNT_MUST_BE_GREATER_THAN_ZERO: u64 = 3;
     /// Only the recipient can claim vested tokens
@@ -143,21 +143,18 @@ module vesting::vesting {
         cliff_duration: u64,
         cliff_percentage_bips: u64
     ): Object<Vesting> acquires Vestings {
-        let current_time = timestamp::now_seconds();
-        assert!(start_timestamp > current_time, ESTART_TIMESTAMP_MUST_BE_IN_FUTURE);
         assert!(duration > 0, EDURATION_MUST_BE_GREATER_THAN_ZERO);
+        assert!(cliff_duration <= duration, ECLIFF_GREATER_THAN_DURATION);
         assert!(total_amount > 0, ETOTAL_AMOUNT_MUST_BE_GREATER_THAN_ZERO);
         assert!(
             cliff_percentage_bips <= BIPS_PRECISION,
             ECLIFF_PERCENTAGE_INVALID
         );
-
         let creator_addr = signer::address_of(creator);
         let vesting_obj_constructor_ref = &object::create_object(creator_addr);
         let vesting_obj_signer = object::generate_signer(vesting_obj_constructor_ref);
         let vesting_obj_addr =
             object::address_from_constructor_ref(vesting_obj_constructor_ref);
-
         move_to(
             &vesting_obj_signer,
             Vesting {
@@ -173,14 +170,12 @@ module vesting::vesting {
                 extend_ref: object::generate_extend_ref(vesting_obj_constructor_ref)
             }
         );
-
         primary_fungible_store::transfer(
             creator,
             vesting_token,
             vesting_obj_addr,
             total_amount
         );
-
         event::emit(
             CreateVestingEvent {
                 vesting_obj: vesting_obj_addr,
@@ -195,12 +190,10 @@ module vesting::vesting {
                 cliff_percentage_bips
             }
         );
-
         let vesting_obj =
             object::object_from_constructor_ref<Vesting>(vesting_obj_constructor_ref);
         let vestings = borrow_global_mut<Vestings>(@vesting);
         vestings.vestings.push_back(vesting_obj);
-
         vesting_obj
     }
 
@@ -211,9 +204,7 @@ module vesting::vesting {
         let vesting_obj_addr = object::object_address(&vesting_obj);
         let vesting = borrow_global_mut<Vesting>(vesting_obj_addr);
         assert!(claimer_addr == vesting.recipient, EONLY_RECIPIENT_CAN_CLAIM);
-
         let current_time = timestamp::now_seconds();
-
         let total_vested =
             calculate_unlocked(
                 vesting.start_timestamp,
@@ -223,19 +214,15 @@ module vesting::vesting {
                 vesting.cliff_duration,
                 vesting.cliff_percentage_bips
             );
-
         let claimable = total_vested - vesting.already_claimed;
         assert!(claimable > 0, ENO_TOKENS_TO_CLAIM);
-
         primary_fungible_store::transfer(
             &object::generate_signer_for_extending(&vesting.extend_ref),
             vesting.vesting_token,
             claimer_addr,
             claimable
         );
-
         vesting.already_claimed += claimable;
-
         event::emit(
             ClaimVestedEvent {
                 vesting_obj_address: vesting_obj_addr,
@@ -262,44 +249,35 @@ module vesting::vesting {
         if (current_timestamp < commenced_timestamp) {
             return 0
         };
-
         let seconds_elapsed = current_timestamp - commenced_timestamp;
-
         // All tokens unlocked if vesting fully complete
         if (seconds_elapsed >= duration) {
             return amount
         };
-
         // If no cliff, simple linear vesting
         if (cliff_duration == 0 && cliff_percentage_bips == 0) {
             // Linear vesting: unlocked = (amount * elapsed) / duration
             return ((amount as u128) * (seconds_elapsed as u128) / (duration as u128) as u64)
         };
-
         // Before cliff: nothing unlocked
         if (seconds_elapsed < cliff_duration) {
             return 0
         };
-
         // At or after cliff: cliff amount + linear vesting of remainder
         let cliff_amount =
             ((amount as u128) * (cliff_percentage_bips as u128)
                 / (BIPS_PRECISION as u128) as u64);
-
         // If we're exactly at the cliff, return just the cliff amount
         if (seconds_elapsed == cliff_duration) {
             return cliff_amount
         };
-
         // After cliff: linearly vest the remaining amount over remaining duration
         let remaining_amount = amount - cliff_amount;
         let remaining_duration = duration - cliff_duration;
         let elapsed_after_cliff = seconds_elapsed - cliff_duration;
-
         let additional_unlocked =
             ((remaining_amount as u128) * (elapsed_after_cliff as u128)
                 / (remaining_duration as u128) as u64);
-
         cliff_amount + additional_unlocked
     }
 
@@ -317,20 +295,16 @@ module vesting::vesting {
         let canceller_addr = signer::address_of(canceller);
         let vesting_obj_addr = object::object_address(&vesting_obj);
         let vesting = borrow_global_mut<Vesting>(vesting_obj_addr);
-
         assert!(
             canceller_addr == vesting.cancellable_by,
             EONLY_CANCELLABLE_BY_CAN_CANCEL
         );
-
         // Prevent double cancellation to avoid underflow
         assert!(
             vesting.already_claimed < vesting.total_amount,
             EVESTING_ALREADY_CANCELLED
         );
-
         let current_time = timestamp::now_seconds();
-
         let total_vested =
             calculate_unlocked(
                 vesting.start_timestamp,
@@ -340,12 +314,9 @@ module vesting::vesting {
                 vesting.cliff_duration,
                 vesting.cliff_percentage_bips
             );
-
         let amount_to_recipient = total_vested - vesting.already_claimed;
         let amount_to_canceller = vesting.total_amount - total_vested;
-
         let vesting_signer = &object::generate_signer_for_extending(&vesting.extend_ref);
-
         // Transfer unlocked amount to recipient
         if (amount_to_recipient > 0) {
             primary_fungible_store::transfer(
@@ -355,7 +326,6 @@ module vesting::vesting {
                 amount_to_recipient
             );
         };
-
         // Transfer locked amount to canceller
         if (amount_to_canceller > 0) {
             primary_fungible_store::transfer(
@@ -365,9 +335,7 @@ module vesting::vesting {
                 amount_to_canceller
             );
         };
-
         vesting.already_claimed = vesting.total_amount;
-
         event::emit(
             CancelVestingEvent {
                 vesting_obj_address: vesting_obj_addr,
@@ -390,7 +358,6 @@ module vesting::vesting {
     ): (u64, u64, u64, address, address, u64, u64) acquires Vesting {
         let vesting_obj_addr = object::object_address(&vesting_obj);
         let vesting = borrow_global<Vesting>(vesting_obj_addr);
-
         let current_time = timestamp::now_seconds();
         let total_vested =
             calculate_unlocked(
@@ -402,7 +369,6 @@ module vesting::vesting {
                 vesting.cliff_percentage_bips
             );
         let claimable_amount = total_vested - vesting.already_claimed;
-
         (
             vesting.start_timestamp,
             vesting.duration,

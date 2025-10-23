@@ -246,31 +246,6 @@ module vesting::vesting_tests {
     #[test(aptos_framework = @0x1, creator = @0x123, recipient = @0x456)]
     #[
         expected_failure(
-            abort_code = vesting::ESTART_TIMESTAMP_MUST_BE_IN_FUTURE, location = vesting
-        )
-    ]
-    fun test_start_timestamp_in_past(
-        aptos_framework: &signer, creator: &signer, recipient: &signer
-    ) {
-        let (_, recipient_addr) = setup_test(aptos_framework, creator, recipient);
-        let token = create_and_mint_dummy_token(creator, 10000);
-
-        vesting::create_vesting(
-            creator,
-            50,
-            1000,
-            10000,
-            token,
-            recipient_addr,
-            @0x0,
-            0,
-            0
-        );
-    }
-
-    #[test(aptos_framework = @0x1, creator = @0x123, recipient = @0x456)]
-    #[
-        expected_failure(
             abort_code = vesting::EDURATION_MUST_BE_GREATER_THAN_ZERO, location = vesting
         )
     ]
@@ -508,3 +483,4 @@ module vesting::vesting_tests {
         vesting::cancel_vesting(attacker, vesting_obj);
     }
 }
+

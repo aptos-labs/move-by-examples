@@ -49,15 +49,6 @@ public fun get_vesting_detail(vesting_obj: Object<Vesting>): (u64, u64, u64, add
 
 Returns: start_timestamp, duration, release_rate, token_address, recipient, already_claimed
 
-## Error Codes
-
-- `ESTART_TIMESTAMP_MUST_BE_IN_FUTURE` (1): Start time must be in future
-- `EDURATION_MUST_BE_GREATER_THAN_ZERO` (2): Duration must be > 0
-- `ERELEASE_RATE_MUST_BE_GREATER_THAN_ZERO` (3): Release rate must be > 0
-- `EONLY_RECIPIENT_CAN_CLAIM` (4): Only recipient can claim
-- `ETOTAL_VESTING_AMOUNT_OVERFLOW` (5): Calculation overflow
-- `ENO_TOKENS_TO_CLAIM` (6): No tokens available to claim
-
 ## Development
 
 ### Testing
