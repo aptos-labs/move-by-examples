@@ -8,7 +8,6 @@ import {
   groupAndSortWallets,
   isAptosConnectWallet,
   isInstallRequired,
-  truncateAddress,
   useWallet,
 } from "@aptos-labs/wallet-adapter-react";
 import { useLocation } from "react-router-dom";
@@ -25,6 +24,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
+import { truncateAddress } from "@/utils/truncateAddress";
 
 export function WalletSelector() {
   const { account, connected, disconnect, wallet } = useWallet();
@@ -33,10 +33,21 @@ export function WalletSelector() {
 
   const closeDialog = useCallback(() => setIsDialogOpen(false), []);
 
+  // Helper function to convert address to string (handles both string and AccountAddress object)
+  const getAddressString = useCallback((address: unknown): string => {
+    if (!address) return "";
+    if (typeof address === "string") return address;
+    if (typeof address === "object" && address !== null && "toString" in address) {
+      return String(address);
+    }
+    return String(address);
+  }, []);
+
   const copyAddress = useCallback(async () => {
     if (!account?.address) return;
     try {
-      await navigator.clipboard.writeText(account.address);
+      const addressString = getAddressString(account.address);
+      await navigator.clipboard.writeText(addressString);
       toast({
         title: "Success",
         description: "Copied wallet address to clipboard.",
@@ -48,12 +59,14 @@ export function WalletSelector() {
         description: "Failed to copy wallet address.",
       });
     }
-  }, [account?.address, toast]);
+  }, [account?.address, toast, getAddressString]);
+
+  const addressString = account?.address ? getAddressString(account.address) : null;
 
   return connected ? (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button>{account?.ansName || truncateAddress(account?.address) || "Unknown"}</Button>
+        <Button>{account?.ansName || (addressString ? truncateAddress(addressString) : "Unknown")}</Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onSelect={copyAddress} className="gap-2">
