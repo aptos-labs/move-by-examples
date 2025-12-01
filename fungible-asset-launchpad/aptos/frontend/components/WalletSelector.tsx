@@ -2,7 +2,6 @@ import {
   APTOS_CONNECT_ACCOUNT_URL,
   AboutAptosConnect,
   AboutAptosConnectEducationScreen,
-  AnyAptosWallet,
   AptosPrivacyPolicy,
   WalletItem,
   groupAndSortWallets,
@@ -180,7 +179,8 @@ function ConnectWalletDialog({ close }: ConnectWalletDialogProps) {
 }
 
 interface WalletRowProps {
-  wallet: AnyAptosWallet;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  wallet: any;
   onConnect?: () => void;
 }
 
