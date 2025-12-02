@@ -1,5 +1,5 @@
 import { AccountAddress, GetFungibleAssetMetadataResponse } from "@aptos-labs/ts-sdk";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 // Internal utils
 import { aptosClient } from "@/utils/aptosClient";
 
@@ -12,20 +12,103 @@ import { aptosClient } from "@/utils/aptosClient";
  */
 export function useGetAssetMetadata() {
   const [fas, setFAs] = useState<GetFungibleAssetMetadataResponse>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const assetObjectsRef = useRef<Array<{ inner: string }>>([]);
+  const maxRetriesRef = useRef(0);
+  const MAX_RETRIES = 15; // Poll for up to 5 minutes (60 * 5 seconds)
 
   useEffect(() => {
-    // fetch the contract registry address
-    getRegistry().then((faObjects) => {
-      // fetch fungible assets objects created under that contract registry address
-      // get each fungible asset object metadata
-      getMetadata(faObjects).then((metadatas) => {
-        console.log("Fungible asset metadata:", metadatas);
-        setFAs(metadatas);
-      });
-    });
+    let isMounted = true;
+
+    const fetchMetadata = async () => {
+      try {
+        // Fetch the contract registry address
+        const faObjects = await getRegistry();
+        assetObjectsRef.current = faObjects;
+
+        // Initial fetch
+        await pollForMetadata(faObjects, isMounted);
+
+        // Set up polling for missing metadata
+        if (isMounted) {
+          intervalRef.current = setInterval(async () => {
+            await pollForMetadata(assetObjectsRef.current, isMounted);
+          }, 5000); // Poll every 5 seconds
+        }
+      } catch (error) {
+        console.error("Error fetching asset metadata:", error);
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchMetadata();
+
+    return () => {
+      isMounted = false;
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
   }, []);
 
-  return fas;
+  const pollForMetadata = async (
+    objects: Array<{ inner: string }>,
+    isMounted: boolean,
+  ) => {
+    if (!isMounted) return;
+
+    const metadatas = await Promise.all(
+      objects.map(async (object: { inner: string }) => {
+        const formattedObjectAddress = AccountAddress.from(object.inner).toString();
+
+        try {
+          const metadata = await aptosClient().getFungibleAssetMetadata({
+            options: {
+              where: { asset_type: { _eq: `${formattedObjectAddress}` } },
+            },
+          });
+          return metadata[0];
+        } catch (error) {
+          console.error(`Error fetching metadata for ${formattedObjectAddress}:`, error);
+          return undefined;
+        }
+      }),
+    );
+
+    if (!isMounted) return;
+
+    // Check if all assets have metadata
+    const allIndexed = metadatas.every((metadata) => metadata !== undefined);
+    const validMetadatas = metadatas.filter(
+      (metadata): metadata is NonNullable<typeof metadata> => metadata !== undefined,
+    );
+
+    setFAs(validMetadatas);
+
+    // Stop polling if all assets are indexed or max retries reached
+    if (allIndexed) {
+      setIsLoading(false);
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    } else {
+      maxRetriesRef.current += 1;
+      if (maxRetriesRef.current >= MAX_RETRIES) {
+        console.warn("Max retries reached. Some assets may not be indexed yet.");
+        setIsLoading(false);
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+          intervalRef.current = null;
+        }
+      }
+    }
+  };
+
+  return { fas, isLoading };
 }
 
 const getRegistry = async () => {
@@ -35,24 +118,4 @@ const getRegistry = async () => {
     },
   });
   return registry[0];
-};
-
-const getMetadata = async (
-  objects: Array<{
-    inner: string;
-  }>,
-) => {
-  const metadatas = await Promise.all(
-    objects.map(async (object: { inner: string }) => {
-      const formattedObjectAddress = AccountAddress.from(object.inner).toString();
-
-      const metadata = await aptosClient().getFungibleAssetMetadata({
-        options: {
-          where: { asset_type: { _eq: `${formattedObjectAddress}` } },
-        },
-      });
-      return metadata[0];
-    }),
-  );
-  return metadatas;
 };

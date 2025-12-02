@@ -2,12 +2,25 @@ import { Link } from "react-router-dom";
 // Internal components
 import { Header } from "@/components/Header";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Spinner } from "@/components/ui/spinner";
 // Internal hooks
 import { useGetAssetMetadata } from "@/hooks/useGetAssetMetadata";
 import { convertAmountFromOnChainToHumanReadable } from "@/utils/helpers";
 
 export function AllFungibleAssets() {
-  const fas = useGetAssetMetadata();
+  const { fas, isLoading } = useGetAssetMetadata();
+
+  if (isLoading) {
+    return (
+      <>
+        <Header />
+        <div className="max-w-screen-xl mx-auto flex flex-col items-center justify-center p-8">
+          <Spinner size="lg" />
+          <p className="mt-4 text-gray-600">Loading fungible assets... Waiting for newly minted assets to be indexed.</p>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
