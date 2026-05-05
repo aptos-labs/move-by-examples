@@ -60,5 +60,11 @@
     "vercel": "^35.2.4",
     "vite": "^5.2.0",
     "vite-plugin-notifier": "^0.1.5"
+  },
+  "pnpm": {
+    "overrides": {
+      "axios": "0.32.0",
+      "undici": "^6.24.0"
+    }
   }
 }

@@ -11,7 +11,7 @@
     "move:upgrade": "node ./scripts/move/upgrade",
     "dev": "vite",
     "build": "tsc && vite build",
-    "deploy":"vercel",
+    "deploy": "vercel",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "_fmt": "prettier 'frontend/**/*.ts'",
@@ -72,5 +72,11 @@
     "vite-plugin-notifier": "^0.1.5",
     "prettier": "^3.3.2",
     "vercel": "^35.2.4"
+  },
+  "pnpm": {
+    "overrides": {
+      "axios": "0.32.0",
+      "undici": "^6.24.0"
+    }
   }
 }

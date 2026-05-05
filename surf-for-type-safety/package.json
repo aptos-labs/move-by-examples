@@ -48,6 +48,11 @@
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8"
   },
+  "pnpm": {
+    "overrides": {
+      "axios": "0.32.0"
+    }
+  },
   "devDependencies": {
     "@types/node": "^20.14.1",
     "@types/react": "^18.2.66",
