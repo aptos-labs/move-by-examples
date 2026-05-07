@@ -1,9 +1,10 @@
 {
   "name": "@advanced-todo-list/anchor",
   "version": "0.0.1",
+  "packageManager": "pnpm@10.33.2",
   "dependencies": {
     "@coral-xyz/anchor": "^0.29.0",
-    "@solana/web3.js": "1.90.0"
+    "@solana/web3.js": "1.90.2"
   },
   "type": "commonjs",
   "main": "./index.cjs",
