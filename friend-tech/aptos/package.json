@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "license": "Apache-2.0",
+  "packageManager": "pnpm@10.33.2",
   "scripts": {
     "move:init": "node ./scripts/init",
     "move:test": "node ./scripts/move/test",
@@ -19,7 +20,7 @@
     "fmt": "npm run _fmt -- --write"
   },
   "dependencies": {
-    "@aptos-labs/ts-sdk": "1.39.0",
+    "@aptos-labs/ts-sdk": "^6.3.1",
     "@aptos-labs/wallet-adapter-react": "^6.0.0",
     "@radix-ui/react-collapsible": "^1.1.0",
     "@radix-ui/react-dialog": "^1.1.1",
