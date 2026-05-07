@@ -1,16 +1,39 @@
 {
   "name": "billboard",
   "version": "1.0.0",
+  "packageManager": "pnpm@10.33.2",
   "scripts": {
     "compile": "npx hardhat compile"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "4.9.5",
-    "@openzeppelin/contracts-upgradeable": "4.9.5",
+    "@openzeppelin/contracts": "4.9.6",
+    "@openzeppelin/contracts-upgradeable": "4.9.6",
     "hardhat": "2.20.1"
   },
   "devDependencies": {
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
+  },
+  "pnpm": {
+    "auditConfig": {
+      "ignoreGhsas": [
+        "GHSA-848j-6mx2-7j84"
+      ]
+    },
+    "overrides": {
+      "next": "^15.5.15",
+      "minimatch@^3": "^3.1.4",
+      "minimatch@^9": "^9.0.7",
+      "cross-spawn": "^6.0.6",
+      "serialize-javascript@<7.0.5": "^7.0.5",
+      "webpack-dev-server": "^5.2.1",
+      "file-type": "^21.3.1",
+      "js-yaml@^4": "^4.1.1",
+      "postcss@^8": "^8.5.10",
+      "@tootallnate/once": "^3.0.1",
+      "tmp": "^0.2.4",
+      "cookie": "^0.7.0",
+      "undici": "^6.24.0"
+    }
   }
 }
