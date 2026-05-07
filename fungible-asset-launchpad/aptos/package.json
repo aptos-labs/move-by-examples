@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "license": "Apache-2.0",
+  "packageManager": "pnpm@10.33.2",
   "scripts": {
     "move:init": "node ./scripts/init",
     "move:test": "node ./scripts/move/test",
@@ -18,7 +19,7 @@
     "fmt": "npm run _fmt -- --write"
   },
   "dependencies": {
-    "@aptos-labs/ts-sdk": "^4.0.0",
+    "@aptos-labs/ts-sdk": "^5.2.1",
     "@aptos-labs/wallet-adapter-react": "^7.2.2",
     "@irys/sdk": "^0.2.1",
     "@radix-ui/react-accordion": "^1.1.2",
@@ -56,7 +57,7 @@
     "autoprefixer": "^10.4.19",
     "crypto-browserify": "^3.12.0",
     "dotenv": "16.3.1",
-    "eslint": "^8.57.0",
+    "eslint": "^8.57.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
     "js-yaml": "4.1.0",
@@ -67,16 +68,30 @@
     "tailwindcss": "^3.4.3",
     "tree-kill": "1.2.2",
     "typescript": "^5.2.2",
-    "vite": "^5.2.0",
+    "vite": "^6.4.2",
     "vite-plugin-node-polyfills": "^0.21.0",
     "vite-plugin-notifier": "^0.1.5",
     "prettier": "^3.3.2",
     "vercel": "^35.2.4"
   },
   "pnpm": {
+    "auditConfig": {
+      "ignoreGhsas": [
+        "GHSA-848j-6mx2-7j84"
+      ]
+    },
     "overrides": {
-      "axios": "0.32.0",
-      "undici": "^6.24.0"
+      "axios": "^1.15.1",
+      "undici": "^6.24.0",
+      "path-to-regexp": "^6.3.0",
+      "semver": "^7.5.2",
+      "tar": "^7.5.11",
+      "esbuild": "^0.25.0",
+      "js-yaml": "^4.1.1",
+      "ajv": "^8.18.0",
+      "debug": "^4.3.1",
+      "@tootallnate/once": "^3.0.1",
+      "bn.js": "^5.2.3"
     }
   }
 }
