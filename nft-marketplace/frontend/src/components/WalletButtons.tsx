@@ -16,7 +16,7 @@ export const WalletButtons = () => {
     return <Button onClick={disconnect}>Disconnect</Button>;
   }
 
-  if (isLoading || !wallets[0]) {
+  if (isLoading || !wallets?.[0]) {
     return <Text>Loading...</Text>;
   }
 
