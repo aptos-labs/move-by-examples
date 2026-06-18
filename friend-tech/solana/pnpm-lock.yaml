@@ -6,6 +6,7 @@ settings:
 
 overrides:
   next: ^15.5.18
+  rpc-websockets: 7.5.1
   minimatch@^3: ^3.1.4
   minimatch@^9: ^9.0.7
   cross-spawn: ^6.0.6
@@ -6694,8 +6695,8 @@ packages:
     engines: {node: '>=10.0.0'}
     hasBin: true
 
-  rpc-websockets@7.11.2:
-    resolution: {integrity: sha512-pL9r5N6AVHlMN/vT98+fcO+5+/UcPLf/4tq+WUaid/PPUGS/ttJ3y8e9IqmaWKtShNAysMSjkczuEA49NuV7UQ==}
+  rpc-websockets@7.5.1:
+    resolution: {integrity: sha512-kGFkeTsmd37pHPMaHIgN1LVKXMi0JD782v4Ds9ZKtLlwdTKjn+CxM9A9/gLT2LaOuEcEFGL98h1QWQtlOIdW0w==}
 
   run-applescript@7.1.0:
     resolution: {integrity: sha512-DPe5pVFaAsinSaV6QjQ6gdiedWDcRCbUuiQfQa2wmWV7+xC9bGulGI8+TdRmoFkAPaBXk8CrAbnlY2ISniJ47Q==}
@@ -10502,7 +10503,7 @@ snapshots:
       fast-stable-stringify: 1.0.0
       jayson: 4.3.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
       node-fetch: 2.7.0(encoding@0.1.13)
-      rpc-websockets: 7.11.2
+      rpc-websockets: 7.5.1
       superstruct: 0.14.2
     transitivePeerDependencies:
       - bufferutil
@@ -15904,8 +15905,9 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.3
 
-  rpc-websockets@7.11.2:
+  rpc-websockets@7.5.1:
     dependencies:
+      '@babel/runtime': 7.29.2
       eventemitter3: 4.0.7
       uuid: 14.0.0
       ws: 8.21.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)

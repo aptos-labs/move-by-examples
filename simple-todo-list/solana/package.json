@@ -82,6 +82,7 @@
       ]
     },
     "overrides": {
+      "rpc-websockets": "7.5.1",
       "axios": "^1.15.1",
       "undici": "^6.24.0",
       "path-to-regexp": "^6.3.0",
