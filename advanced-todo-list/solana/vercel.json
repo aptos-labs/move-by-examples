@@ -1,4 +1,11 @@
 {
+  "git": {
+    "deploymentEnabled": false
+  },
+  "github": {
+    "enabled": false
+  },
+  "ignoreCommand": "exit 0",
   "buildCommand": "pnpm run build",
   "installCommand": "pnpm install",
   "outputDirectory": "dist/web/.next"

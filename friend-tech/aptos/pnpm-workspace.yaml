@@ -1,49 +1,129 @@
+# pnpm 11 reads overrides/auditConfig from this file, not package.json.
+# Ignored GHSAs have no compatible patch:
+# - GHSA-848j-6mx2-7j84 elliptic (no patched release)
+# - GHSA-wrjc-x8rr-h8h6 / GHSA-337j-9hxr-rhxg react-router (patched only in v7)
+# Solana Next apps also ignore image-size (GHSA-5p2g-fcmc-qvqq, GHSA-w3rx-r6r6-pgpr),
+# nx CORS (GHSA-g2r8-wvmj-jf5w), and bigint-buffer (GHSA-3gc7-fjrx-p6mg).
 allowBuilds:
-  esbuild: set this to true or false
-  keccak: set this to true or false
-  secp256k1: set this to true or false
+  esbuild: true
+  keccak: true
+  secp256k1: true
 minimumReleaseAgeExclude:
-  - debug@4.3.1
-  - tar@6.2.1
-  - undici@5.28.5
-  - path-to-regexp@6.3.0
-  - esbuild@0.25.0
-  - undici@6.23.0
-  - tar@7.5.7
-  - js-yaml@4.1.1
-  - semver@7.5.2
-  - undici@5.29.0
-  - tar@7.5.3
-  - tar@7.5.8
-  - ajv@8.18.0
-  - '@tootallnate/once@3.0.1'
-  - tar@7.5.10
-  - tar@7.5.11
-  - undici@6.24.0
-  - tar@7.5.4
-  - vite@6.4.2
-  - axios@1.15.0
-  - uuid@14.0.0
-  - axios@1.15.1
-  - axios@1.15.2
+- "debug@4.3.1"
+- "tar@6.2.1"
+- "undici@5.28.5"
+- "path-to-regexp@6.3.0"
+- "esbuild@0.25.0"
+- "undici@6.23.0"
+- "tar@7.5.7"
+- "js-yaml@4.1.1"
+- "semver@7.5.2"
+- "undici@5.29.0"
+- "tar@7.5.3"
+- "tar@7.5.8"
+- "ajv@8.18.0"
+- "@tootallnate/once@3.0.1"
+- "tar@7.5.10"
+- "tar@7.5.11"
+- "undici@6.24.0"
+- "tar@7.5.4"
+- "vite@6.4.2"
+- "axios@1.15.0"
+- "uuid@14.0.0"
+- "axios@1.15.1"
+- "axios@1.15.2"
+- "next@15.5.25"
+- "js-yaml@4.3.2"
+- "axios@1.20.0"
+- "undici@6.28.1"
+- "postcss@8.5.28"
+- "nanoid@3.3.19"
+- "browserslist@4.28.7"
+- "websocket-driver@0.7.5"
+- "brace-expansion@1.1.21"
+- "brace-expansion@2.1.7"
+- "adm-zip@0.6.1"
+- "react-router-dom@6.30.6"
 overrides:
-  undici: ^6.24.0
-  '@tootallnate/once@<3.0.1': ^3.0.1
-  ajv@>=7.0.0-alpha.0 <8.18.0: ^8.18.0
-  axios@>=1.0.0 <1.15.0: ^1.15.0
-  axios@>=1.0.0 <1.15.1: ^1.15.1
-  axios@>=1.0.0 <1.15.2: ^1.15.2
-  debug@>=4.0.0 <4.3.1: ^4.3.1
-  esbuild@<=0.24.2: ^0.25.0
-  js-yaml@>=4.0.0 <4.1.1: ^4.1.1
-  path-to-regexp@>=4.0.0 <6.3.0: ^6.3.0
-  semver@>=7.0.0 <7.5.2: ^7.5.2
-  tar@<6.2.1: ^6.2.1
-  tar@<7.5.7: ^7.5.7
-  tar@<7.5.8: ^7.5.8
-  tar@<=7.5.10: ^7.5.11
-  tar@<=7.5.2: ^7.5.3
-  tar@<=7.5.3: ^7.5.4
-  tar@<=7.5.9: ^7.5.10
-  uuid@<14.0.0: ^14.0.0
-  vite@<=6.4.1: ^6.4.2
+  undici: ^6.28.1
+  "@tootallnate/once@<3.0.1": ^3.0.1
+  "ajv@>=7.0.0-alpha.0 <8.18.0": ^8.18.0
+  "axios@>=1.0.0 <1.15.0": ^1.15.0
+  "axios@>=1.0.0 <1.15.1": ^1.15.1
+  "axios@>=1.0.0 <1.15.2": ^1.15.2
+  "debug@>=4.0.0 <4.3.1": ^4.3.1
+  "esbuild@<=0.24.2": ^0.25.0
+  "js-yaml@>=4.0.0 <4.1.1": ^4.1.1
+  "path-to-regexp@>=4.0.0 <6.3.0": ^6.3.0
+  "semver@>=7.0.0 <7.5.2": ^7.5.2
+  "tar@<6.2.1": ^6.2.1
+  "tar@<7.5.7": ^7.5.7
+  "tar@<7.5.8": ^7.5.8
+  "tar@<=7.5.10": ^7.5.11
+  "tar@<=7.5.2": ^7.5.3
+  "tar@<=7.5.3": ^7.5.4
+  "tar@<=7.5.9": ^7.5.10
+  "uuid@<14.0.0": ^14.0.0
+  "vite@<=6.4.1": ^6.4.2
+  axios: ^1.20.0
+  path-to-regexp: ^6.3.0
+  semver: ^7.5.2
+  tar: ^7.5.11
+  esbuild: ^0.25.0
+  js-yaml: 4.3.2
+  ajv: ^8.18.0
+  debug: ^4.3.1
+  "@tootallnate/once": ^3.0.1
+  next: 15.5.25
+  postcss: ^8.5.28
+  "nanoid@^3": 3.3.19
+  browserslist: ^4.28.7
+  websocket-driver: 0.7.5
+  "brace-expansion@^1": 1.1.21
+  "brace-expansion@^2": 2.1.7
+  adm-zip: ">=0.6.0"
+  qs: ">=6.16.0"
+  shell-quote: ">=1.9.0"
+  "fast-uri@^3": ">=3.1.6"
+  "fast-uri@^4": ">=4.1.3"
+  "immutable@^4": ">=4.3.9"
+  "immutable@^5": ">=5.1.8"
+  "webpack-dev-server@<5.2.6": ">=5.2.6"
+  "react-router-dom@^6": ^6.30.6
+  "react-router@^6": ^6.30.6
+  "@remix-run/router": ">=1.23.3"
+  "svgo@^2": ">=2.8.4"
+  "svgo@^3": ">=3.3.5"
+  "toml@^4": ">=4.2.0"
+  "postcss-selector-parser@^6": ">=6.1.3"
+  "postcss-selector-parser@^7": ">=7.1.3"
+  body-parser: ">=1.20.6"
+  colord: ">=2.9.4"
+  baseline-browser-mapping: ">=2.11.0"
+  stream-json: ">=3.5.0"
+  valibot: ">=1.4.2"
+  "form-data@>=4.0.0 <4.0.6": ">=4.0.6"
+  "fast-uri@<=3.1.1": ">=3.1.6"
+  "qs@>=6.11.1 <=6.15.1": ">=6.16.0"
+  "shell-quote@>=1.1.0 <=1.8.3": ">=1.9.0"
+  "tmp@<0.2.6": ">=0.2.6"
+  "webpack-dev-server@<5.2.5": ">=5.2.6"
+  "http-proxy-middleware@>=0.16.0 <3.0.6": ">=3.0.6"
+  "ws@>=8.0.0 <8.21.0": 8.21.3
+  "ws@>=7.0.0 <7.5.11": 7.5.13
+  "fast-uri@>=4.0.0": 4.1.5
+  "fast-uri@>=3.0.0 <4.0.0": 3.1.8
+  "svgo@>=3.0.0 <3.3.5": 3.3.5
+  "svgo@>=2.0.0 <2.8.4": 2.8.4
+  toml: 4.3.0
+  sharp: 0.35.4
+  "csv-parse@<7.0.2": 7.0.2
+  "@babel/core": ^7.29.6
+  "postcss-selector-parser@>=7.1.0 <7.1.3": 7.1.3
+  "postcss-selector-parser@>=6.0.0 <6.1.3": 6.1.3
+auditConfig:
+  ignoreGhsas:
+  - GHSA-337j-9hxr-rhxg
+  - GHSA-848j-6mx2-7j84
+  - GHSA-wrjc-x8rr-h8h6
+pmOnFail: ignore

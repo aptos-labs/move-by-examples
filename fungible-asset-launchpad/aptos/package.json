@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "license": "Apache-2.0",
-  "packageManager": "pnpm@10.33.2",
+  "packageManager": "pnpm@11.21.0",
   "scripts": {
     "move:init": "node ./scripts/init",
     "move:test": "node ./scripts/move/test",
@@ -12,7 +12,6 @@
     "move:upgrade": "node ./scripts/move/upgrade",
     "dev": "vite",
     "build": "tsc && vite build",
-    "deploy": "vercel",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "_fmt": "prettier 'frontend/**/*.ts'",
@@ -43,7 +42,7 @@
     "react": "^18.2.0",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.23.1",
+    "react-router-dom": "^6.30.6",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7"
   },
@@ -60,38 +59,17 @@
     "eslint": "^8.57.1",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
-    "js-yaml": "4.1.1",
+    "js-yaml": "4.3.2",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",
-    "postcss": "8.5.14",
+    "postcss": "8.5.28",
     "stream-browserify": "^3.0.0",
     "tailwindcss": "^3.4.3",
     "tree-kill": "1.2.2",
     "typescript": "^5.2.2",
-    "vite": "^6.4.2",
+    "vite": "^6.4.3",
     "vite-plugin-node-polyfills": "^0.21.0",
     "vite-plugin-notifier": "^0.1.5",
-    "prettier": "^3.3.2",
-    "vercel": "^35.2.4"
-  },
-  "pnpm": {
-    "auditConfig": {
-      "ignoreGhsas": [
-        "GHSA-848j-6mx2-7j84"
-      ]
-    },
-    "overrides": {
-      "axios": "^1.15.1",
-      "undici": "^6.24.0",
-      "path-to-regexp": "^6.3.0",
-      "semver": "^7.5.2",
-      "tar": "^7.5.11",
-      "esbuild": "^0.25.0",
-      "js-yaml": "^4.1.1",
-      "ajv": "^8.18.0",
-      "debug": "^4.3.1",
-      "@tootallnate/once": "^3.0.1",
-      "bn.js": "^5.2.3"
-    }
+    "prettier": "^3.3.2"
   }
 }

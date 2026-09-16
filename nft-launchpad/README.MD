@@ -39,6 +39,5 @@ Some commands are built-in the template and can be ran as a npm script, for exam
 - `npm run move:upgrade` - a command to upgrade the Move contract
 - `npm run move:test` - a command to run Move unit tests
 - `npm run move:compile` - a command to compile the Move contract
-- `npm run deploy` - a command to deploy the dapp to Vercel
 
 For all other available CLI commands, can run `npx aptos` and see a list of all available commands.

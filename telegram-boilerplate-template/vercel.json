@@ -1,0 +1,9 @@
+{
+  "git": {
+    "deploymentEnabled": false
+  },
+  "github": {
+    "enabled": false
+  },
+  "ignoreCommand": "exit 0"
+}
