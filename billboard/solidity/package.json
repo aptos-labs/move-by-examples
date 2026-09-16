@@ -1,7 +1,7 @@
 {
   "name": "billboard",
   "version": "1.0.0",
-  "packageManager": "pnpm@10.33.2",
+  "packageManager": "pnpm@11.21.0",
   "scripts": {
     "compile": "npx hardhat compile"
   },
@@ -13,29 +13,5 @@
   "devDependencies": {
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
-  },
-  "pnpm": {
-    "auditConfig": {
-      "ignoreGhsas": [
-        "GHSA-848j-6mx2-7j84"
-      ]
-    },
-    "overrides": {
-      "next": "^15.5.15",
-      "minimatch@^3": "^3.1.4",
-      "minimatch@^9": "^9.0.7",
-      "cross-spawn": "^6.0.6",
-      "serialize-javascript@<7.0.5": "^7.0.5",
-      "webpack-dev-server": "^5.2.1",
-      "file-type": "^21.3.1",
-      "postcss@^8": "^8.5.10",
-      "@tootallnate/once": "^3.0.1",
-      "tmp": "^0.2.6",
-      "cookie": "^0.7.0",
-      "undici": "^6.24.0",
-      "uuid@<11.1.1": ">=11.1.1",
-      "ws": "^7.5.11",
-      "js-yaml@<=4.1.1": ">=4.2.0"
-    }
   }
 }

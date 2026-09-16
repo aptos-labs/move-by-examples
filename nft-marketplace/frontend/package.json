@@ -2,7 +2,7 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
-  "packageManager": "pnpm@10.33.2",
+  "packageManager": "pnpm@11.21.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -18,7 +18,7 @@
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
     "framer-motion": "^11.0.8",
-    "next": "15.5.18",
+    "next": "15.5.25",
     "petra-plugin-wallet-adapter": "^0.4.4",
     "react": "^18",
     "react-dom": "^18"
@@ -30,29 +30,5 @@
     "eslint": "^8",
     "eslint-config-next": "14.1.0",
     "typescript": "^5"
-  },
-  "pnpm": {
-    "auditConfig": {
-      "ignoreGhsas": [
-        "GHSA-848j-6mx2-7j84"
-      ]
-    },
-    "overrides": {
-      "axios": "^1.15.1",
-      "undici": "^6.24.0",
-      "path-to-regexp": "^6.3.0",
-      "semver": "^7.5.2",
-      "tar": "^7.5.11",
-      "esbuild": "^0.25.0",
-      "ajv": "^8.18.0",
-      "debug": "^4.3.1",
-      "@tootallnate/once": "^3.0.1",
-      "bn.js": "^5.2.3",
-      "minimatch@^9": "^9.0.7",
-      "postcss": "^8.5.10",
-      "glob@^10": "^10.5.0",
-      "form-data@>=4.0.0 <4.0.6": ">=4.0.6",
-      "js-yaml@<=4.1.1": ">=4.2.0"
-    }
   }
 }
