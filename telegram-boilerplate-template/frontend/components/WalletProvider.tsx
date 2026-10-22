@@ -20,7 +20,7 @@ export function WalletProvider({ children }: PropsWithChildren) {
           manifestURL: "https://assets.mz.xyz/static/config/mizuwallet-connect-manifest.json",
         },
       }}
-      optInWallets={["Mizu Wallet"]}
+      // wallet-adapter 8 no longer accepts "Mizu Wallet" in optInWallets.
       onError={(error) => {
         toast({
           variant: "destructive",

@@ -23,7 +23,7 @@ export function Counter() {
         const counter = await surfClient()
           .view.count({
             typeArguments: [],
-            functionArguments: [account?.address as `0x${string}`],
+            functionArguments: [account?.address?.toStringLong() as `0x${string}`],
           })
           .then((result) => {
             return parseInt(result[0]);

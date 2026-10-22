@@ -39,7 +39,7 @@ export function AllCollections() {
                   <TableCell className="font-medium">
                     <div className="flex items-center gap-2 flex-wrap">
                       <Image
-                        src={collection?.cdn_asset_uris?.cdn_image_uri ?? ""}
+                        src={collection?.uri ?? ""}
                         rounded
                         className="w-10 h-10 bg-gray-100 shrink-0"
                       />
