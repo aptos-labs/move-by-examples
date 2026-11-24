@@ -73,9 +73,8 @@ overrides:
   immutable@^4: '>=4.3.9'
   immutable@^5: '>=5.1.8'
   webpack-dev-server@<5.2.6: '>=5.2.6'
-  react-router-dom@^6: ^6.30.6
-  react-router@^6: ^6.30.6
-  '@remix-run/router': '>=1.23.3'
+  react-router-dom: ^7.18.7
+  react-router: ^7.18.7
   svgo@^2: '>=2.8.4'
   svgo@^3: '>=3.3.5'
   toml@<=5.0.0: '>=5.0.1'
@@ -124,8 +123,8 @@ importers:
         specifier: 4.9.6
         version: 4.9.6
       hardhat:
-        specifier: 2.29.1
-        version: 2.29.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@25.6.0)(typescript@5.9.3))(typescript@5.9.3)
+        specifier: 2.30.0
+        version: 2.30.0(supports-color@8.1.1)(ts-node@10.9.2(@types/node@25.6.0)(typescript@5.9.3))(typescript@5.9.3)
     devDependencies:
       ts-node:
         specifier: ^10.9.2
@@ -237,37 +236,55 @@ packages:
   '@noble/secp256k1@1.7.1':
     resolution: {integrity: sha512-hOUk6AyBFmqVrv7k5WAw/LpszxVbj9gGN4JRkIX52fdFAj1UA61KXmZDvqVEm+pOyec3+fIeZB02LYa/pWOArw==}
 
-  '@nomicfoundation/edr-darwin-arm64@0.12.0-next.23':
-    resolution: {integrity: sha512-Amh7mRoDzZyJJ4efqoePqdoZOzharmSOttZuJDlVE5yy07BoE8hL6ZRpa5fNYn0LCqn/KoWs8OHANWxhKDGhvQ==}
-    engines: {node: '>= 20'}
+  '@nomicfoundation/edr-darwin-arm64@0.26.0':
+    resolution: {integrity: sha512-FgK0BmUtWXX6K16I41hgS6s3MXxFxMRWZIbP1iWbKzYNSP2k5ukYatLiUWZefCBfm2krKBMhm0RKEzBc6+p+jw==}
+    engines: {node: '>= 22'}
+    cpu: [arm64]
+    os: [darwin]
 
-  '@nomicfoundation/edr-darwin-x64@0.12.0-next.23':
-    resolution: {integrity: sha512-9wn489FIQm7m0UCD+HhktjWx6vskZzeZD9oDc2k9ZvbBzdXwPp5tiDqUBJ+eQpByAzCDfteAJwRn2lQCE0U+Iw==}
-    engines: {node: '>= 20'}
+  '@nomicfoundation/edr-darwin-x64@0.26.0':
+    resolution: {integrity: sha512-19JR69RN/ey5ACVG/q88vA2IGRES3pqVNwTjcP78Ekc//AtxfBuxD1kTRKuYv5ikfAGhhGKjzakcCNt5cXQ7lg==}
+    engines: {node: '>= 22'}
+    cpu: [x64]
+    os: [darwin]
 
-  '@nomicfoundation/edr-linux-arm64-gnu@0.12.0-next.23':
-    resolution: {integrity: sha512-nlk5EejSzEUfEngv0Jkhqq3/wINIfF2ED9wAofc22w/V1DV99ASh9l3/e/MIHOQFecIZ9MDqt0Em9/oDyB1Uew==}
-    engines: {node: '>= 20'}
+  '@nomicfoundation/edr-linux-arm64-gnu@0.26.0':
+    resolution: {integrity: sha512-oQAuKsfQEzrQ7pRvCRvr3nb5xTL/z3ODk/T9J6qr6GvCsCX9Kj5OvpyQmCYTGJktWhOSeWdg3V53EDLU6U9BzA==}
+    engines: {node: '>= 22'}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
 
-  '@nomicfoundation/edr-linux-arm64-musl@0.12.0-next.23':
-    resolution: {integrity: sha512-SJuPBp3Rc6vM92UtVTUxZQ/QlLhLfwTftt2XUiYohmGKB3RjGzpgduEFMCA0LEnucUckU6UHrJNFHiDm77C4PQ==}
-    engines: {node: '>= 20'}
+  '@nomicfoundation/edr-linux-arm64-musl@0.26.0':
+    resolution: {integrity: sha512-Dx5SxM4R3UWaSRNZEjS2Q/DzDSThj33tWg3IplJPRsiuONKqUK6puHBzXLFnOJqUjYzI3P6uRy4xWzW8BjBfcw==}
+    engines: {node: '>= 22'}
+    cpu: [arm64]
+    os: [linux]
+    libc: [musl]
 
-  '@nomicfoundation/edr-linux-x64-gnu@0.12.0-next.23':
-    resolution: {integrity: sha512-NU+Qs3u7Qt6t3bJFdmmjd5CsvgI2bPPzO31KifM2Ez96/jsXYho5debtTQnimlb5NAqiHTSlxjh/F8ROcptmeQ==}
-    engines: {node: '>= 20'}
+  '@nomicfoundation/edr-linux-x64-gnu@0.26.0':
+    resolution: {integrity: sha512-9Mh3Niq/CzVQOebB67z+dVFtlrQTggdvTD0V1hgpyjC1STKDXq06JzIoklbCbDoPXXzXteWa8iUhnwjeB49COw==}
+    engines: {node: '>= 22'}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
 
-  '@nomicfoundation/edr-linux-x64-musl@0.12.0-next.23':
-    resolution: {integrity: sha512-F78fZA2h6/ssiCSZOovlgIu0dUeI7ItKPsDDF3UUlIibef052GCXmliMinC90jVPbrjUADMd1BUwjfI0Z8OllQ==}
-    engines: {node: '>= 20'}
+  '@nomicfoundation/edr-linux-x64-musl@0.26.0':
+    resolution: {integrity: sha512-/IX6Dt8YROp0lX8URcLkWrhxdTLMi8eZZTdp1AQf6hFwW1Q72epKCrz86pscfyhVrX33ccYWiDe1PlxRFQAj4Q==}
+    engines: {node: '>= 22'}
+    cpu: [x64]
+    os: [linux]
+    libc: [musl]
 
-  '@nomicfoundation/edr-win32-x64-msvc@0.12.0-next.23':
-    resolution: {integrity: sha512-IfJZQJn7d/YyqhmguBIGoCKjE9dKjbu6V6iNEPApfwf5JyyjHYyyfkLU4rf7hygj57bfH4sl1jtQ6r8HnT62lw==}
-    engines: {node: '>= 20'}
+  '@nomicfoundation/edr-win32-x64-msvc@0.26.0':
+    resolution: {integrity: sha512-Fqnpqf2z4GKyXDWqJfDYUYyDsWkuLCJ0cdJ7t93OT3A5PooNixtpI8um9HM8yHkqxPeel9Ruy8vvcIcBEXgoIw==}
+    engines: {node: '>= 22'}
+    cpu: [x64]
+    os: [win32]
 
-  '@nomicfoundation/edr@0.12.0-next.23':
-    resolution: {integrity: sha512-F2/6HZh8Q9RsgkOIkRrckldbhPjIZY7d4mT9LYuW68miwGQ5l7CkAgcz9fRRiurA0+YJhtsbx/EyrD9DmX9BOw==}
-    engines: {node: '>= 20'}
+  '@nomicfoundation/edr@0.26.0':
+    resolution: {integrity: sha512-KRsXuAejPwkOYfuoTYpEJzIvzjbqwXrHcEzUJCKe2I4qz3uZ2/9rY0l25rA+yLf4oGMCKlXfuORKmzZHWsPZAg==}
+    engines: {node: '>= 22'}
 
   '@nomicfoundation/solidity-analyzer-darwin-arm64@0.1.2':
     resolution: {integrity: sha512-JaqcWPDZENCvm++lFFGjrDd8mxtf+CtLd2MiXvMNTBD33dContTZ9TWETwNFwg7JTJT5Q9HEecH7FA+HTSsIUw==}
@@ -590,8 +607,8 @@ packages:
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
 
-  hardhat@2.29.1:
-    resolution: {integrity: sha512-BVPE15F9+gWH5Eof7aAhprXTi05mNHwn32fwIKMeMFqrkU3Jun1f7NubXsJ0SOeMqu0mchF6KkW7rx1CHinlWw==}
+  hardhat@2.30.0:
+    resolution: {integrity: sha512-D+7zl1iM0dJWtx7n3M57Lf7FVMzPoBwKvFNvslDfrZip4Df1E601JkrMnzfnMRe1TXtflDhgnU5ekZnkD0DxPw==}
     hasBin: true
     peerDependencies:
       ts-node: '*'
@@ -921,10 +938,6 @@ packages:
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
-  uuid@14.0.0:
-    resolution: {integrity: sha512-Qo+uWgilfSmAhXCMav1uYFynlQO7fMFiMVZsQqZRMIXp0O7rR7qjkj+cPvBHLgBqi960QCoo/PH2/6ZtVqKvrg==}
-    hasBin: true
-
   v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
 
@@ -1138,29 +1151,36 @@ snapshots:
 
   '@noble/secp256k1@1.7.1': {}
 
-  '@nomicfoundation/edr-darwin-arm64@0.12.0-next.23': {}
+  '@nomicfoundation/edr-darwin-arm64@0.26.0':
+    optional: true
 
-  '@nomicfoundation/edr-darwin-x64@0.12.0-next.23': {}
+  '@nomicfoundation/edr-darwin-x64@0.26.0':
+    optional: true
 
-  '@nomicfoundation/edr-linux-arm64-gnu@0.12.0-next.23': {}
+  '@nomicfoundation/edr-linux-arm64-gnu@0.26.0':
+    optional: true
 
-  '@nomicfoundation/edr-linux-arm64-musl@0.12.0-next.23': {}
+  '@nomicfoundation/edr-linux-arm64-musl@0.26.0':
+    optional: true
 
-  '@nomicfoundation/edr-linux-x64-gnu@0.12.0-next.23': {}
+  '@nomicfoundation/edr-linux-x64-gnu@0.26.0':
+    optional: true
 
-  '@nomicfoundation/edr-linux-x64-musl@0.12.0-next.23': {}
+  '@nomicfoundation/edr-linux-x64-musl@0.26.0':
+    optional: true
 
-  '@nomicfoundation/edr-win32-x64-msvc@0.12.0-next.23': {}
+  '@nomicfoundation/edr-win32-x64-msvc@0.26.0':
+    optional: true
 
-  '@nomicfoundation/edr@0.12.0-next.23':
-    dependencies:
-      '@nomicfoundation/edr-darwin-arm64': 0.12.0-next.23
-      '@nomicfoundation/edr-darwin-x64': 0.12.0-next.23
-      '@nomicfoundation/edr-linux-arm64-gnu': 0.12.0-next.23
-      '@nomicfoundation/edr-linux-arm64-musl': 0.12.0-next.23
-      '@nomicfoundation/edr-linux-x64-gnu': 0.12.0-next.23
-      '@nomicfoundation/edr-linux-x64-musl': 0.12.0-next.23
-      '@nomicfoundation/edr-win32-x64-msvc': 0.12.0-next.23
+  '@nomicfoundation/edr@0.26.0':
+    optionalDependencies:
+      '@nomicfoundation/edr-darwin-arm64': 0.26.0
+      '@nomicfoundation/edr-darwin-x64': 0.26.0
+      '@nomicfoundation/edr-linux-arm64-gnu': 0.26.0
+      '@nomicfoundation/edr-linux-arm64-musl': 0.26.0
+      '@nomicfoundation/edr-linux-x64-gnu': 0.26.0
+      '@nomicfoundation/edr-linux-x64-musl': 0.26.0
+      '@nomicfoundation/edr-win32-x64-msvc': 0.26.0
 
   '@nomicfoundation/solidity-analyzer-darwin-arm64@0.1.2':
     optional: true
@@ -1473,11 +1493,11 @@ snapshots:
 
   graceful-fs@4.2.11: {}
 
-  hardhat@2.29.1(supports-color@8.1.1)(ts-node@10.9.2(@types/node@25.6.0)(typescript@5.9.3))(typescript@5.9.3):
+  hardhat@2.30.0(supports-color@8.1.1)(ts-node@10.9.2(@types/node@25.6.0)(typescript@5.9.3))(typescript@5.9.3):
     dependencies:
       '@ethereumjs/util': 9.1.0
       '@ethersproject/abi': 5.8.0
-      '@nomicfoundation/edr': 0.12.0-next.23
+      '@nomicfoundation/edr': 0.26.0
       '@nomicfoundation/solidity-analyzer': 0.1.2
       '@sentry/node': 5.30.0(supports-color@8.1.1)
       adm-zip: 0.6.1
@@ -1512,7 +1532,6 @@ snapshots:
       tinyglobby: 0.2.17
       tsort: 0.0.1
       undici: 6.29.1
-      uuid: 14.0.0
       ws: 7.5.13
     optionalDependencies:
       ts-node: 10.9.2(@types/node@25.6.0)(typescript@5.9.3)
@@ -1823,8 +1842,6 @@ snapshots:
   unpipe@1.0.0: {}
 
   util-deprecate@1.0.2: {}
-
-  uuid@14.0.0: {}
 
   v8-compile-cache-lib@3.0.1: {}
 

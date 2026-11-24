@@ -38,9 +38,8 @@ overrides:
   immutable@^4: '>=4.3.9'
   immutable@^5: '>=5.1.8'
   webpack-dev-server@<5.2.6: '>=5.2.6'
-  react-router-dom@^6: ^6.30.6
-  react-router@^6: ^6.30.6
-  '@remix-run/router': '>=1.23.3'
+  react-router-dom: ^7.18.7
+  react-router: ^7.18.7
   svgo@^2: '>=2.8.4'
   svgo@^3: '>=3.3.5'
   toml@<=5.0.0: '>=5.0.1'
