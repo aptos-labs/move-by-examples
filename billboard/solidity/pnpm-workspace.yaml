@@ -1,11 +1,7 @@
 # pnpm 11 reads overrides/auditConfig from this file, not package.json.
 # Ignored GHSAs have no compatible patch:
 # - GHSA-848j-6mx2-7j84 elliptic (no patched release)
-# - GHSA-wrjc-x8rr-h8h6 / GHSA-337j-9hxr-rhxg react-router (patched only in v7)
-# - GHSA-vfj7-8cjw-p6xm braces (advisory fixed in 3.0.4, which is not published)
-# Solana Next apps also ignore image-size (GHSA-5p2g-fcmc-qvqq, GHSA-w3rx-r6r6-pgpr),
-# bigint-buffer (GHSA-3gc7-fjrx-p6mg), and nx advisories that require nx 22
-# (GHSA-g2r8-wvmj-jf5w, GHSA-w2vw-w76x-qr89, GHSA-w3vv-58gj-gw77, GHSA-hrvq-x7jp-36xv).
+# Solana Next apps also ignore bigint-buffer (GHSA-3gc7-fjrx-p6mg).
 overrides:
   next: 15.5.29
   "minimatch@^3": ^3.1.4
@@ -41,9 +37,8 @@ overrides:
   "immutable@^4": ">=4.3.9"
   "immutable@^5": ">=5.1.8"
   "webpack-dev-server@<5.2.6": ">=5.2.6"
-  "react-router-dom@^6": ^6.30.6
-  "react-router@^6": ^6.30.6
-  "@remix-run/router": ">=1.23.3"
+  "react-router-dom": ^7.18.7
+  "react-router": ^7.18.7
   "svgo@^2": ">=2.8.4"
   "svgo@^3": ">=3.3.5"
   "toml@<=5.0.0": ">=5.0.1"
@@ -82,24 +77,21 @@ overrides:
   postcss-selector-parser: 7.1.6
 auditConfig:
   ignoreGhsas:
-    - GHSA-vfj7-8cjw-p6xm
-    - GHSA-337j-9hxr-rhxg
     - GHSA-848j-6mx2-7j84
-    - GHSA-wrjc-x8rr-h8h6
 pmOnFail: ignore
 minimumReleaseAgeExclude:
-- "next@15.5.25"
-- "js-yaml@4.3.2"
-- "axios@1.20.0"
-- "undici@6.28.1"
-- "postcss@8.5.28"
-- "nanoid@3.3.19"
-- "browserslist@4.28.7"
-- "websocket-driver@0.7.5"
-- "brace-expansion@1.1.21"
-- "brace-expansion@2.1.7"
-- "adm-zip@0.6.1"
-- "react-router-dom@6.30.6"
+  - "next@15.5.25"
+  - "js-yaml@4.3.2"
+  - "axios@1.20.0"
+  - "undici@6.28.1"
+  - "postcss@8.5.28"
+  - "nanoid@3.3.19"
+  - "browserslist@4.28.7"
+  - "websocket-driver@0.7.5"
+  - brace-expansion@1.1.21 || 2.1.7
+  - "adm-zip@0.6.1"
+  - "react-router-dom@6.30.6"
+  - hardhat@2.30.0
 allowBuilds:
   keccak: true
   secp256k1: true

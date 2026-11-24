@@ -1,51 +1,33 @@
 # pnpm 11 reads overrides/auditConfig from this file, not package.json.
 # Ignored GHSAs have no compatible patch:
 # - GHSA-848j-6mx2-7j84 elliptic (no patched release)
-# - GHSA-wrjc-x8rr-h8h6 / GHSA-337j-9hxr-rhxg react-router (patched only in v7)
-# - GHSA-vfj7-8cjw-p6xm braces (advisory fixed in 3.0.4, which is not published)
-# Solana Next apps also ignore image-size (GHSA-5p2g-fcmc-qvqq, GHSA-w3rx-r6r6-pgpr),
-# bigint-buffer (GHSA-3gc7-fjrx-p6mg), and nx advisories that require nx 22
-# (GHSA-g2r8-wvmj-jf5w, GHSA-w2vw-w76x-qr89, GHSA-w3vv-58gj-gw77, GHSA-hrvq-x7jp-36xv).
+# Solana Next apps also ignore bigint-buffer (GHSA-3gc7-fjrx-p6mg).
 allowBuilds:
   esbuild: true
   keccak: true
   secp256k1: true
 minimumReleaseAgeExclude:
-- "debug@4.3.1"
-- "tar@6.2.1"
-- "undici@5.28.5"
-- "path-to-regexp@6.3.0"
-- "esbuild@0.25.0"
-- "undici@6.23.0"
-- "tar@7.5.7"
-- "js-yaml@4.1.1"
-- "semver@7.5.2"
-- "undici@5.29.0"
-- "tar@7.5.3"
-- "tar@7.5.8"
-- "ajv@8.18.0"
-- "@tootallnate/once@3.0.1"
-- "tar@7.5.10"
-- "tar@7.5.11"
-- "undici@6.24.0"
-- "tar@7.5.4"
-- "vite@6.4.2"
-- "axios@1.15.0"
-- "uuid@14.0.0"
-- "axios@1.15.1"
-- "axios@1.15.2"
-- "next@15.5.25"
-- "js-yaml@4.3.2"
-- "axios@1.20.0"
-- "undici@6.28.1"
-- "postcss@8.5.28"
-- "nanoid@3.3.19"
-- "browserslist@4.28.7"
-- "websocket-driver@0.7.5"
-- "brace-expansion@1.1.21"
-- "brace-expansion@2.1.7"
-- "adm-zip@0.6.1"
-- "react-router-dom@6.30.6"
+  - "debug@4.3.1"
+  - tar@6.2.1 || 7.5.3 || 7.5.4 || 7.5.7 || 7.5.8 || 7.5.10 || 7.5.11
+  - undici@5.28.5 || 5.29.0 || 6.23.0 || 6.24.0 || 6.28.1
+  - "path-to-regexp@6.3.0"
+  - "esbuild@0.25.0"
+  - js-yaml@4.1.1 || 4.3.2
+  - "semver@7.5.2"
+  - "ajv@8.18.0"
+  - "@tootallnate/once@3.0.1"
+  - "vite@6.4.2"
+  - axios@1.15.0 || 1.15.1 || 1.15.2 || 1.20.0
+  - "uuid@14.0.0"
+  - "next@15.5.25"
+  - "postcss@8.5.28"
+  - "nanoid@3.3.19"
+  - "browserslist@4.28.7"
+  - "websocket-driver@0.7.5"
+  - brace-expansion@1.1.21 || 2.1.7
+  - "adm-zip@0.6.1"
+  - react-router-dom@6.30.6 || 7.18.7
+  - react-router@7.18.7
 overrides:
   undici: ^6.29.1
   "@tootallnate/once@<3.0.1": ^3.0.1
@@ -91,9 +73,8 @@ overrides:
   "immutable@^4": ">=4.3.9"
   "immutable@^5": ">=5.1.8"
   "webpack-dev-server@<5.2.6": ">=5.2.6"
-  "react-router-dom@^6": ^6.30.6
-  "react-router@^6": ^6.30.6
-  "@remix-run/router": ">=1.23.3"
+  "react-router-dom": ^7.18.7
+  "react-router": ^7.18.7
   "svgo@^2": ">=2.8.4"
   "svgo@^3": ">=3.3.5"
   "toml@<=5.0.0": ">=5.0.1"
@@ -135,8 +116,5 @@ overrides:
   "serialize-javascript@<7.1.3": ">=7.1.3"
 auditConfig:
   ignoreGhsas:
-    - GHSA-vfj7-8cjw-p6xm
-    - GHSA-337j-9hxr-rhxg
     - GHSA-848j-6mx2-7j84
-    - GHSA-wrjc-x8rr-h8h6
 pmOnFail: ignore
